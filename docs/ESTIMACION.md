@@ -38,16 +38,17 @@ Este documento traduce el trabajo a **horas y días** para que TiforTi pueda con
 | Carga del equipo | 2 – 3 |
 | Avisos por correo simulados y recordatorios | 2 – 3 |
 | Maqueta del editor de contenido (Etapa 2) | 3 – 4 |
+| Registro manual de consultas (opción A de WhatsApp) | 4 – 6 |
 | Ajustes (plazo, casilla compartida, retención) | 1 – 2 |
 | Responsive y accesibilidad | 4 – 6 |
 | Pruebas automáticas y correcciones | 4 – 6 |
 | Documentación | 2 – 3 |
-| **Subtotal A2** | **39 – 55 h** |
+| **Subtotal A2** | **43 – 61 h** |
 
 ### Total de los prototipos (A1 + A2)
 | | Horas | Días de 8 h |
 |---|---|---|
-| **Referencia manual** | **77 – 110 h** | **≈ 10 – 14 días** |
+| **Referencia manual** | **81 – 116 h** | **≈ 10 – 15 días** |
 
 ---
 
@@ -84,7 +85,7 @@ Este documento traduce el trabajo a **horas y días** para que TiforTi pueda con
 ### B3. Opcional · WhatsApp (fuera de la cotización base)
 | Módulo | Horas |
 |---|---|
-| A. Registro manual de consultas de WhatsApp en el panel | 4 – 6 |
+| A. Registro manual de consultas de WhatsApp en el panel (ya incluido en el prototipo A2; en producción solo falta conectarlo a Firestore, dentro de B1) | — |
 | B. WhatsApp Business Platform: cuenta y número en Meta, webhook, creación automática de consultas, deduplicación, avisos, plantillas de mensaje | 20 – 30 |
 | C. Agente de IA: diseño de reglas y conversación, modelo de lenguaje, traspaso a humano, reserva de horas (requiere agenda real), pruebas con casos de riesgo | 40 – 70 |
 

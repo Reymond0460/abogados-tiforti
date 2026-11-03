@@ -7,6 +7,7 @@
   let db, actor, sla = 24, view = 'inbox', log = [], seq = 1043;
   const AREAS = { civil: 'Derecho civil', laboral: 'Derecho laboral', empresas: 'Asesoría a empresas', orientacion: 'Necesita orientación' };
   const STATUS = { nueva: 'Nueva', tomada: 'Tomada', espera: 'Esperando respuesta', cerrada: 'Cerrada' };
+  const CHANNELS = { formulario: 'Formulario web', whatsapp: 'WhatsApp', telefono: 'Teléfono', presencial: 'Presencial', otro: 'Otro canal' };
   const SHARED = 'consultas@nexo-demo.example';
 
   const put = (el, ...nodes) => el.replaceChildren(...nodes.filter(Boolean));
@@ -66,7 +67,7 @@
     const list = filtered();
     $('#rows').replaceChildren(...list.map((c) => h('tr', { class: overdue(c) ? 'row-late' : '' },
       h('td', { 'data-label': 'N.º' }, c.id),
-      h('td', { 'data-label': 'Recibida' }, ago(c.createdAt), c.channel === 'whatsapp' ? h('span', { class: 'chip' }, 'WhatsApp') : null),
+      h('td', { 'data-label': 'Recibida' }, ago(c.createdAt), c.channel !== 'formulario' ? h('span', { class: 'chip' }, CHANNELS[c.channel] || c.channel) : null),
       h('td', { 'data-label': 'Persona' }, h('div', { class: 'cell-person' }, h('strong', {}, c.name), h('span', { class: 'sub' }, c.email))),
       h('td', { 'data-label': 'Área' }, AREAS[c.area]),
       h('td', { 'data-label': 'Estado' }, pill(c)),
@@ -120,8 +121,8 @@
       h('button', { class: 'close', type: 'button', 'aria-label': 'Cerrar ventana', onclick: closeDetail }, '✕'),
       h('p', { class: 'eyebrow' }, c.id + ' · ' + AREAS[c.area]),
       h('h2', { id: 'detail-title', tabindex: '-1' }, c.name),
-      h('p', {}, pill(c), ' ', h('span', { class: 'muted' }, 'Recibida ' + ago(c.createdAt) + ' por ' + (c.channel === 'whatsapp' ? 'WhatsApp' : 'formulario') + ' · Responsable: ' + pname(c.owner))),
-      h('dl', { class: 'facts' }, h('dt', {}, 'Correo'), h('dd', {}, c.email), h('dt', {}, 'Teléfono'), h('dd', {}, c.phone || 'No indicado')),
+      h('p', {}, pill(c), ' ', h('span', { class: 'muted' }, 'Recibida ' + ago(c.createdAt) + ' · Canal: ' + (CHANNELS[c.channel] || c.channel) + (c.manual ? ' (registrada a mano)' : '') + ' · Responsable: ' + pname(c.owner))),
+      h('dl', { class: 'facts' }, h('dt', {}, 'Correo'), h('dd', {}, c.email), h('dt', {}, 'Teléfono'), h('dd', {}, c.phone || 'No indicado'), c.summary ? h('dt', {}, 'Resumen') : null, c.summary ? h('dd', {}, c.summary) : null),
       lockedBy ? h('p', { class: 'lock', role: 'status' }, 'Esta consulta la tomó ' + lockedBy.name + '. Puedes reasignarla indicando un motivo.') : null,
       !c.owner && c.status !== 'cerrada' ? h('button', { class: 'btn btn-primary', type: 'button', onclick: () => take(c.id) }, 'Tomar esta consulta') : null,
       c.owner && c.status !== 'cerrada' ? h('div', { class: 'block' }, h('label', { for: 'd-status' }, 'Estado'), statusSel,
@@ -172,6 +173,48 @@
     toast(late.length + ' recordatorio(s) registrados.'); renderAll();
   }
 
+
+  /* ---------- Registro manual (opción A) ---------- */
+  function openRegister(from) {
+    opener = from; openId = null;
+    const f = h('form', { id: 'reg-form', novalidate: true });
+    const err = h('p', { class: 'error', role: 'alert', hidden: true });
+    const sel = (id, opts) => h('select', { id }, ...opts.map(([v, t]) => h('option', { value: v }, t)));
+    f.append(
+      h('label', { for: 'r-name' }, 'Nombre de la persona'), h('input', { id: 'r-name', maxlength: 100, autocomplete: 'off' }),
+      h('label', { for: 'r-email' }, 'Correo (opcional si hay teléfono)'), h('input', { id: 'r-email', type: 'email', maxlength: 180, autocomplete: 'off' }),
+      h('label', { for: 'r-phone' }, 'Teléfono o WhatsApp (opcional si hay correo)'), h('input', { id: 'r-phone', type: 'tel', inputmode: 'tel', maxlength: 20, pattern: '[0-9+()\\-\\s]{7,20}', autocomplete: 'off' }),
+      h('label', { for: 'r-channel' }, 'Por dónde llegó'), sel('r-channel', [['whatsapp', 'WhatsApp'], ['telefono', 'Teléfono'], ['presencial', 'Presencial'], ['otro', 'Otro canal']]),
+      h('label', { for: 'r-area' }, 'Área de interés'), sel('r-area', Object.entries(AREAS)),
+      h('label', { for: 'r-summary' }, 'Resumen breve (opcional)'), h('textarea', { id: 'r-summary', rows: 3, maxlength: 300 }),
+      h('p', { class: 'fine' }, 'No registres antecedentes sensibles ni datos del caso: solo lo necesario para contactar a la persona.'),
+      h('label', { class: 'check', for: 'r-take' }, h('input', { id: 'r-take', type: 'checkbox', checked: true }), ' Tomarla yo ahora (' + pname(actor) + ')'),
+      err,
+      h('div', { class: 'row-btns' }, h('button', { class: 'btn btn-primary', type: 'submit' }, 'Registrar consulta'), h('button', { class: 'btn btn-secondary', type: 'button', onclick: closeDetail }, 'Cancelar')));
+    put($('#detail-body'), h('button', { class: 'close', type: 'button', 'aria-label': 'Cerrar ventana', onclick: closeDetail }, '✕'),
+      h('p', { class: 'eyebrow' }, 'REGISTRO MANUAL'), h('h2', { id: 'detail-title', tabindex: '-1' }, 'Registrar consulta'),
+      h('p', { class: 'muted' }, 'Para consultas que llegan por WhatsApp, teléfono o en persona y que el sistema no recibe solo.'), f);
+    f.addEventListener('input', () => { err.hidden = true; });
+    f.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = $('#r-name').value.trim(), email = $('#r-email').value.trim(), phone = $('#r-phone').value.trim();
+      const fail = (m, el) => { err.textContent = m; err.hidden = false; el.focus(); };
+      if (!name) return fail('Escribe el nombre de la persona.', $('#r-name'));
+      if (!email && !phone) return fail('Indica un correo o un teléfono para poder contactarla.', $('#r-phone'));
+      if (email && !$('#r-email').checkValidity()) return fail('El correo no tiene un formato válido.', $('#r-email'));
+      if (phone && !$('#r-phone').checkValidity()) return fail('Usa solo números, espacios, +, paréntesis o guiones en el teléfono.', $('#r-phone'));
+      const ch = $('#r-channel').value, take = $('#r-take').checked;
+      const c = { id: 'C-' + seq++, createdAt: Date.now(), name, email, phone, area: $('#r-area').value, channel: ch, manual: true, summary: $('#r-summary').value.trim(),
+        status: take ? 'tomada' : 'nueva', owner: take ? actor : null, notes: [],
+        history: [{ at: Date.now(), who: pname(actor), text: 'Registró la consulta a mano (canal: ' + CHANNELS[ch] + ').' }] };
+      if (take) c.history.push({ at: Date.now(), who: pname(actor), text: 'Tomó la consulta.' });
+      db.consultations.unshift(c);
+      notify('Consulta ' + c.id + ' registrada a mano (' + CHANNELS[ch] + ')', allRecipients());
+      opener = null; closeDetail(); toast('Consulta ' + c.id + ' registrada' + (take ? ' y tomada por ti.' : ' y dejada sin tomar.')); renderAll(); show('inbox'); $('#rows tr button') && $('#rows tr button').focus();
+    });
+    $('#detail').showModal(); $('#detail-title').focus();
+  }
+
   /* ---------- Editor de contenido (maqueta Etapa 2) ---------- */
   function openEditor(key, from) {
     const it = db.content.find((x) => x.key === key); opener = from; openId = null;
@@ -214,7 +257,7 @@
   $('#actor').addEventListener('change', (e) => { actor = e.target.value; toast('Ahora actúas como ' + partner(actor).name + '.'); renderAll(); });
   $$('.tabs button').forEach((b) => b.addEventListener('click', () => show(b.dataset.view)));
   $('#filters').addEventListener('input', renderRows); $('#filters').addEventListener('submit', (e) => e.preventDefault());
-  $('#sim-new').addEventListener('click', simNew); $('#sim-other').addEventListener('click', simOther);
+  $('#register').addEventListener('click', (e) => openRegister(e.currentTarget)); $('#sim-new').addEventListener('click', simNew); $('#sim-other').addEventListener('click', simOther);
   $('#reset').addEventListener('click', () => { init(); closeDetail(); toast('Datos de ejemplo restablecidos.'); });
   $('#send-reminders').addEventListener('click', sendReminders);
   $('#settings-form').addEventListener('submit', (e) => {

@@ -45,6 +45,7 @@ Cómo ejecutarlos: ver `README.md`.
 | 17 | Asesoría sobre un panel admin para tres socios | Recomendación por etapas (ver sección 5) | Hecho |
 | 18 | Documentar todo, tecnologías y horas/días para convertirlos en costo | Este documento y `docs/ESTIMACION.md` | Hecho |
 | 19 | Primer prototipo del panel | `admin/` (ver sección 4) | Hecho |
+| 21 | Seguir con la opción A (registro manual de consultas de WhatsApp/teléfono/presencial) | Botón «Registrar consulta» en el panel: formulario con nombre, contacto, canal, área, resumen breve y opción de tomarla de inmediato; queda en historial y avisos como registrada a mano | Hecho (prototipo) |
 | 20 | Pregunta (comentario): ¿cómo sabe el sistema que una consulta llegó por WhatsApp y se atiende con IA/automatización con reservas? | Respondida: hoy es solo una etiqueta en datos de ejemplo. Opciones y alcance en sección 5b; no desarrollado | Respondido, sin desarrollo |
 
 ---
@@ -89,6 +90,8 @@ Pantallas:
 6. **Contenido (maqueta de Etapa 2)**: editar textos ES/EN, guardar borrador, publicar (simulado).
 7. **Ajustes**: plazo (24 h por defecto), casilla compartida y retención «por definir».
 
+**Registro manual (opción A):** el botón «Registrar consulta» permite ingresar consultas que llegan por WhatsApp, teléfono o en persona. Exige nombre y al menos un correo o teléfono, advierte no registrar datos sensibles, permite tomarla de inmediato y deja constancia en el historial y en los avisos.
+
 Herramientas de demostración: «Simular consulta nueva», «Simular que otro socio toma una» (para ver el bloqueo), «Restablecer datos» y selector «Actuando como».
 
 Limitaciones del prototipo (a propósito): datos en memoria que se pierden al recargar; sin red, sin Firebase, sin correos reales, sin autenticación real.
@@ -129,7 +132,7 @@ Requisito: las Cloud Functions necesitan el plan **Blaze** de Firebase (pago por
 
 | Opción | Cómo sabría el sistema que llegó por WhatsApp | Alcance |
 |---|---|---|
-| A. Registro manual | Un socio pulsa «Registrar consulta de WhatsApp» en el panel y la ingresa | Se puede sumar al panel; no automatiza |
+| A. Registro manual | Un socio pulsa «Registrar consulta» en el panel y la ingresa | **Hecho en el prototipo**; no automatiza |
 | B. WhatsApp Business Platform (API Cloud de Meta) | Un *webhook* (Cloud Function) recibe cada mensaje y crea la consulta con canal «WhatsApp», avisa y la deja «sin tomar» | Requiere número dedicado y cuenta verificada en Meta; condiciones y costos de Meta |
 | C. Agente de IA sobre B | La IA conversa, recopila datos y propone horarios de consulta | Requiere B, un modelo de lenguaje, reglas estrictas (no dar asesoría jurídica, derivar urgencias y datos sensibles a una persona, traspaso a un socio), calendario/agenda real y revisión legal de privacidad y consentimiento |
 

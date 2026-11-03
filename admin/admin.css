@@ -135,3 +135,6 @@ select,input,textarea{background:#fff;color:#1c2a45;color-scheme:light}
 dialog p,dialog li,dialog dd,dialog dt,dialog label{color:inherit}
 dialog .muted,dialog .sub,dialog .facts dt{color:var(--muted)}
 dialog label,dialog h2,dialog h3{color:var(--navy)}
+
+label.check{display:flex;align-items:center;gap:10px;font-weight:500;margin-top:14px}
+label.check input{width:24px;height:24px;min-height:24px;accent-color:var(--navy)}
