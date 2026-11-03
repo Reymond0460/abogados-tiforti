@@ -90,3 +90,12 @@ main section[id]{scroll-margin-top:96px}
 .header nav>a[aria-current]:not(.button){color:#0077b4;font-weight:600}
 .header nav>a[aria-current]:not(.button):after{width:100%}
 html.a11y-contrast .header nav>a[aria-current]{text-decoration:underline!important}
+
+/* Enlaces a tiforti.cl */
+.sr-only{position:absolute!important;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.concept-bar a.tiforti-link{display:inline-flex;align-items:center;gap:6px;color:var(--navy);font-size:10px;letter-spacing:0;white-space:nowrap;min-height:24px}
+.concept-bar a.tiforti-link:hover,.vertical-label:hover,.footer-bottom a.tiforti:hover{text-decoration:underline}
+a.vertical-label{color:inherit;text-decoration:none}
+.footer-bottom a.tiforti{color:#fff;font-weight:600;display:inline-flex;align-items:center;min-height:32px}
+@media(max-width:640px){.concept-bar a.tiforti-link{font-size:8px}}
+html.a11y-links .vertical-label{outline-offset:6px!important}

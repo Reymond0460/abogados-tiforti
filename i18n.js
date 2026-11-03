@@ -5,7 +5,7 @@ window.I18N = {
 es: {
  'meta.title': 'NEXO Abogados · Decisiones claras. Asesoría cercana.',
  'meta.desc': 'Propuesta conceptual de sitio web para un estudio jurídico de tres socios. Un espacio para conocer al equipo, explorar áreas de práctica y solicitar una consulta.',
- 'skip': 'Saltar al contenido',
+ 'skip': 'Saltar al contenido', 'ext.new': '(se abre en una pestaña nueva)',
  'bar.left': 'PROPUESTA DE IDENTIDAD · NOMBRE POR VALIDAR',
  'bar.btn': 'Propuesta de TiforTi',
  'brand.aria': 'NEXO Abogados, inicio',
@@ -144,7 +144,7 @@ es: {
 en: {
  'meta.title': 'NEXO Abogados · Clear decisions. Close counsel.',
  'meta.desc': 'Conceptual website proposal for a three-partner law firm. A place to meet the team, explore practice areas and request a consultation.',
- 'skip': 'Skip to content',
+ 'skip': 'Skip to content', 'ext.new': '(opens in a new tab)',
  'bar.left': 'IDENTITY PROPOSAL · NAME TO BE VALIDATED',
  'bar.btn': 'A TiforTi proposal',
  'brand.aria': 'NEXO Abogados, home',
