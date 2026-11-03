@@ -153,8 +153,14 @@
     <!-- CONTENIDO -->
     <section id="view-content" class="view" hidden aria-labelledby="t-content">
       <div class="view-head"><h1 id="t-content">Contenido del sitio</h1></div>
-      <p class="muted">Vista previa de la Etapa 2: los socios editarán los textos en español e inglés, guardarán un borrador y lo publicarán. Aquí no cambia el sitio público.</p>
-      <ul class="content-list" id="content-list"></ul>
+      <p class="muted">Cambia los textos de la página web. Maqueta de la Etapa 2: aquí el sitio público no cambia.</p>
+      <ol class="steps steps-row" aria-label="Cómo editar">
+        <li><span class="step-n" aria-hidden="true">1</span><span>Elige una sección.</span></li>
+        <li><span class="step-n" aria-hidden="true">2</span><span>Edita en español e inglés.</span></li>
+        <li><span class="step-n" aria-hidden="true">3</span><span>Mira cómo se verá.</span></li>
+        <li><span class="step-n" aria-hidden="true">4</span><span>Publica cuando estés listo.</span></li>
+      </ol>
+      <div id="editor-root" class="editor"></div>
     </section>
 
     <!-- AJUSTES -->
@@ -171,6 +177,7 @@
   </main>
 </div>
 
+<dialog id="confirm-dialog" aria-labelledby="confirm-title"><h2 id="confirm-title"></h2><p class="muted">Estos textos cambiarán en el sitio público.</p><ul class="confirm-list" id="confirm-list"></ul><div class="row-btns"><button class="btn btn-primary" id="confirm-ok" type="button">Sí, publicar</button><button class="btn btn-secondary" id="confirm-cancel" type="button">Cancelar</button></div></dialog>
 <dialog id="session-dialog" aria-labelledby="session-title"><h2 id="session-title">¿Sigues ahí?</h2><p id="session-text" role="status"></p><div class="row-btns"><button class="btn btn-primary" id="session-keep" type="button">Seguir conectado</button><button class="btn btn-secondary" id="session-out" type="button">Salir ahora</button></div></dialog>
 <dialog id="detail" aria-labelledby="detail-title"><div id="detail-body"></div></dialog>
 <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
@@ -179,6 +186,8 @@
 <script src="data.js"></script>
 <script src="export.js"></script>
 <script src="charts.js"></script>
+<script src="content.js"></script>
+<script src="editor.js"></script>
 <script src="admin.js"></script>
 </body>
 </html>

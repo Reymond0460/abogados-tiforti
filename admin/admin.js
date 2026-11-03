@@ -93,18 +93,12 @@
     $('#log').replaceChildren(...log.map((l) => h('li', {}, h('strong', {}, l.subject), h('span', { class: 'sub' }, 'Para: ' + l.to.join(', ')), h('span', { class: 'sub' }, new Date(l.at).toLocaleTimeString('es-CL')))));
     $('#log-empty').hidden = log.length > 0;
   }
-  function renderContent() {
-    $('#content-list').replaceChildren(...db.content.map((it) => h('li', {},
-      h('div', {}, h('strong', {}, it.label), h('span', { class: 'sub' }, 'ES: ' + it.es), h('span', { class: 'sub' }, 'EN: ' + it.en)),
-      h('span', { class: 'pill pill-' + (it.status === 'publicado' ? 'cerrada' : 'espera') }, it.status === 'publicado' ? 'Publicado' : 'Borrador'),
-      h('button', { class: 'btn btn-secondary', type: 'button', 'aria-label': 'Editar ' + it.label, onclick: (e) => openEditor(it.key, e.currentTarget) }, 'Editar'))));
-  }
   function renderOwnerFilter() {
     const sel = $('#f-owner'), cur = sel.value;
     sel.replaceChildren(h('option', { value: '' }, 'Todos'), h('option', { value: 'none' }, 'Sin asignar'), ...db.partners.map((p) => h('option', { value: p.id }, p.short)));
     sel.value = cur;
   }
-  function renderAll() { renderDashboard(); renderTiles(); renderRows(); renderTeam(); renderLog(); renderContent(); if ($('#detail').open && openId) renderDetail(openId); }
+  function renderAll() { renderDashboard(); renderTiles(); renderRows(); renderTeam(); renderLog(); if ($('#detail').open && openId) renderDetail(openId); }
 
   /* ---------- Detalle ---------- */
   let openId = null, opener = null;
@@ -253,22 +247,6 @@
     $('#detail').showModal(); $('#detail-title').focus();
   }
 
-  /* ---------- Editor de contenido (maqueta Etapa 2) ---------- */
-  function openEditor(key, from) {
-    const it = db.content.find((x) => x.key === key); opener = from; openId = null; sizeDetail(true);
-    const es = h('textarea', { id: 'e-es', rows: 3 }), en = h('textarea', { id: 'e-en', rows: 3 }); es.value = it.es; en.value = it.en;
-    $('#detail-body').replaceChildren(
-      h('button', { class: 'close', type: 'button', 'aria-label': 'Cerrar ventana', onclick: closeDetail }, '✕'),
-      h('p', { class: 'eyebrow' }, 'CONTENIDO · MAQUETA'), h('h2', { id: 'detail-title', tabindex: '-1' }, it.label),
-      h('label', { for: 'e-es' }, 'Español'), es, h('label', { for: 'e-en' }, 'English'), en,
-      h('p', { class: 'fine' }, 'En la versión real, publicar actualizará el sitio y se guardará el historial de versiones.'),
-      h('div', { class: 'row-btns' },
-        h('button', { class: 'btn btn-secondary', type: 'button', onclick: () => { it.es = es.value; it.en = en.value; it.status = 'borrador'; renderContent(); closeDetail(); toast('Borrador guardado.'); } }, 'Guardar borrador'),
-        h('button', { class: 'btn btn-primary', type: 'button', onclick: () => { it.es = es.value; it.en = en.value; it.status = 'publicado'; renderContent(); closeDetail(); toast('Publicado (simulado). El sitio público no cambió.'); } }, 'Publicar')));
-    $('#detail').showModal(); $('#detail-title').focus();
-  }
-
-
   /* ---------- Dashboard ---------- */
   const COL = window.AdminCharts.COLORS;
   function legend(id, items, total) {
@@ -342,17 +320,20 @@
   function show(v) {
     view = v; $$('.view').forEach((s) => { s.hidden = s.id !== 'view-' + v; });
     $$('.tabs button').forEach((b) => { if (b.dataset.view === v) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current'); });
+    if (v === 'content') window.AdminEditor.render();
     $('#main').focus({ preventScroll: true });
   }
   function init() {
     db = JSON.parse(RAW); log = []; seq = 1043; sla = 24; $('#s-sla').value = 24;
-    renderOwnerFilter(); renderAll();
+    window.AdminEditor.reset(); renderOwnerFilter(); renderAll(); if (view === 'content') window.AdminEditor.render();
   }
   function fillActors() {
     const opts = () => db.partners.map((p) => h('option', { value: p.id }, p.name));
     $('#login-partner').replaceChildren(...opts()); $('#actor').replaceChildren(...opts());
   }
-  db = JSON.parse(RAW); fillActors(); init();
+  db = JSON.parse(RAW); fillActors();
+  window.AdminEditor.setCtx({ toast, who: () => pname(actor), partnerPhoto: (i) => db.partners[i].photo });
+  init();
 
   /* ---------- Acceso: demostración de controles ---------- */
   const SEC = Object.assign({ maxAttempts: 5, lockSeconds: 30, sessionMinutes: 15, warnSeconds: 60 }, (window.ADMIN_CONFIG || {}).security);
@@ -397,7 +378,7 @@
     clearTimeout(idleTimer); clearTimeout(warnTimer); clearInterval(tickTimer);
     if ($('#session-dialog').open) $('#session-dialog').close();
     if ($('#detail').open) $('#detail').close();
-    ['#rows', '#tiles', '#team-grid', '#log', '#content-list', '#dash-kpis', '#ch-load', '#ch-days', '#ch-area', '#ch-status', '#ch-channel'].forEach((s) => $(s).replaceChildren());
+    ['#rows', '#tiles', '#team-grid', '#log', '#editor-root', '#dash-kpis', '#ch-load', '#ch-days', '#ch-area', '#ch-status', '#ch-channel'].forEach((s) => $(s).replaceChildren());
     $('#app').hidden = true; $('#login').hidden = false;
     loginMsg.textContent = reason || 'Cerraste sesión.'; loginMsg.hidden = false; $('#login-pass').focus();
   }

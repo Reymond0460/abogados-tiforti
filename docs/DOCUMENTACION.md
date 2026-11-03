@@ -46,6 +46,7 @@ Cómo ejecutarlos: ver `README.md`.
 | 18 | Documentar todo, tecnologías y horas/días para convertirlos en costo | Este documento y `docs/ESTIMACION.md` | Hecho |
 | 19 | Primer prototipo del panel | `admin/` (ver sección 4) | Hecho |
 | 21 | Seguir con la opción A (registro manual de consultas de WhatsApp/teléfono/presencial) | Botón «Registrar consulta» en el panel: formulario con nombre, contacto, canal, área, resumen breve y opción de tomarla de inmediato; queda en historial y avisos como registrada a mano | Hecho (prototipo) |
+| 31 | Hacer fácil e intuitiva la edición del contenido de la página por los admin | Editor guiado (maqueta de la Etapa 2): 6 secciones del sitio, campos con ayuda y contador en español e inglés lado a lado, vista previa en vivo ES/EN, borrador guardado automáticamente, confirmación con «antes → después» antes de publicar, «Volver a lo publicado» y versiones restaurables | Hecho (prototipo) |
 | 30 | Tamaño de ficha que no requiera scroll | Ficha compacta de tamaño fijo con pestañas (Resumen, Notas, Historial, Reasignar); verificado sin desplazamiento en las 22 fichas y 4 pestañas en 5 tamaños de pantalla (1440×900, 1280×720, 390×844, 375×812, 360×740); listas largas muestran lo más reciente | Hecho |
 | 29 | Todas las fichas con el mismo tamaño (22 consultas) | Ventana de tamaño fijo (620×600 px en escritorio; ancho completo en móvil) y navegación Anterior/Siguiente fija abajo; el registro manual, el editor y «Copiar para Excel» usan una variante más alta | Hecho |
 | 28 | Mejorar la UX de la ficha de consulta | Plazo visible, contacto con «Copiar», estado con botones de un clic, reasignar e historial plegables, notas, reabrir y navegación Anterior/Siguiente | Hecho |
@@ -96,7 +97,7 @@ Pantallas:
 3. **Detalle de consulta**: datos, **tomar** (con bloqueo si otro socio ya la tomó), cambiar estado, **reasignar con motivo obligatorio**, notas internas, historial.
 4. **Carga del equipo**: consultas en curso y cerradas por socio.
 5. **Avisos por correo (simulados)**: registro de lo que se enviaría a la casilla compartida y a los socios; recordatorios de consultas vencidas.
-6. **Contenido (maqueta de Etapa 2)**: editar textos ES/EN, guardar borrador, publicar (simulado).
+6. **Contenido (maqueta de Etapa 2)**: editor guiado por secciones del sitio (Portada, El estudio, Especialidades, Equipo, Preguntas frecuentes, Datos de contacto) con campos en ES/EN, límites de caracteres, vista previa en vivo, autoguardado de borrador, confirmación antes de publicar y versiones restaurables (simulado).
 7. **Ajustes**: plazo (24 h por defecto), casilla compartida y retención «por definir».
 
 **Exportar a Excel:** genera un archivo `.xlsx` sin librerías externas, con encabezado fijo, filtros automáticos, anchos de columna, fechas reales y una segunda hoja con el resumen por socio. Exporta lo que muestran los filtros de la bandeja. Los textos se guardan como texto (no como fórmulas) para evitar inyección de fórmulas. «Copiar para Excel» deja la tabla en el portapapeles (separada por tabuladores) para pegarla en la celda A1. Nota: en la vista previa de claude.ai las descargas están bloqueadas por el visor; la descarga funciona al abrir el panel localmente o alojado.
@@ -160,7 +161,7 @@ Recomendación: A como primer paso, B cuando el volumen lo justifique y C solo t
 index.html, style.css, extras.css, app.js, i18n.js   Sitio público
 assets/                                             Fuente Jost, imágenes, SVG
 admin/                                              Panel (prototipo)
-  index.html, admin.css, admin.js, data.js, export.js, charts.js
+  index.html, admin.css, admin.js, data.js, export.js, charts.js, content.js, editor.js, config.js
 docs/                                               Documentación (DOCUMENTACION, ESTIMACION, SEGURIDAD)
 README.md                                           Cómo ejecutar
 ```

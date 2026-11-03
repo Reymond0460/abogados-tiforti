@@ -37,7 +37,7 @@ Este documento traduce el trabajo a **horas y días** para que TiforTi pueda con
 | Detalle: tomar con bloqueo, estado, reasignar con motivo, notas, historial, plazo visible, copiar contacto, navegación entre consultas, pestañas y tamaño fijo sin scroll | 14 – 18 |
 | Carga del equipo | 2 – 3 |
 | Avisos por correo simulados y recordatorios | 2 – 3 |
-| Maqueta del editor de contenido (Etapa 2) | 3 – 4 |
+| Editor de contenido guiado (maqueta Etapa 2): secciones, campos ES/EN, vista previa, autoguardado, confirmación, versiones | 10 – 14 |
 | Registro manual de consultas (opción A de WhatsApp) | 4 – 6 |
 | Exportar a Excel (.xlsx, copia al portapapeles, verificación) | 6 – 8 |
 | Demostración de controles de acceso (contraseña, 2.º factor, bloqueo, inactividad, CSP), mejora de la pantalla de ingreso e instrucciones, y plan de seguridad (`docs/SEGURIDAD.md`) | 8 – 12 |
@@ -46,12 +46,12 @@ Este documento traduce el trabajo a **horas y días** para que TiforTi pueda con
 | Responsive y accesibilidad | 4 – 6 |
 | Pruebas automáticas y correcciones | 4 – 6 |
 | Documentación | 2 – 3 |
-| **Subtotal A2** | **71 – 101 h** |
+| **Subtotal A2** | **78 – 111 h** |
 
 ### Total de los prototipos (A1 + A2)
 | | Horas | Días de 8 h |
 |---|---|---|
-| **Referencia manual** | **109 – 156 h** | **≈ 14 – 20 días** |
+| **Referencia manual** | **116 – 166 h** | **≈ 15 – 21 días** |
 
 ---
 
@@ -80,12 +80,12 @@ Este documento traduce el trabajo a **horas y días** para que TiforTi pueda con
 | Módulo | Horas |
 |---|---|
 | Modelo de datos y paso de los textos a Firestore, con respaldo local | 10 – 14 |
-| Editor con borrador, publicación y versiones (ES/EN) | 14 – 20 |
+| Editor con borrador, publicación y versiones (ES/EN); la interfaz ya existe en el prototipo, aquí se conecta a datos reales | 12 – 18 |
 | Permisos (cada socio su perfil; textos generales aprobados) | 4 – 6 |
 | El sitio público lee el contenido publicado | 6 – 8 |
 | Pruebas | 6 – 8 |
 | Documentación | 2 – 3 |
-| **Subtotal B2** | **42 – 59 h** |
+| **Subtotal B2** | **40 – 57 h** |
 
 ### B3. Opcional · WhatsApp (fuera de la cotización base)
 | Módulo | Horas |
@@ -100,9 +100,9 @@ Notas: C depende de B y de una agenda real (hoy no incluida). Meta y el proveedo
 | | Horas | Días de 8 h |
 |---|---|---|
 | B1 (consultas reales) | 90 – 128 | ≈ 11 – 16 |
-| B2 (edición de textos) | 42 – 59 | ≈ 5 – 7 |
+| B2 (edición de textos) | 40 – 57 | ≈ 5 – 7 |
 | Contingencia sugerida (15 %) | 20 – 28 | ≈ 3 – 4 |
-| **Total B** | **152 – 215 h** | **≈ 19 – 27 días** |
+| **Total B** | **150 – 213 h** | **≈ 19 – 27 días** |
 
 ---
 
