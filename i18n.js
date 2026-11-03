@@ -5,7 +5,7 @@ window.I18N = {
 es: {
  'meta.title': 'NEXO Abogados · Decisiones claras. Asesoría cercana.',
  'meta.desc': 'Propuesta conceptual de sitio web para un estudio jurídico de tres socios. Un espacio para conocer al equipo, explorar áreas de práctica y solicitar una consulta.',
- 'skip': 'Saltar al contenido', 'ext.new': '(se abre en una pestaña nueva)',
+ 'skip': 'Saltar al contenido', 'ext.new': '(se abre en una pestaña nueva)', 'wa.label': 'Escribir por WhatsApp (se abre en una pestaña nueva)', 'wa.text': 'WhatsApp', 'wa.msg': 'Hola, quisiera orientación para una primera consulta. (Mensaje de prueba del sitio de demostración)',
  'bar.left': 'PROPUESTA DE IDENTIDAD · NOMBRE POR VALIDAR',
  'bar.btn': 'Propuesta de TiforTi',
  'brand.aria': 'NEXO Abogados, inicio',
@@ -106,7 +106,7 @@ es: {
    {h: 'Conservación', p: 'Solo el tiempo necesario para atender su solicitud, salvo que una norma exija conservarlos más. El plazo exacto se definirá con el estudio.'},
    {h: 'Sus derechos', p: 'Conforme a la normativa chilena de protección de datos personales (Ley N° 19.628 y sus modificaciones, incluida la Ley N° 21.719), usted podrá solicitar acceso, rectificación, supresión, oposición, bloqueo y portabilidad de sus datos, y retirar su consentimiento, escribiendo al contacto indicado.'},
    {h: 'Datos sensibles y urgencias', p: 'No envíe documentos, antecedentes de su caso ni datos sensibles. Este sitio no es un canal para urgencias o vencimientos legales. Un contacto no implica aceptación de un encargo.'},
-   {h: 'Transferencias', p: 'El sitio definitivo podría alojarse en Firebase Hosting (Google), con DNS en Cloudflare y correo en Zoho Mail, que pueden tratar datos fuera de Chile bajo sus propias condiciones. Se informará antes de activar cualquier servicio.'}
+   {h: 'Transferencias', p: 'El sitio definitivo podría alojarse en Firebase Hosting (Google), con DNS en Cloudflare y correo en Zoho Mail, que pueden tratar datos fuera de Chile bajo sus propias condiciones. El botón de WhatsApp (número ficticio en esta demo) abre WhatsApp, de Meta, en una pestaña nueva solo si usted lo pulsa; allí rigen sus condiciones. Se informará antes de activar cualquier servicio.'}
   ],
   end: 'Las preferencias de idioma y accesibilidad se guardan localmente en su navegador; vea «Cookies y almacenamiento».'},
  'dlg.cookies': {tag: 'COOKIES Y ALMACENAMIENTO LOCAL', title: 'Cookies y almacenamiento',
@@ -145,7 +145,7 @@ es: {
 en: {
  'meta.title': 'NEXO Abogados · Clear decisions. Close counsel.',
  'meta.desc': 'Conceptual website proposal for a three-partner law firm. A place to meet the team, explore practice areas and request a consultation.',
- 'skip': 'Skip to content', 'ext.new': '(opens in a new tab)',
+ 'skip': 'Skip to content', 'ext.new': '(opens in a new tab)', 'wa.label': 'Message us on WhatsApp (opens in a new tab)', 'wa.text': 'WhatsApp', 'wa.msg': 'Hello, I would like guidance for a first consultation. (Test message from the demo site)',
  'bar.left': 'IDENTITY PROPOSAL · NAME TO BE VALIDATED',
  'bar.btn': 'A TiforTi proposal',
  'brand.aria': 'NEXO Abogados, home',
@@ -246,7 +246,7 @@ en: {
    {h: 'Retention', p: 'Only as long as needed to handle your request, unless a rule requires keeping it longer. The exact period will be defined with the firm.'},
    {h: 'Your rights', p: 'Under Chilean personal data protection law (Law No. 19.628 and its amendments, including Law No. 21.719), you may request access, rectification, erasure, objection, blocking and portability of your data, and withdraw your consent, by writing to the contact above.'},
    {h: 'Sensitive data and emergencies', p: 'Do not send documents, case details or sensitive data. This site is not a channel for emergencies or legal deadlines. Contacting us does not mean we accept a matter.'},
-   {h: 'Transfers', p: 'The final site might be hosted on Firebase Hosting (Google), with DNS on Cloudflare and email on Zoho Mail, which may process data outside Chile under their own terms. You will be informed before any service is activated.'}
+   {h: 'Transfers', p: 'The final site might be hosted on Firebase Hosting (Google), with DNS on Cloudflare and email on Zoho Mail, which may process data outside Chile under their own terms. The WhatsApp button (a fictitious number in this demo) opens WhatsApp, by Meta, in a new tab only if you press it; its own terms apply there. You will be informed before any service is activated.'}
   ],
   end: 'Language and accessibility preferences are stored locally in your browser; see "Cookies and storage".'},
  'dlg.cookies': {tag: 'COOKIES AND LOCAL STORAGE', title: 'Cookies and storage',

@@ -126,6 +126,8 @@ function applyLang(next, save) {
   menuButton.setAttribute('aria-label', t(menuButton.getAttribute('aria-expanded') === 'true' ? 'menu.close' : 'menu.open'));
   if (statusShown) status.textContent = t('form.ok');
   if (currentKey) renderDialog(currentKey);
+  const wa = document.querySelector('#wa-fab');
+  if (wa) wa.href = 'https://wa.me/56900000000?text=' + encodeURIComponent(t('wa.msg'));
   updateA11yLabels();
   if (save) store.set('nexo-lang', lang);
 }
