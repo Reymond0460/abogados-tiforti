@@ -20,20 +20,43 @@
       <span class="brand-name">NEXO<small>ABOGADOS</small></span>
     </div>
     <h1 id="login-title">Panel interno</h1>
-    <p class="muted">Prototipo con datos ficticios. El acceso real usará Firebase Authentication con segundo factor. Lo que ves aquí son solo demostraciones de los controles; la seguridad real la aplica el servidor.</p>
+    <p class="muted">Acceso exclusivo para los socios del estudio.</p>
+    <ol class="steps" aria-label="Cómo ingresar">
+      <li><span class="step-n" aria-hidden="true">1</span><span>Elige tu nombre.</span></li>
+      <li><span class="step-n" aria-hidden="true">2</span><span>Escribe tu contraseña.</span></li>
+      <li><span class="step-n" aria-hidden="true">3</span><span>Escribe el código de 6 dígitos de tu aplicación autenticadora.</span></li>
+    </ol>
     <form id="login-form" novalidate>
       <label for="login-partner">Ingresar como</label>
-      <select id="login-partner" required></select>
-      <label for="login-pass">Contraseña (simulada)</label>
-      <div class="pass-row"><input id="login-pass" type="password" autocomplete="current-password" minlength="8" maxlength="128" placeholder="Mínimo 8 caracteres" required><button class="btn btn-secondary" id="pass-toggle" type="button" aria-pressed="false">Mostrar</button></div>
-      <label for="login-code">Código de verificación (segundo factor, simulado)</label>
-      <input id="login-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="Código de 6 dígitos" required>
-      <p class="fine">Prototipo: sirve cualquier contraseña de 8+ caracteres y cualquier código, salvo <strong>000000</strong>, que simula un código incorrecto para probar el bloqueo.</p>
+      <div class="who-pick"><img id="login-avatar" src="../assets/partner-1.jpg" alt="" width="44" height="44"><select id="login-partner" required></select></div>
+      <label for="login-pass">Contraseña</label>
+      <div class="pass-row"><input id="login-pass" type="password" autocomplete="current-password" minlength="8" maxlength="128" aria-describedby="pass-help caps-warn" required><button class="btn btn-secondary" id="pass-toggle" type="button" aria-pressed="false" aria-label="Mostrar contraseña">Mostrar</button></div>
+      <p id="pass-help" class="field-help">Mínimo 8 caracteres.</p>
+      <p id="caps-warn" class="field-warn" role="status" hidden>Tienes activadas las mayúsculas (Bloq Mayús).</p>
+      <label for="login-code">Código de verificación</label>
+      <input id="login-code" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code" maxlength="6" placeholder="000 000" aria-describedby="code-help" required>
+      <p id="code-help" class="field-help">6 dígitos que muestra tu aplicación autenticadora. Cambian cada 30 segundos.</p>
       <p id="login-msg" class="ok" role="status" hidden></p>
       <p id="login-error" class="error" role="alert" hidden></p>
       <button class="btn btn-primary" id="login-submit" type="submit">Entrar al panel</button>
     </form>
-    <p class="fine">Esta pantalla no valida credenciales ni envía datos.</p>
+    <details class="help">
+      <summary>¿Problemas para ingresar?</summary>
+      <ul>
+        <li>Revisa que la hora de tu teléfono esté en automático: el código depende de ella.</li>
+        <li>Tras 5 intentos fallidos el acceso se bloquea unos segundos; espera y vuelve a intentar.</li>
+        <li>Si perdiste tu teléfono o crees que alguien entró a tu cuenta, avisa de inmediato a otro socio.</li>
+      </ul>
+    </details>
+    <div class="demo-tip" role="note">
+      <strong>Para probar este prototipo</strong>
+      <ul>
+        <li>Sirve cualquier contraseña de 8 o más caracteres y cualquier código de 6 dígitos.</li>
+        <li>El código <strong>000000</strong> simula uno incorrecto (5 fallos bloquean 30 s).</li>
+        <li>La sesión se cierra tras 15 minutos sin actividad.</li>
+        <li>Los datos son ficticios y no se envía nada. La seguridad real la aplica el servidor.</li>
+      </ul>
+    </div>
     <a class="btn btn-secondary back-site" href="../index.html"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg><span>Volver al sitio principal</span></a>
   </div>
 </section>

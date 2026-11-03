@@ -326,17 +326,29 @@
     show(); clearInterval(lockTimer);
     lockTimer = setInterval(() => { left--; if (left <= 0) { clearInterval(lockTimer); attempts = 0; submit.disabled = false; loginErr.hidden = true; loginMsg.textContent = 'Ya puedes intentarlo de nuevo.'; loginMsg.hidden = false; } else show(); }, 1000);
   }
-  $('#pass-toggle').addEventListener('click', (e) => { const i = $('#login-pass'), show = i.type === 'password'; i.type = show ? 'text' : 'password'; e.currentTarget.textContent = show ? 'Ocultar' : 'Mostrar'; e.currentTarget.setAttribute('aria-pressed', String(show)); });
+  const avatar = $('#login-avatar'), sel = $('#login-partner'), passIn = $('#login-pass'), codeIn = $('#login-code');
+  const setAvatar = () => { const p = partner(sel.value); if (p) avatar.src = p.photo; };
+  sel.addEventListener('change', setAvatar); setAvatar();
+  codeIn.addEventListener('input', () => { codeIn.value = codeIn.value.replace(/\D/g, '').slice(0, 6); codeIn.removeAttribute('aria-invalid'); });
+  passIn.addEventListener('input', () => passIn.removeAttribute('aria-invalid'));
+  const caps = (e) => { if (e.getModifierState) $('#caps-warn').hidden = !e.getModifierState('CapsLock'); };
+  passIn.addEventListener('keydown', caps); passIn.addEventListener('keyup', caps); passIn.addEventListener('blur', () => { $('#caps-warn').hidden = true; });
+  setTimeout(() => { if (!$('#login').hidden) passIn.focus({ preventScroll: true }); }, 0);
+  $('#pass-toggle').addEventListener('click', (e) => { const i = $('#login-pass'), show = i.type === 'password'; i.type = show ? 'text' : 'password'; e.currentTarget.textContent = show ? 'Ocultar' : 'Mostrar'; e.currentTarget.setAttribute('aria-pressed', String(show)); e.currentTarget.setAttribute('aria-label', show ? 'Ocultar contraseña' : 'Mostrar contraseña'); });
   $('#login-form').addEventListener('submit', (e) => {
     e.preventDefault(); if (submit.disabled) return;
     loginMsg.hidden = true;
     const pass = $('#login-pass').value, code = $('#login-code').value.trim();
-    const valid = pass.length >= 8 && /^\d{6}$/.test(code) && code !== '000000';
+    passIn.removeAttribute('aria-invalid'); codeIn.removeAttribute('aria-invalid');
+    const fmtErr = (m, el) => { loginErr.textContent = m; loginErr.hidden = false; el.setAttribute('aria-invalid', 'true'); el.focus(); };
+    if (pass.length < 8) return fmtErr('Escribe tu contraseña (mínimo 8 caracteres).', passIn);
+    if (!/^\d{6}$/.test(code)) return fmtErr('El código tiene 6 dígitos. Revisa tu aplicación autenticadora.', codeIn);
+    const valid = code !== '000000';
     if (!valid) {
       attempts++;
       $('#login-code').value = '';
       if (attempts >= SEC.maxAttempts) { $('#login-pass').value = ''; lockLogin(); return; }
-      loginErr.textContent = 'No pudimos verificar tus datos. Revisa la contraseña y el código. Intentos restantes: ' + (SEC.maxAttempts - attempts) + '.'; loginErr.hidden = false; $('#login-code').focus(); return;
+      loginErr.textContent = 'No pudimos verificar tus datos. Revisa la contraseña y el código, y vuelve a intentarlo. Te quedan ' + (SEC.maxAttempts - attempts) + (SEC.maxAttempts - attempts === 1 ? ' intento.' : ' intentos.'); loginErr.hidden = false; codeIn.setAttribute('aria-invalid', 'true'); codeIn.focus(); return;
     }
     attempts = 0; loginErr.hidden = true; actor = $('#login-partner').value; $('#actor').value = actor;
     $('#login-pass').value = ''; $('#login-code').value = ''; $('#login-pass').type = 'password'; $('#pass-toggle').textContent = 'Mostrar'; $('#pass-toggle').setAttribute('aria-pressed', 'false');

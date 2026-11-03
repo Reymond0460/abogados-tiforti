@@ -165,3 +165,23 @@ a.btn{text-decoration:none}
 
 .pass-row{display:flex;gap:8px}.pass-row input{flex:1;min-width:0}.pass-row .btn{white-space:nowrap}
 #session-dialog{max-width:420px}#session-dialog h2{padding-right:0}
+
+/* Inicio de sesión: pasos, ayudas y avatar */
+.steps{list-style:none;margin:10px 0 4px;padding:0;display:grid;gap:8px}
+.steps li{display:flex;gap:10px;align-items:flex-start;font-size:15px}
+.step-n{flex:0 0 26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-weight:700;font-size:14px;display:grid;place-items:center;margin-top:1px}
+.who-pick{display:flex;gap:10px;align-items:center}.who-pick img{border-radius:50%;object-fit:cover;flex:0 0 44px}.who-pick select{flex:1;min-width:0}
+.field-help{font-size:14px;color:var(--muted);margin:6px 0 0}
+.field-warn{font-size:14px;color:var(--warn);background:var(--warn-bg);border-radius:8px;padding:6px 10px;margin:6px 0 0;font-weight:600}
+#login-code{letter-spacing:6px;font-variant-numeric:tabular-nums;font-size:20px;text-align:center}#login-code::placeholder{letter-spacing:6px}
+input[aria-invalid=true]{border-color:var(--late);box-shadow:0 0 0 2px #fde7e9}
+.login-card #login-error,.login-card #login-msg{margin-top:12px;padding:10px 12px;border-radius:10px}
+.login-card #login-error{background:var(--late-bg)}.login-card #login-msg{background:var(--ok-bg)}
+.help{margin-top:14px;border-top:1px solid var(--line);padding-top:10px}.help summary{cursor:pointer;font-weight:600;color:var(--navy);min-height:32px;display:flex;align-items:center}
+.help ul,.demo-tip ul{margin:8px 0 0;padding-left:20px;font-size:14px;color:var(--muted)}
+.demo-tip{margin-top:14px;background:#edf4fa;border:1px dashed #9db7d6;border-radius:12px;padding:12px 14px;font-size:14px;color:#1c2a45}
+.demo-tip>strong{color:var(--navy);display:block}
+.login-card{padding-bottom:22px}
+
+.login-card .pass-row .btn{width:auto;margin-top:0;flex:0 0 auto;padding-inline:14px}
+.login-card .pass-row input{margin:0}

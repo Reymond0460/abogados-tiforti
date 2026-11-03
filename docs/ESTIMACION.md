@@ -40,18 +40,18 @@ Este documento traduce el trabajo a **horas y días** para que TiforTi pueda con
 | Maqueta del editor de contenido (Etapa 2) | 3 – 4 |
 | Registro manual de consultas (opción A de WhatsApp) | 4 – 6 |
 | Exportar a Excel (.xlsx, copia al portapapeles, verificación) | 6 – 8 |
-| Demostración de controles de acceso (contraseña, 2.º factor, bloqueo, inactividad, CSP) y plan de seguridad (`docs/SEGURIDAD.md`) | 6 – 9 |
+| Demostración de controles de acceso (contraseña, 2.º factor, bloqueo, inactividad, CSP), mejora de la pantalla de ingreso e instrucciones, y plan de seguridad (`docs/SEGURIDAD.md`) | 8 – 12 |
 | Dashboard: indicadores y 5 gráficos SVG accesibles (barras y pastel) | 8 – 12 |
 | Ajustes (plazo, casilla compartida, retención) | 1 – 2 |
 | Responsive y accesibilidad | 4 – 6 |
 | Pruebas automáticas y correcciones | 4 – 6 |
 | Documentación | 2 – 3 |
-| **Subtotal A2** | **63 – 90 h** |
+| **Subtotal A2** | **65 – 93 h** |
 
 ### Total de los prototipos (A1 + A2)
 | | Horas | Días de 8 h |
 |---|---|---|
-| **Referencia manual** | **101 – 145 h** | **≈ 13 – 18 días** |
+| **Referencia manual** | **103 – 148 h** | **≈ 13 – 19 días** |
 
 ---
 
