@@ -182,3 +182,12 @@ document.querySelector('#a11y-reset').addEventListener('click', () => {
 const savedLang = store.get('nexo-lang');
 applyLang(LANGS.includes(savedLang) ? savedLang : 'es', false);
 applyPrefs(false);
+
+/* ---------- Volver al inicio ----------
+   #inicio es la cabecera fija (sticky): el navegador la considera ya visible y no desplaza. */
+document.querySelectorAll('a[href="#inicio"]').forEach((a) => a.addEventListener('click', (e) => {
+  e.preventDefault();
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches || document.documentElement.classList.contains('a11y-motion');
+  window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
+  document.querySelector('.brand').focus({ preventScroll: true });
+}));
