@@ -185,3 +185,26 @@ input[aria-invalid=true]{border-color:var(--late);box-shadow:0 0 0 2px #fde7e9}
 
 .login-card .pass-row .btn{width:auto;margin-top:0;flex:0 0 auto;padding-inline:14px}
 .login-card .pass-row input{margin:0}
+
+/* Ficha de consulta */
+.meta{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;margin:2px 0 8px}
+.owner-chip{display:inline-flex;align-items:center;gap:6px;font-weight:600;color:var(--navy);background:#edf4fa;border-radius:999px;padding:2px 10px 2px 3px}.owner-chip img{border-radius:50%;object-fit:cover}
+.sla{margin:6px 0 10px;padding:8px 12px;border-radius:10px;font-weight:600;font-size:15px}
+.sla-ok{background:var(--ok-bg);color:var(--ok)}.sla-late{background:var(--late-bg);color:var(--late)}
+.block-first{border-top:0;margin-top:6px}
+dialog h3{margin:.2em 0 .4em}
+.contact-row{display:grid;grid-template-columns:78px 1fr auto;gap:4px 10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+.contact-row:last-child{border-bottom:0}.c-l{color:var(--muted);font-size:15px}.c-v{font-weight:600;overflow-wrap:anywhere}
+.btn-sm{min-height:36px;padding:4px 12px;font-size:14px}
+.btn-lg{min-height:52px;width:100%;font-size:17px}
+.primary-action{margin:14px 0 4px}.primary-action .fine{text-align:center}
+.segs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.seg{min-height:48px;padding:6px 8px;border:1.5px solid #b9c7dd;border-radius:12px;background:#fff;color:var(--navy);font-weight:600;font-size:15px;line-height:1.2;cursor:pointer}
+.seg:hover{background:#edf4fa}.seg-on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.fold{border-top:1px solid var(--line);margin-top:14px;padding-top:8px}
+.fold summary{cursor:pointer;font-weight:600;color:var(--navy);min-height:40px;display:flex;align-items:center}
+.fold .btn{margin-top:10px}
+.detail-nav{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:18px;padding-top:10px;border-top:1px solid var(--line)}
+.detail-nav .btn:disabled{opacity:.4;cursor:not-allowed}
+@media(max-width:480px){.segs{grid-template-columns:1fr}.contact-row{grid-template-columns:1fr auto}.c-l{grid-column:1/-1}}
+.seg-on,.seg-on:hover{background:var(--navy);color:#fff;border-color:var(--navy)}

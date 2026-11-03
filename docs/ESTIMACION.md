@@ -34,7 +34,7 @@ Este documento traduce el trabajo a **horas y días** para que TiforTi pueda con
 | Diseño de flujos y de la interfaz (consultas, roles, estados, bloqueo) | 4 – 6 |
 | Estructura, inicio de sesión simulado, navegación | 3 – 4 |
 | Bandeja: resumen, filtros, plazo vencido, tabla/tarjetas en móvil | 6 – 8 |
-| Detalle: tomar con bloqueo, estado, reasignar con motivo, notas, historial | 8 – 10 |
+| Detalle: tomar con bloqueo, estado, reasignar con motivo, notas, historial, plazo visible, copiar contacto, navegación entre consultas | 11 – 14 |
 | Carga del equipo | 2 – 3 |
 | Avisos por correo simulados y recordatorios | 2 – 3 |
 | Maqueta del editor de contenido (Etapa 2) | 3 – 4 |
@@ -46,12 +46,12 @@ Este documento traduce el trabajo a **horas y días** para que TiforTi pueda con
 | Responsive y accesibilidad | 4 – 6 |
 | Pruebas automáticas y correcciones | 4 – 6 |
 | Documentación | 2 – 3 |
-| **Subtotal A2** | **65 – 93 h** |
+| **Subtotal A2** | **68 – 97 h** |
 
 ### Total de los prototipos (A1 + A2)
 | | Horas | Días de 8 h |
 |---|---|---|
-| **Referencia manual** | **103 – 148 h** | **≈ 13 – 19 días** |
+| **Referencia manual** | **106 – 152 h** | **≈ 14 – 19 días** |
 
 ---
 

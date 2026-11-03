@@ -110,32 +110,59 @@
   let openId = null, opener = null;
   function openDetail(id, from) { openId = id; opener = from; renderDetail(id); $('#detail').showModal(); $('#detail-title').focus(); }
   function closeDetail() { $('#detail').close(); }
+  function copyText(text, what) {
+    const done = () => toast(what + ' copiado.');
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, () => toast('No se pudo copiar. Selecciona el texto y cópialo a mano.', true));
+    else toast('No se pudo copiar. Selecciona el texto y cópialo a mano.', true);
+  }
+  const fullDate = (ts) => new Date(ts).toLocaleString('es-CL', { dateStyle: 'medium', timeStyle: 'short' });
+  const hoursLabel = (ms) => { const m = Math.round(Math.abs(ms) / 60000); return m < 60 ? m + ' min' : m < 2880 ? Math.round(m / 60) + ' h' : Math.round(m / 1440) + ' d'; };
+  function slaLine(c) {
+    if (c.status === 'nueva' && !c.owner) {
+      const left = sla * H - age(c.createdAt);
+      return left >= 0 ? h('p', { class: 'sla sla-ok' }, 'Plazo para tomarla: quedan ' + hoursLabel(left) + ' (de ' + sla + ' h).') : h('p', { class: 'sla sla-late' }, 'Plazo vencido hace ' + hoursLabel(left) + '. Conviene tomarla hoy.');
+    }
+    const t = tookAt(c);
+    if (t) { const w = t - c.createdAt, okSla = w <= sla * H; return h('p', { class: 'sla ' + (okSla ? 'sla-ok' : 'sla-late') }, 'Se tomó ' + hoursLabel(w) + ' después de recibirla (' + (okSla ? 'dentro' : 'fuera') + ' del plazo de ' + sla + ' h).'); }
+    return null;
+  }
   function renderDetail(id) {
     const c = find(id), body = $('#detail-body');
-    const lockedBy = c.owner && c.owner !== actor ? partner(c.owner) : null;
+    const lockedBy = c.owner && c.owner !== actor ? partner(c.owner) : null, mine = c.owner === actor, own = c.owner ? partner(c.owner) : null;
     const reassignSel = h('select', { id: 'd-to' }, ...db.partners.filter((p) => p.id !== c.owner).map((p) => h('option', { value: p.id }, p.name)));
-    const reason = h('input', { id: 'd-reason', maxlength: 120, placeholder: 'Motivo (obligatorio)' });
-    const noteIn = h('textarea', { id: 'd-note', rows: 3, maxlength: 400, placeholder: 'Nota interna' });
-    const statusSel = h('select', { id: 'd-status' }, ...Object.entries(STATUS).filter(([k]) => k !== 'nueva').map(([k, v]) => h('option', { value: k, selected: c.status === k }, v)));
+    const reason = h('input', { id: 'd-reason', maxlength: 120, placeholder: 'Por qué se reasigna (obligatorio)' });
+    const noteIn = h('textarea', { id: 'd-note', rows: 3, maxlength: 400, placeholder: 'Escribe una nota para el equipo' });
+    const list = filtered().map((x) => x.id), idx = list.indexOf(id);
+    const seg = (st, label) => h('button', { type: 'button', class: 'seg' + (c.status === st ? ' seg-on' : ''), 'aria-pressed': String(c.status === st), onclick: () => setStatus(c.id, st) }, label);
+    const contact = (label, value, what) => h('div', { class: 'contact-row' }, h('span', { class: 'c-l' }, label), h('span', { class: 'c-v' }, value || 'No indicado'),
+      value ? h('button', { class: 'btn btn-secondary btn-sm', type: 'button', 'aria-label': 'Copiar ' + what + ' de ' + c.name, onclick: () => copyText(value, what[0].toUpperCase() + what.slice(1)) }, 'Copiar') : null);
     put(body,
       h('button', { class: 'close', type: 'button', 'aria-label': 'Cerrar ventana', onclick: closeDetail }, '✕'),
       h('p', { class: 'eyebrow' }, c.id + ' · ' + AREAS[c.area]),
       h('h2', { id: 'detail-title', tabindex: '-1' }, c.name),
-      h('p', {}, pill(c), ' ', h('span', { class: 'muted' }, 'Recibida ' + ago(c.createdAt) + ' · Canal: ' + (CHANNELS[c.channel] || c.channel) + (c.manual ? ' (registrada a mano)' : '') + ' · Responsable: ' + pname(c.owner))),
-      h('dl', { class: 'facts' }, h('dt', {}, 'Correo'), h('dd', {}, c.email), h('dt', {}, 'Teléfono'), h('dd', {}, c.phone || 'No indicado'), c.summary ? h('dt', {}, 'Resumen') : null, c.summary ? h('dd', {}, c.summary) : null),
-      lockedBy ? h('p', { class: 'lock', role: 'status' }, 'Esta consulta la tomó ' + lockedBy.name + '. Puedes reasignarla indicando un motivo.') : null,
-      !c.owner && c.status !== 'cerrada' ? h('button', { class: 'btn btn-primary', type: 'button', onclick: () => take(c.id) }, 'Tomar esta consulta') : null,
-      c.owner && c.status !== 'cerrada' ? h('div', { class: 'block' }, h('label', { for: 'd-status' }, 'Estado'), statusSel,
-        h('button', { class: 'btn btn-secondary', type: 'button', onclick: () => setStatus(c.id, statusSel.value) }, 'Guardar estado')) : null,
-      c.status !== 'cerrada' ? h('div', { class: 'block' }, h('label', { for: 'd-to' }, 'Reasignar a'), reassignSel, h('label', { for: 'd-reason' }, 'Motivo'), reason,
+      h('div', { class: 'meta' }, pill(c),
+        own ? h('span', { class: 'owner-chip' }, h('img', { src: own.photo, alt: '', width: 24, height: 24 }), mine ? 'Tú (' + own.short + ')' : own.short) : h('span', { class: 'muted' }, 'Sin responsable'),
+        h('span', { class: 'muted' }, CHANNELS[c.channel] + (c.manual ? ' · registrada a mano' : '') + ' · ' + fullDate(c.createdAt) + ' (' + ago(c.createdAt) + ')')),
+      slaLine(c),
+      h('div', { class: 'block block-first' }, h('h3', {}, 'Contacto'), contact('Correo', c.email, 'correo'), contact('Teléfono', c.phone, 'teléfono'),
+        c.summary ? h('div', { class: 'contact-row' }, h('span', { class: 'c-l' }, 'Resumen'), h('span', { class: 'c-v' }, c.summary)) : null),
+      lockedBy ? h('p', { class: 'lock', role: 'status' }, 'La tomó ' + lockedBy.name + '. Si hace falta, puedes reasignarla indicando un motivo.') : null,
+      !c.owner && c.status !== 'cerrada' ? h('div', { class: 'primary-action' }, h('button', { class: 'btn btn-primary btn-lg', type: 'button', onclick: () => take(c.id) }, 'Tomar esta consulta'), h('p', { class: 'fine' }, 'Quedará a tu nombre y los otros socios la verán como tomada.')) : null,
+      c.owner && c.status !== 'cerrada' ? h('div', { class: 'block' }, h('h3', {}, 'Estado'), h('div', { class: 'segs', role: 'group', 'aria-label': 'Estado de la consulta' }, seg('tomada', 'En curso'), seg('espera', 'Esperando respuesta'), seg('cerrada', 'Cerrar consulta'))) : null,
+      c.status === 'cerrada' ? h('div', { class: 'block' }, h('p', { class: 'muted' }, 'Consulta cerrada.'), h('button', { class: 'btn btn-secondary', type: 'button', onclick: () => setStatus(c.id, 'tomada') }, 'Reabrir consulta')) : null,
+      c.status !== 'cerrada' ? h('details', { class: 'fold' }, h('summary', {}, 'Reasignar a otro socio'), h('label', { for: 'd-to' }, 'Reasignar a'), reassignSel, h('label', { for: 'd-reason' }, 'Motivo'), reason,
         h('button', { class: 'btn btn-secondary', type: 'button', onclick: () => reassign(c.id, reassignSel.value, reason.value) }, 'Reasignar')) : null,
-      h('div', { class: 'block' }, h('label', { for: 'd-note' }, 'Notas internas'), noteIn,
+      h('div', { class: 'block' }, h('h3', {}, 'Notas internas'), h('label', { for: 'd-note', class: 'sr' }, 'Nueva nota'), noteIn,
         h('button', { class: 'btn btn-secondary', type: 'button', onclick: () => addNote(c.id, noteIn.value) }, 'Agregar nota'),
-        h('ul', { class: 'notes' }, ...c.notes.map((n) => h('li', {}, h('strong', {}, n.who), ' · ' + ago(n.at), h('span', { class: 'sub' }, n.text))))),
-      h('h3', {}, 'Historial'),
-      h('ol', { class: 'history' }, ...c.history.slice().reverse().map((x) => h('li', {}, h('strong', {}, x.who), ' · ' + ago(x.at), h('span', { class: 'sub' }, x.text))))
+        h('ul', { class: 'notes' }, ...c.notes.slice().reverse().map((n) => h('li', {}, h('strong', {}, n.who), ' · ' + ago(n.at), h('span', { class: 'sub' }, n.text))))),
+      h('details', { class: 'fold' }, h('summary', {}, 'Historial (' + c.history.length + ')'),
+        h('ol', { class: 'history' }, ...c.history.slice().reverse().map((x) => h('li', {}, h('strong', {}, x.who), ' · ' + ago(x.at), h('span', { class: 'sub' }, x.text))))),
+      h('div', { class: 'detail-nav' }, h('button', { class: 'btn btn-ghost', type: 'button', disabled: idx <= 0, onclick: () => gotoDetail(list[idx - 1]) }, '← Anterior'),
+        h('span', { class: 'muted' }, idx >= 0 ? (idx + 1) + ' de ' + list.length : ''),
+        h('button', { class: 'btn btn-ghost', type: 'button', disabled: idx < 0 || idx >= list.length - 1, onclick: () => gotoDetail(list[idx + 1]) }, 'Siguiente →'))
     );
   }
+  function gotoDetail(id) { if (!id) return; openId = id; renderDetail(id); $('#detail-title').focus(); $('#detail').scrollTop = 0; }
 
   /* ---------- Acciones ---------- */
   function take(id) {
