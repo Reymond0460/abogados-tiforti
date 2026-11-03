@@ -2,7 +2,9 @@
 <html lang="es-CL">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0e3b83">
-<meta name="robots" content="noindex,nofollow">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <title>NEXO Abogados · Panel (prototipo)</title>
 <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="admin.css">
@@ -18,14 +20,18 @@
       <span class="brand-name">NEXO<small>ABOGADOS</small></span>
     </div>
     <h1 id="login-title">Panel interno</h1>
-    <p class="muted">Prototipo con datos ficticios. El acceso real usará Firebase Authentication con segundo factor.</p>
+    <p class="muted">Prototipo con datos ficticios. El acceso real usará Firebase Authentication con segundo factor. Lo que ves aquí son solo demostraciones de los controles; la seguridad real la aplica el servidor.</p>
     <form id="login-form" novalidate>
       <label for="login-partner">Ingresar como</label>
       <select id="login-partner" required></select>
-      <label for="login-code">Código de verificación (simulado)</label>
-      <input id="login-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="Cualquier código de 6 dígitos" required>
+      <label for="login-pass">Contraseña (simulada)</label>
+      <div class="pass-row"><input id="login-pass" type="password" autocomplete="current-password" minlength="8" maxlength="128" placeholder="Mínimo 8 caracteres" required><button class="btn btn-secondary" id="pass-toggle" type="button" aria-pressed="false">Mostrar</button></div>
+      <label for="login-code">Código de verificación (segundo factor, simulado)</label>
+      <input id="login-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="Código de 6 dígitos" required>
+      <p class="fine">Prototipo: sirve cualquier contraseña de 8+ caracteres y cualquier código, salvo <strong>000000</strong>, que simula un código incorrecto para probar el bloqueo.</p>
+      <p id="login-msg" class="ok" role="status" hidden></p>
       <p id="login-error" class="error" role="alert" hidden></p>
-      <button class="btn btn-primary" type="submit">Entrar al panel</button>
+      <button class="btn btn-primary" id="login-submit" type="submit">Entrar al panel</button>
     </form>
     <p class="fine">Esta pantalla no valida credenciales ni envía datos.</p>
     <a class="btn btn-secondary back-site" href="../index.html"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg><span>Volver al sitio principal</span></a>
@@ -142,6 +148,7 @@
   </main>
 </div>
 
+<dialog id="session-dialog" aria-labelledby="session-title"><h2 id="session-title">¿Sigues ahí?</h2><p id="session-text" role="status"></p><div class="row-btns"><button class="btn btn-primary" id="session-keep" type="button">Seguir conectado</button><button class="btn btn-secondary" id="session-out" type="button">Salir ahora</button></div></dialog>
 <dialog id="detail" aria-labelledby="detail-title"><div id="detail-body"></div></dialog>
 <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
 

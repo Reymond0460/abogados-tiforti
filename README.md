@@ -21,11 +21,12 @@ y abrir http://localhost:8000. (También funciona abriendo `index.html` directam
 - Idioma y preferencias de accesibilidad se guardan solo en `localStorage` del navegador (nada del formulario). La política de privacidad y la de cookies lo indican.
 
 ## Panel interno (prototipo)
-Abrir `admin/index.html` (por ejemplo http://localhost:8000/admin/). Inicio de sesión simulado: elegir un socio y escribir cualquier código de 6 dígitos. Datos ficticios en memoria; no usa red, Firebase ni correo. Incluye bandeja de consultas con plazo de 24 h, tomar con bloqueo, reasignar con motivo, notas e historial, carga del equipo, avisos simulados, maqueta de edición de contenido (Etapa 2) y ajustes.
+Abrir `admin/index.html` (por ejemplo http://localhost:8000/admin/). Inicio de sesión simulado: elegir un socio, escribir una contraseña de 8+ caracteres y un código de 6 dígitos (000000 simula un código incorrecto; 5 fallos bloquean 30 s; la sesión se cierra a los 15 min sin actividad). Datos ficticios en memoria; no usa red, Firebase ni correo. Incluye bandeja de consultas con plazo de 24 h, tomar con bloqueo, reasignar con motivo, notas e historial, carga del equipo, avisos simulados, maqueta de edición de contenido (Etapa 2) y ajustes.
 
 ## Documentación
 - `docs/DOCUMENTACION.md`: bitácora de solicitudes, decisiones provisionales, tecnologías, qué se desarrolló, pendientes.
 - `docs/ESTIMACION.md`: horas y días por módulo, para convertir luego en valor de desarrollo.
+- `docs/SEGURIDAD.md`: controles de seguridad (qué demuestra el prototipo y qué se implementará de verdad).
 
 ## Firebase Hosting (cuando se acuerde)
 Sitio estático: esta carpeta puede usarse como `public`. No se incluyó `firebase.json` ni `projectId`. NIC Chile (dominio), Cloudflare (DNS) y Zoho Mail (correo) no se modifican.

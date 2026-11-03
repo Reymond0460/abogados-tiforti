@@ -46,6 +46,7 @@ Cómo ejecutarlos: ver `README.md`.
 | 18 | Documentar todo, tecnologías y horas/días para convertirlos en costo | Este documento y `docs/ESTIMACION.md` | Hecho |
 | 19 | Primer prototipo del panel | `admin/` (ver sección 4) | Hecho |
 | 21 | Seguir con la opción A (registro manual de consultas de WhatsApp/teléfono/presencial) | Botón «Registrar consulta» en el panel: formulario con nombre, contacto, canal, área, resumen breve y opción de tomarla de inmediato; queda en historial y avisos como registrada a mano | Hecho (prototipo) |
+| 26 | Reforzar la seguridad del login para evitar vulneraciones y robo de información de socios y clientes | Demostración de controles en el prototipo (contraseña + segundo factor, límite de intentos con bloqueo, mensajes genéricos, cierre por inactividad, pantalla vaciada al salir, CSP) y plan de seguridad real en `docs/SEGURIDAD.md`. El prototipo no da seguridad real: la aplica el servidor | Hecho (demostración y plan) |
 | 25 | Dónde ubicar el acceso al panel de los abogados (comentario) | Enlace discreto «Acceso socios» / «Partner access» en el pie del sitio público; recomendación de producción: subdominio propio `panel.` con Firebase Hosting multisitio, sin enlace destacado | Hecho (prototipo); decidir ubicación final |
 | 24 | Botón para volver a la página principal desde el panel | Enlace «Volver al sitio principal» en la pantalla de ingreso y «Ver sitio principal» en la cabecera del panel | Hecho |
 | 23 | En producción solo debe estar la opción de exportar a Excel (comentario cortado: «ojo hay…») | Interruptor `showCopyFallback` en `admin/config.js`; «Copiar para Excel» solo en la vista previa. Anotado en la lista de producción | Hecho; pendiente leer el resto del comentario |
@@ -156,7 +157,7 @@ index.html, style.css, extras.css, app.js, i18n.js   Sitio público
 assets/                                             Fuente Jost, imágenes, SVG
 admin/                                              Panel (prototipo)
   index.html, admin.css, admin.js, data.js, export.js, charts.js
-docs/                                               Esta documentación
+docs/                                               Documentación (DOCUMENTACION, ESTIMACION, SEGURIDAD)
 README.md                                           Cómo ejecutar
 ```
 
@@ -197,7 +198,7 @@ Los archivos `assets/manrope.*`, `sans.woff2`, `serif.woff2` y `office.jpg` son 
 ## 8b. Lista para pasar a producción (panel)
 - **Solo «Exportar a Excel»:** «Copiar para Excel» existe únicamente porque la vista previa de claude.ai bloquea descargas. Antes de producción, poner `showCopyFallback: false` en `admin/config.js` (o eliminar el botón y su código). Pedido del cliente (comentario 23; el mensaje llegó cortado, pendiente confirmar el resto).
 - Quitar las herramientas de demostración («Simular consulta nueva», «Simular que otro socio toma una», «Restablecer datos», selector «Actuando como») y el aviso de prototipo.
-- Reemplazar el inicio de sesión simulado por Firebase Authentication con segundo factor.
+- Reemplazar el inicio de sesión simulado por Firebase Authentication con segundo factor, App Check y las demás medidas de `docs/SEGURIDAD.md`.
 - Reemplazar `data.js` por datos reales de Firestore.
 
 ---

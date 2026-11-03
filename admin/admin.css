@@ -162,3 +162,6 @@ label.check input{width:24px;height:24px;min-height:24px;accent-color:var(--navy
 .back-site:hover svg,.site-link:hover svg{transform:translateX(-3px)}
 a.btn{text-decoration:none}
 @media(prefers-reduced-motion:reduce){.back-site svg,.site-link svg{transition:none}}
+
+.pass-row{display:flex;gap:8px}.pass-row input{flex:1;min-width:0}.pass-row .btn{white-space:nowrap}
+#session-dialog{max-width:420px}#session-dialog h2{padding-right:0}

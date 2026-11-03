@@ -17,7 +17,7 @@
     const e = document.createElement(tag);
     Object.entries(attrs || {}).forEach(([k, v]) => {
       if (v === false || v == null) return;
-      if (k === 'class') e.className = v; else if (k.startsWith('on')) e.addEventListener(k.slice(2), v);
+      if (k === 'class') e.className = v; else if (k === 'style') e.style.cssText = v; else if (k.startsWith('on')) e.addEventListener(k.slice(2), v);
       else e.setAttribute(k, v === true ? '' : v);
     });
     kids.flat().forEach((c) => { if (c != null && c !== false) e.append(c.nodeType ? c : document.createTextNode(c)); });
@@ -316,14 +316,60 @@
   }
   db = JSON.parse(RAW); fillActors(); init();
 
+  /* ---------- Acceso: demostración de controles ---------- */
+  const SEC = Object.assign({ maxAttempts: 5, lockSeconds: 30, sessionMinutes: 15, warnSeconds: 60 }, (window.ADMIN_CONFIG || {}).security);
+  let attempts = 0, lockTimer = null, idleTimer = null, warnTimer = null, tickTimer = null;
+  const loginErr = $('#login-error'), loginMsg = $('#login-msg'), submit = $('#login-submit');
+  function lockLogin() {
+    let left = SEC.lockSeconds; submit.disabled = true;
+    const show = () => { loginErr.textContent = 'Demasiados intentos. Por seguridad, espera ' + left + ' s para volver a intentarlo.'; loginErr.hidden = false; };
+    show(); clearInterval(lockTimer);
+    lockTimer = setInterval(() => { left--; if (left <= 0) { clearInterval(lockTimer); attempts = 0; submit.disabled = false; loginErr.hidden = true; loginMsg.textContent = 'Ya puedes intentarlo de nuevo.'; loginMsg.hidden = false; } else show(); }, 1000);
+  }
+  $('#pass-toggle').addEventListener('click', (e) => { const i = $('#login-pass'), show = i.type === 'password'; i.type = show ? 'text' : 'password'; e.currentTarget.textContent = show ? 'Ocultar' : 'Mostrar'; e.currentTarget.setAttribute('aria-pressed', String(show)); });
   $('#login-form').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const code = $('#login-code').value.trim(), err = $('#login-error');
-    if (!/^\d{6}$/.test(code)) { err.textContent = 'Ingresa un código de 6 dígitos (en el prototipo sirve cualquiera).'; err.hidden = false; $('#login-code').focus(); return; }
-    err.hidden = true; actor = $('#login-partner').value; $('#actor').value = actor; $('#login-code').value = '';
-    $('#login').hidden = true; $('#app').hidden = false; show('inbox'); $('#main').focus();
+    e.preventDefault(); if (submit.disabled) return;
+    loginMsg.hidden = true;
+    const pass = $('#login-pass').value, code = $('#login-code').value.trim();
+    const valid = pass.length >= 8 && /^\d{6}$/.test(code) && code !== '000000';
+    if (!valid) {
+      attempts++;
+      $('#login-code').value = '';
+      if (attempts >= SEC.maxAttempts) { $('#login-pass').value = ''; lockLogin(); return; }
+      loginErr.textContent = 'No pudimos verificar tus datos. Revisa la contraseña y el código. Intentos restantes: ' + (SEC.maxAttempts - attempts) + '.'; loginErr.hidden = false; $('#login-code').focus(); return;
+    }
+    attempts = 0; loginErr.hidden = true; actor = $('#login-partner').value; $('#actor').value = actor;
+    $('#login-pass').value = ''; $('#login-code').value = ''; $('#login-pass').type = 'password'; $('#pass-toggle').textContent = 'Mostrar'; $('#pass-toggle').setAttribute('aria-pressed', 'false');
+    $('#login').hidden = true; $('#app').hidden = false; renderAll(); show('inbox'); $('#main').focus(); startSession();
   });
-  $('#logout').addEventListener('click', () => { $('#app').hidden = true; $('#login').hidden = false; $('#login-code').focus(); });
+  /* Cierre de sesión (manual o por inactividad): se vacía la información de la pantalla. */
+  function endSession(reason) {
+    clearTimeout(idleTimer); clearTimeout(warnTimer); clearInterval(tickTimer);
+    if ($('#session-dialog').open) $('#session-dialog').close();
+    if ($('#detail').open) $('#detail').close();
+    ['#rows', '#tiles', '#team-grid', '#log', '#content-list', '#dash-kpis', '#ch-load', '#ch-days', '#ch-area', '#ch-status', '#ch-channel'].forEach((s) => $(s).replaceChildren());
+    $('#app').hidden = true; $('#login').hidden = false;
+    loginMsg.textContent = reason || 'Cerraste sesión.'; loginMsg.hidden = false; $('#login-pass').focus();
+  }
+  function startSession() {
+    const reset = () => {
+      if ($('#session-dialog').open) return;
+      clearTimeout(idleTimer); clearTimeout(warnTimer);
+      warnTimer = setTimeout(warn, Math.max(1, SEC.sessionMinutes * 60 - SEC.warnSeconds) * 1000);
+    };
+    startSession.reset = reset; reset();
+  }
+  function warn() {
+    let left = SEC.warnSeconds; const text = $('#session-text'), dlg2 = $('#session-dialog');
+    const paint = () => { text.textContent = 'Por seguridad, tu sesión se cerrará por inactividad en ' + left + ' s.'; };
+    paint(); if ($('#detail').open) $('#detail').close(); dlg2.showModal(); $('#session-keep').focus();
+    clearInterval(tickTimer); tickTimer = setInterval(() => { left--; if (left <= 0) { clearInterval(tickTimer); endSession('Tu sesión se cerró por inactividad.'); } else paint(); }, 1000);
+  }
+  $('#session-keep').addEventListener('click', () => { clearInterval(tickTimer); $('#session-dialog').close(); startSession.reset(); toast('Sesión mantenida.'); });
+  $('#session-out').addEventListener('click', () => endSession('Cerraste sesión.'));
+  $('#session-dialog').addEventListener('cancel', (e) => e.preventDefault());
+  ['click', 'keydown', 'pointerdown', 'touchstart'].forEach((ev) => document.addEventListener(ev, () => { if (!$('#app').hidden && startSession.reset) startSession.reset(); }, { passive: true }));
+  $('#logout').addEventListener('click', () => endSession('Cerraste sesión.'));
   $('#actor').addEventListener('change', (e) => { actor = e.target.value; toast('Ahora actúas como ' + partner(actor).name + '.'); renderAll(); });
   $$('.tabs button').forEach((b) => b.addEventListener('click', () => show(b.dataset.view)));
   $('#filters').addEventListener('input', renderRows); $('#filters').addEventListener('submit', (e) => e.preventDefault());
