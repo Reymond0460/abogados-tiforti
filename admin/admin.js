@@ -104,7 +104,7 @@
     sel.replaceChildren(h('option', { value: '' }, 'Todos'), h('option', { value: 'none' }, 'Sin asignar'), ...db.partners.map((p) => h('option', { value: p.id }, p.short)));
     sel.value = cur;
   }
-  function renderAll() { renderTiles(); renderRows(); renderTeam(); renderLog(); renderContent(); if ($('#detail').open && openId) renderDetail(openId); }
+  function renderAll() { renderDashboard(); renderTiles(); renderRows(); renderTeam(); renderLog(); renderContent(); if ($('#detail').open && openId) renderDetail(openId); }
 
   /* ---------- Detalle ---------- */
   let openId = null, opener = null;
@@ -230,6 +230,76 @@
     $('#detail').showModal(); $('#detail-title').focus();
   }
 
+
+  /* ---------- Dashboard ---------- */
+  const COL = window.AdminCharts.COLORS;
+  function legend(id, items, total) {
+    put($(id), ...items.map((it) => h('li', {}, h('span', { class: 'sw', style: 'background:' + it.color, 'aria-hidden': 'true' }), h('span', { class: 'lg-l' }, it.label), h('strong', {}, String(it.value)), total ? h('span', { class: 'lg-p' }, Math.round((it.value / total) * 100) + ' %') : null)));
+  }
+  function tookAt(c) { const e = c.history.find((x) => /^Tomó la consulta/.test(x.text)); return e ? e.at : null; }
+  function renderDashboard() {
+    const all = db.consultations, n = all.length;
+    const took = all.map((c) => ({ c, t: tookAt(c) })).filter((x) => x.t);
+    const waits = took.map((x) => (x.t - x.c.createdAt) / H);
+    const avg = waits.length ? waits.reduce((a, b) => a + b, 0) / waits.length : 0;
+    const inSla = waits.length ? Math.round((waits.filter((w) => w <= sla).length / waits.length) * 100) : 0;
+    const closed = all.filter((c) => c.status === 'cerrada').length;
+    const kpis = [['Recibidas', String(n)], ['Cerradas', String(closed) + (n ? ' (' + Math.round((closed / n) * 100) + ' %)' : '')], ['Tiempo medio hasta tomar', avg.toFixed(1).replace('.', ',') + ' h'], ['Tomadas dentro del plazo (' + sla + ' h)', inSla + ' %'], ['Vencidas hoy', String(all.filter(overdue).length)]];
+    put($('#dash-kpis'), ...kpis.map(([l, v], i) => h('li', { class: 'tile' + (i === 4 && v !== '0' ? ' tile-late' : '') }, h('span', { class: 'tile-n' }, v), h('span', { class: 'tile-l' }, l))));
+
+    const load = db.partners.map((p) => ({ open: all.filter((c) => c.owner === p.id && c.status !== 'cerrada').length, done: all.filter((c) => c.owner === p.id && c.status === 'cerrada').length }));
+    const ls = [{ name: 'En curso', color: COL[1], values: load.map((x) => x.open) }, { name: 'Cerradas', color: COL[0], values: load.map((x) => x.done) }];
+    put($('#ch-load'), window.AdminCharts.bars({ labels: db.partners.map((p) => p.short), series: ls, label: 'Barras apiladas por socio: ' + db.partners.map((p, i) => p.short + ' ' + load[i].open + ' en curso y ' + load[i].done + ' cerradas').join('; ') }));
+    legend('#lg-load', ls.map((s) => ({ label: s.name, value: s.values.reduce((a, b) => a + b, 0), color: s.color })));
+
+    const days = [], day0 = new Date(); day0.setHours(0, 0, 0, 0);
+    for (let i = 6; i >= 0; i--) { const d = new Date(day0); d.setDate(d.getDate() - i); days.push({ d, n: 0 }); }
+    all.forEach((c) => { const x = days.find((q) => c.createdAt >= q.d.getTime() && c.createdAt < q.d.getTime() + 86400000); if (x) x.n++; });
+    put($('#ch-days'), window.AdminCharts.bars({ labels: days.map((x) => x.d.toLocaleDateString('es-CL', { weekday: 'short' }).replace('.', '')), series: [{ name: 'Recibidas', color: COL[1], values: days.map((x) => x.n) }], label: 'Barras de consultas recibidas por día en los últimos 7 días: ' + days.map((x) => x.n).join(', ') }));
+    legend('#lg-days', [{ label: 'Recibidas en 7 días', value: days.reduce((a, x) => a + x.n, 0), color: COL[1] }]);
+
+    const pie = (id, lg, entries, name) => {
+      const items = entries.map(([label, value], i) => ({ label, value, color: COL[i % COL.length] })), total = items.reduce((a, x) => a + x.value, 0);
+      put($(id), window.AdminCharts.donut({ items, label: 'Gráfico de pastel ' + name + ': ' + items.filter((x) => x.value).map((x) => x.label + ' ' + x.value).join(', ') }));
+      legend(lg, items, total);
+    };
+    pie('#ch-area', '#lg-area', Object.entries(AREAS).map(([k, v]) => [v, all.filter((c) => c.area === k).length]), 'por área');
+    pie('#ch-status', '#lg-status', [['Sin tomar', all.filter((c) => c.status === 'nueva').length], ['Tomadas', all.filter((c) => c.status === 'tomada').length], ['Esperando respuesta', all.filter((c) => c.status === 'espera').length], ['Cerradas', closed]], 'por estado');
+    pie('#ch-channel', '#lg-channel', Object.entries(CHANNELS).map(([k, v]) => [v, all.filter((c) => c.channel === k).length]), 'por canal');
+  }
+
+  /* ---------- Exportar a Excel ---------- */
+  function exportSheets() {
+    const list = filtered();
+    const consultasSheet = { name: 'Consultas', headers: ['N.º', 'Recibida', 'Nombre', 'Correo', 'Teléfono', 'Área', 'Canal', 'Estado', 'Responsable', 'Vencida sin tomar', 'Registrada a mano', 'Resumen'],
+      widths: [10, 18, 28, 30, 18, 22, 16, 22, 16, 16, 16, 40],
+      rows: list.map((c) => [c.id, { date: c.createdAt }, c.name, c.email, c.phone || '', AREAS[c.area], CHANNELS[c.channel] || c.channel, STATUS[c.status], pname(c.owner), overdue(c) ? 'Sí' : 'No', c.manual ? 'Sí' : 'No', c.summary || '']) };
+    const resumen = { name: 'Resumen por socio', headers: ['Socio', 'En curso', 'Cerradas', 'Total'], widths: [26, 12, 12, 12],
+      rows: db.partners.map((p) => { const mine = list.filter((c) => c.owner === p.id); const open = mine.filter((c) => c.status !== 'cerrada').length; return [p.name, open, mine.length - open, mine.length]; }).concat([['Sin asignar', 0, 0, list.filter((c) => !c.owner).length]]) };
+    return { list, sheets: [consultasSheet, resumen] };
+  }
+  function exportXlsx() {
+    const { list, sheets } = exportSheets();
+    if (!list.length) { toast('No hay consultas para exportar con estos filtros.', true); return; }
+    const d = new Date(), p = (x) => String(x).padStart(2, '0'), name = 'consultas-nexo-' + d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + '.xlsx';
+    const url = URL.createObjectURL(window.AdminExport.toXlsx(sheets));
+    const a = h('a', { href: url, download: name }); document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 4000);
+    toast('Exportadas ' + list.length + ' consultas a ' + name + '. Si no se descarga (por ejemplo, en la vista previa), usa «Copiar para Excel».');
+  }
+  function copyForExcel(from) {
+    const { list, sheets } = exportSheets();
+    if (!list.length) { toast('No hay consultas para copiar con estos filtros.', true); return; }
+    const tsv = window.AdminExport.toTSV(sheets[0]);
+    const manual = () => {
+      opener = from; openId = null;
+      const ta = h('textarea', { id: 'tsv', rows: 8, readonly: true, 'aria-label': 'Tabla para copiar' }); ta.value = tsv;
+      put($('#detail-body'), h('button', { class: 'close', type: 'button', 'aria-label': 'Cerrar ventana', onclick: closeDetail }, '✕'), h('p', { class: 'eyebrow' }, 'COPIAR PARA EXCEL'), h('h2', { id: 'detail-title', tabindex: '-1' }, 'Copia la tabla'),
+        h('p', { class: 'muted' }, 'Selecciona todo, copia (Ctrl+C o Cmd+C) y pega en la celda A1 de una hoja de Excel.'), ta);
+      $('#detail').showModal(); ta.focus(); ta.select();
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(tsv).then(() => toast(list.length + ' consultas copiadas. Pégalas en la celda A1 de Excel.'), manual); else manual();
+  }
+
   /* ---------- Navegación y arranque ---------- */
   function show(v) {
     view = v; $$('.view').forEach((s) => { s.hidden = s.id !== 'view-' + v; });
@@ -257,7 +327,7 @@
   $('#actor').addEventListener('change', (e) => { actor = e.target.value; toast('Ahora actúas como ' + partner(actor).name + '.'); renderAll(); });
   $$('.tabs button').forEach((b) => b.addEventListener('click', () => show(b.dataset.view)));
   $('#filters').addEventListener('input', renderRows); $('#filters').addEventListener('submit', (e) => e.preventDefault());
-  $('#register').addEventListener('click', (e) => openRegister(e.currentTarget)); $('#sim-new').addEventListener('click', simNew); $('#sim-other').addEventListener('click', simOther);
+  $('#export-xlsx').addEventListener('click', exportXlsx); $('#copy-xlsx').addEventListener('click', (e) => copyForExcel(e.currentTarget)); $('#register').addEventListener('click', (e) => openRegister(e.currentTarget)); $('#sim-new').addEventListener('click', simNew); $('#sim-other').addEventListener('click', simOther);
   $('#reset').addEventListener('click', () => { init(); closeDetail(); toast('Datos de ejemplo restablecidos.'); });
   $('#send-reminders').addEventListener('click', sendReminders);
   $('#settings-form').addEventListener('submit', (e) => {

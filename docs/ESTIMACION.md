@@ -39,16 +39,18 @@ Este documento traduce el trabajo a **horas y días** para que TiforTi pueda con
 | Avisos por correo simulados y recordatorios | 2 – 3 |
 | Maqueta del editor de contenido (Etapa 2) | 3 – 4 |
 | Registro manual de consultas (opción A de WhatsApp) | 4 – 6 |
+| Exportar a Excel (.xlsx, copia al portapapeles, verificación) | 6 – 8 |
+| Dashboard: indicadores y 5 gráficos SVG accesibles (barras y pastel) | 8 – 12 |
 | Ajustes (plazo, casilla compartida, retención) | 1 – 2 |
 | Responsive y accesibilidad | 4 – 6 |
 | Pruebas automáticas y correcciones | 4 – 6 |
 | Documentación | 2 – 3 |
-| **Subtotal A2** | **43 – 61 h** |
+| **Subtotal A2** | **57 – 81 h** |
 
 ### Total de los prototipos (A1 + A2)
 | | Horas | Días de 8 h |
 |---|---|---|
-| **Referencia manual** | **81 – 116 h** | **≈ 10 – 15 días** |
+| **Referencia manual** | **95 – 136 h** | **≈ 12 – 17 días** |
 
 ---
 
@@ -63,13 +65,14 @@ Este documento traduce el trabajo a **horas y días** para que TiforTi pueda con
 | Función de recepción del formulario: validación, anti-spam (Turnstile/App Check), límite de envíos | 10 – 14 |
 | Correo con Zoho: casilla compartida, correos de socios, plantillas, secretos | 6 – 8 |
 | Bandeja conectada a Firestore en tiempo real; «tomar» con transacción | 12 – 16 |
+| Dashboard y exportación conectados a datos reales (consultas agregadas, permisos) | 6 – 8 |
 | Recordatorio programado a las 24 h | 4 – 6 |
 | Historial y registro de auditoría | 4 – 6 |
 | Conectar el formulario del sitio público | 4 – 6 |
 | Dominio, DNS (Cloudflare/NIC) y despliegue | 4 – 6 |
 | Pruebas de extremo a extremo y revisión de seguridad | 10 – 14 |
 | Documentación y capacitación a los socios | 4 – 6 |
-| **Subtotal B1** | **74 – 104 h** |
+| **Subtotal B1** | **80 – 112 h** |
 
 ### B2. Etapa 2 · Edición de textos por los socios
 | Módulo | Horas |
@@ -94,10 +97,10 @@ Notas: C depende de B y de una agenda real (hoy no incluida). Meta y el proveedo
 ### Resumen de producción (B1 + B2)
 | | Horas | Días de 8 h |
 |---|---|---|
-| B1 (consultas reales) | 74 – 104 | ≈ 9 – 13 |
+| B1 (consultas reales) | 80 – 112 | ≈ 10 – 14 |
 | B2 (edición de textos) | 42 – 59 | ≈ 5 – 7 |
-| Contingencia sugerida (15 %) | 17 – 24 | ≈ 2 – 3 |
-| **Total B** | **133 – 187 h** | **≈ 17 – 23 días** |
+| Contingencia sugerida (15 %) | 18 – 26 | ≈ 2 – 3 |
+| **Total B** | **140 – 197 h** | **≈ 18 – 25 días** |
 
 ---
 

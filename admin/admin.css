@@ -138,3 +138,19 @@ dialog label,dialog h2,dialog h3{color:var(--navy)}
 
 label.check{display:flex;align-items:center;gap:10px;font-weight:500;margin-top:14px}
 label.check input{width:24px;height:24px;min-height:24px;accent-color:var(--navy)}
+
+/* Dashboard */
+.tiles-5{grid-template-columns:repeat(5,1fr)}
+.charts{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.chart-card{margin:0;background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+.chart-card h2{margin:0}.chart-card figcaption p{margin:2px 0 8px}
+.chart{width:100%;height:auto;max-height:260px;display:block}
+.chart .grid{stroke:#e3e6ec;stroke-width:1}.chart .axis{fill:#5d6361;font:12px Jost,Arial,sans-serif}
+.chart .bar-top{fill:#0e3b83;font:600 12px Jost,Arial,sans-serif}.chart .bar-in{fill:#fff;font:600 12px Jost,Arial,sans-serif}
+.chart .donut-n{fill:#0e3b83;font:700 30px Jost,Arial,sans-serif}
+.pie-wrap{display:flex;gap:16px;align-items:center;flex-wrap:wrap}.pie-wrap>div{flex:0 0 180px;max-width:180px}.pie-wrap .legend{flex:1 1 180px}
+.legend{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:6px}
+.legend li{display:flex;align-items:center;gap:8px;font-size:15px}
+.legend .sw{width:14px;height:14px;border-radius:3px;flex:0 0 14px}
+.legend .lg-l{flex:1;min-width:0}.legend .lg-p{color:var(--muted);min-width:44px;text-align:right}
+@media(max-width:1000px){.tiles-5{grid-template-columns:repeat(2,1fr)}.charts{grid-template-columns:1fr}}

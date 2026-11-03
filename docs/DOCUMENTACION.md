@@ -46,6 +46,7 @@ Cómo ejecutarlos: ver `README.md`.
 | 18 | Documentar todo, tecnologías y horas/días para convertirlos en costo | Este documento y `docs/ESTIMACION.md` | Hecho |
 | 19 | Primer prototipo del panel | `admin/` (ver sección 4) | Hecho |
 | 21 | Seguir con la opción A (registro manual de consultas de WhatsApp/teléfono/presencial) | Botón «Registrar consulta» en el panel: formulario con nombre, contacto, canal, área, resumen breve y opción de tomarla de inmediato; queda en historial y avisos como registrada a mano | Hecho (prototipo) |
+| 22 | Botón para exportar clientes a Excel ordenados en filas y columnas; dashboard con gráficos de barras y de pastel del equipo | «Exportar a Excel» (.xlsx real, hoja «Consultas» y hoja «Resumen por socio», respeta los filtros) y «Copiar para Excel» (respaldo); pestaña «Dashboard» con indicadores, 2 gráficos de barras y 3 de pastel | Hecho (prototipo) |
 | 20 | Pregunta (comentario): ¿cómo sabe el sistema que una consulta llegó por WhatsApp y se atiende con IA/automatización con reservas? | Respondida: hoy es solo una etiqueta en datos de ejemplo. Opciones y alcance en sección 5b; no desarrollado | Respondido, sin desarrollo |
 
 ---
@@ -90,6 +91,10 @@ Pantallas:
 6. **Contenido (maqueta de Etapa 2)**: editar textos ES/EN, guardar borrador, publicar (simulado).
 7. **Ajustes**: plazo (24 h por defecto), casilla compartida y retención «por definir».
 
+**Exportar a Excel:** genera un archivo `.xlsx` sin librerías externas, con encabezado fijo, filtros automáticos, anchos de columna, fechas reales y una segunda hoja con el resumen por socio. Exporta lo que muestran los filtros de la bandeja. Los textos se guardan como texto (no como fórmulas) para evitar inyección de fórmulas. «Copiar para Excel» deja la tabla en el portapapeles (separada por tabuladores) para pegarla en la celda A1. Nota: en la vista previa de claude.ai las descargas están bloqueadas por el visor; la descarga funciona al abrir el panel localmente o alojado.
+
+**Dashboard:** indicadores (recibidas, cerradas, tiempo medio hasta tomar, tomadas dentro del plazo, vencidas), carga por socio (barras apiladas), recibidas en los últimos 7 días (barras) y gráficos de pastel por área, estado y canal. Gráficos en SVG propio, con leyenda numérica y texto alternativo. Se recalculan al operar el panel.
+
 **Registro manual (opción A):** el botón «Registrar consulta» permite ingresar consultas que llegan por WhatsApp, teléfono o en persona. Exige nombre y al menos un correo o teléfono, advierte no registrar datos sensibles, permite tomarla de inmediato y deja constancia en el historial y en los avisos.
 
 Herramientas de demostración: «Simular consulta nueva», «Simular que otro socio toma una» (para ver el bloqueo), «Restablecer datos» y selector «Actuando como».
@@ -106,7 +111,8 @@ Limitaciones del prototipo (a propósito): datos en memoria que se pierden al re
 | Frontend | HTML, CSS y JavaScript nativo (sin frameworks ni dependencias) |
 | Tipografía | Jost (variable, local, licencia OFL) |
 | Iconos y banderas | SVG en línea |
-| Pruebas | Playwright con Chromium (escritorio y móvil) |
+| Gráficos y Excel | SVG propio (`admin/charts.js`) y generador de `.xlsx` propio (`admin/export.js`), sin librerías |
+| Pruebas | Playwright con Chromium (escritorio y móvil); verificación del `.xlsx` con openpyxl |
 | Control de versiones | git (local) |
 | Vista previa | Artifact privado de claude.ai |
 
@@ -146,7 +152,7 @@ Recomendación: A como primer paso, B cuando el volumen lo justifique y C solo t
 index.html, style.css, extras.css, app.js, i18n.js   Sitio público
 assets/                                             Fuente Jost, imágenes, SVG
 admin/                                              Panel (prototipo)
-  index.html, admin.css, admin.js, data.js
+  index.html, admin.css, admin.js, data.js, export.js, charts.js
 docs/                                               Esta documentación
 README.md                                           Cómo ejecutar
 ```
