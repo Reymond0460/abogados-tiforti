@@ -46,6 +46,7 @@ Cómo ejecutarlos: ver `README.md`.
 | 18 | Documentar todo, tecnologías y horas/días para convertirlos en costo | Este documento y `docs/ESTIMACION.md` | Hecho |
 | 19 | Primer prototipo del panel | `admin/` (ver sección 4) | Hecho |
 | 21 | Seguir con la opción A (registro manual de consultas de WhatsApp/teléfono/presencial) | Botón «Registrar consulta» en el panel: formulario con nombre, contacto, canal, área, resumen breve y opción de tomarla de inmediato; queda en historial y avisos como registrada a mano | Hecho (prototipo) |
+| 23 | En producción solo debe estar la opción de exportar a Excel (comentario cortado: «ojo hay…») | Interruptor `showCopyFallback` en `admin/config.js`; «Copiar para Excel» solo en la vista previa. Anotado en la lista de producción | Hecho; pendiente leer el resto del comentario |
 | 22 | Botón para exportar clientes a Excel ordenados en filas y columnas; dashboard con gráficos de barras y de pastel del equipo | «Exportar a Excel» (.xlsx real, hoja «Consultas» y hoja «Resumen por socio», respeta los filtros) y «Copiar para Excel» (respaldo); pestaña «Dashboard» con indicadores, 2 gráficos de barras y 3 de pastel | Hecho (prototipo) |
 | 20 | Pregunta (comentario): ¿cómo sabe el sistema que una consulta llegó por WhatsApp y se atiende con IA/automatización con reservas? | Respondida: hoy es solo una etiqueta en datos de ejemplo. Opciones y alcance en sección 5b; no desarrollado | Respondido, sin desarrollo |
 
@@ -188,6 +189,14 @@ Los archivos `assets/manrope.*`, `sans.woff2`, `serif.woff2` y `office.jpg` son 
 - Reemplazar el número ficticio de WhatsApp (en `index.html` y `app.js`).
 - Crear proyecto Firebase solo cuando se acuerde (no se ha creado ninguno ni se ha inventado un `projectId`).
 - Subir el repositorio a un remoto cuando se decida.
+
+---
+
+## 8b. Lista para pasar a producción (panel)
+- **Solo «Exportar a Excel»:** «Copiar para Excel» existe únicamente porque la vista previa de claude.ai bloquea descargas. Antes de producción, poner `showCopyFallback: false` en `admin/config.js` (o eliminar el botón y su código). Pedido del cliente (comentario 23; el mensaje llegó cortado, pendiente confirmar el resto).
+- Quitar las herramientas de demostración («Simular consulta nueva», «Simular que otro socio toma una», «Restablecer datos», selector «Actuando como») y el aviso de prototipo.
+- Reemplazar el inicio de sesión simulado por Firebase Authentication con segundo factor.
+- Reemplazar `data.js` por datos reales de Firestore.
 
 ---
 

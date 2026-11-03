@@ -335,6 +335,7 @@
     if (!(v >= 1 && v <= 168)) { m.textContent = 'Usa un plazo entre 1 y 168 horas.'; m.hidden = false; return; }
     sla = v; m.textContent = 'Plazo aplicado: ' + sla + ' h (solo en esta sesión de prueba).'; m.hidden = false; renderAll();
   });
+  $('#copy-xlsx').hidden = !(window.ADMIN_CONFIG && window.ADMIN_CONFIG.showCopyFallback);
   const dlg = $('#detail');
   dlg.addEventListener('click', (e) => { const r = dlg.getBoundingClientRect(); if (e.target === dlg && (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom)) closeDetail(); });
   dlg.addEventListener('close', () => {
