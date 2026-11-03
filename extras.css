@@ -83,3 +83,10 @@ footer{padding-bottom:84px!important}
 .lang-switch button{display:inline-flex;align-items:center;gap:6px}
 .lang-switch .flag{width:20px;height:14px;border-radius:2px;box-shadow:0 0 0 1px #0e3b8333;flex-shrink:0}
 @media(max-width:480px){.lang-switch button{gap:4px;padding-inline:6px}.lang-switch .flag{width:16px;height:11px}}
+
+/* Navegación: sección activa y margen bajo la cabecera fija */
+main section[id]{scroll-margin-top:96px}
+@media(max-width:800px){main section[id]{scroll-margin-top:84px}}
+.header nav>a[aria-current]:not(.button){color:#0077b4;font-weight:600}
+.header nav>a[aria-current]:not(.button):after{width:100%}
+html.a11y-contrast .header nav>a[aria-current]{text-decoration:underline!important}

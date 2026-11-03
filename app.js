@@ -191,3 +191,22 @@ document.querySelectorAll('a[href="#inicio"]').forEach((a) => a.addEventListener
   window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
   document.querySelector('.brand').focus({ preventScroll: true });
 }));
+
+/* ---------- Sección activa en el menú ---------- */
+(() => {
+  const links = [...nav.querySelectorAll('a[href^="#"]')].filter((a) => a.getAttribute('href').length > 1);
+  const map = new Map();
+  links.forEach((a) => { const s = document.querySelector(a.getAttribute('href')); if (s) map.set(s, a); });
+  if (!('IntersectionObserver' in window) || !map.size) return;
+  const visible = new Set();
+  const update = () => {
+    let current = null;
+    map.forEach((a, s) => { if (visible.has(s) && !current) current = a; });
+    links.forEach((a) => { if (a === current) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current'); });
+  };
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((en) => { if (en.isIntersecting) visible.add(en.target); else visible.delete(en.target); });
+    update();
+  }, { rootMargin: '-35% 0px -55% 0px' });
+  map.forEach((_, s) => io.observe(s));
+})();
