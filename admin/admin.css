@@ -208,3 +208,12 @@ dialog h3{margin:.2em 0 .4em}
 .detail-nav .btn:disabled{opacity:.4;cursor:not-allowed}
 @media(max-width:480px){.segs{grid-template-columns:1fr}.contact-row{grid-template-columns:1fr auto}.c-l{grid-column:1/-1}}
 .seg-on,.seg-on:hover{background:var(--navy);color:#fff;border-color:var(--navy)}
+
+/* Todas las fichas tienen el mismo tamaño: el contenido se desplaza por dentro y la navegación queda fija abajo */
+#detail{width:min(620px,calc(100% - 24px))}
+#detail[open]{display:flex;flex-direction:column;height:min(780px,90svh);max-height:90svh;overflow:hidden}
+#detail-body{display:flex;flex-direction:column;flex:1;min-height:0;overflow-y:auto}
+#detail-body .detail-scroll{flex:1 1 auto;min-height:0;overflow-y:auto;padding-right:6px;margin-right:-6px}
+#detail-body .detail-nav{flex:0 0 auto;margin-top:10px;padding-top:10px}
+#detail-body .detail-nav .btn{white-space:nowrap;padding-inline:10px}
+#detail-body .detail-nav .muted{white-space:nowrap;font-size:14px}

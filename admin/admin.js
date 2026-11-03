@@ -136,8 +136,7 @@
     const seg = (st, label) => h('button', { type: 'button', class: 'seg' + (c.status === st ? ' seg-on' : ''), 'aria-pressed': String(c.status === st), onclick: () => setStatus(c.id, st) }, label);
     const contact = (label, value, what) => h('div', { class: 'contact-row' }, h('span', { class: 'c-l' }, label), h('span', { class: 'c-v' }, value || 'No indicado'),
       value ? h('button', { class: 'btn btn-secondary btn-sm', type: 'button', 'aria-label': 'Copiar ' + what + ' de ' + c.name, onclick: () => copyText(value, what[0].toUpperCase() + what.slice(1)) }, 'Copiar') : null);
-    put(body,
-      h('button', { class: 'close', type: 'button', 'aria-label': 'Cerrar ventana', onclick: closeDetail }, '✕'),
+    const items = [
       h('p', { class: 'eyebrow' }, c.id + ' · ' + AREAS[c.area]),
       h('h2', { id: 'detail-title', tabindex: '-1' }, c.name),
       h('div', { class: 'meta' }, pill(c),
@@ -156,13 +155,14 @@
         h('button', { class: 'btn btn-secondary', type: 'button', onclick: () => addNote(c.id, noteIn.value) }, 'Agregar nota'),
         h('ul', { class: 'notes' }, ...c.notes.slice().reverse().map((n) => h('li', {}, h('strong', {}, n.who), ' · ' + ago(n.at), h('span', { class: 'sub' }, n.text))))),
       h('details', { class: 'fold' }, h('summary', {}, 'Historial (' + c.history.length + ')'),
-        h('ol', { class: 'history' }, ...c.history.slice().reverse().map((x) => h('li', {}, h('strong', {}, x.who), ' · ' + ago(x.at), h('span', { class: 'sub' }, x.text))))),
-      h('div', { class: 'detail-nav' }, h('button', { class: 'btn btn-ghost', type: 'button', disabled: idx <= 0, onclick: () => gotoDetail(list[idx - 1]) }, '← Anterior'),
+        h('ol', { class: 'history' }, ...c.history.slice().reverse().map((x) => h('li', {}, h('strong', {}, x.who), ' · ' + ago(x.at), h('span', { class: 'sub' }, x.text)))))
+    ];
+    const navBar = h('div', { class: 'detail-nav' }, h('button', { class: 'btn btn-ghost', type: 'button', disabled: idx <= 0, onclick: () => gotoDetail(list[idx - 1]) }, '← Anterior'),
         h('span', { class: 'muted' }, idx >= 0 ? (idx + 1) + ' de ' + list.length : ''),
-        h('button', { class: 'btn btn-ghost', type: 'button', disabled: idx < 0 || idx >= list.length - 1, onclick: () => gotoDetail(list[idx + 1]) }, 'Siguiente →'))
-    );
+        h('button', { class: 'btn btn-ghost', type: 'button', disabled: idx < 0 || idx >= list.length - 1, onclick: () => gotoDetail(list[idx + 1]) }, 'Siguiente →'));
+    put(body, h('button', { class: 'close', type: 'button', 'aria-label': 'Cerrar ventana', onclick: closeDetail }, '✕'), h('div', { class: 'detail-scroll' }, ...items.filter(Boolean)), navBar);
   }
-  function gotoDetail(id) { if (!id) return; openId = id; renderDetail(id); $('#detail-title').focus(); $('#detail').scrollTop = 0; }
+  function gotoDetail(id) { if (!id) return; openId = id; renderDetail(id); $('#detail-title').focus(); const sc = $('#detail .detail-scroll'); if (sc) sc.scrollTop = 0; }
 
   /* ---------- Acciones ---------- */
   function take(id) {
