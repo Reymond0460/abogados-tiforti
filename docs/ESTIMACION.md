@@ -45,13 +45,14 @@ Este documento traduce el trabajo a **horas y días** para que TiforTi pueda con
 | Ajustes (plazo, casilla compartida, retención) | 1 – 2 |
 | Responsive y accesibilidad | 4 – 6 |
 | Pruebas automáticas y correcciones | 4 – 6 |
+| QA integral: suite reutilizable (13 grupos), auditoría axe-core, teclado, tamaños, idiomas, privacidad, corrección de 10 defectos e informe | 14 – 20 |
 | Documentación | 2 – 3 |
-| **Subtotal A2** | **78 – 111 h** |
+| **Subtotal A2** | **92 – 131 h** |
 
 ### Total de los prototipos (A1 + A2)
 | | Horas | Días de 8 h |
 |---|---|---|
-| **Referencia manual** | **116 – 166 h** | **≈ 15 – 21 días** |
+| **Referencia manual** | **130 – 186 h** | **≈ 16 – 23 días** |
 
 ---
 

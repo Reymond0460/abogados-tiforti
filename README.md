@@ -26,6 +26,7 @@ Abrir `admin/index.html` (por ejemplo http://localhost:8000/admin/). Inicio de s
 ## Documentación
 - `docs/DOCUMENTACION.md`: bitácora de solicitudes, decisiones provisionales, tecnologías, qué se desarrolló, pendientes.
 - `docs/ESTIMACION.md`: horas y días por módulo, para convertir luego en valor de desarrollo.
+- `docs/QA.md`: informe de QA y lista para pasar a desarrollo. Suite en `tests/` (`node tests/run-all.js`).
 - `docs/SEGURIDAD.md`: controles de seguridad (qué demuestra el prototipo y qué se implementará de verdad).
 
 ## Firebase Hosting (cuando se acuerde)

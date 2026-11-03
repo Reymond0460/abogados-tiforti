@@ -113,3 +113,16 @@ html.a11y-contrast .wa-fab{background:#000!important;border-color:#ffeb3b!import
 
 /* Fuente legible (Verdana es más ancha): compactar la cabecera en móvil para no desbordar */
 @media(max-width:480px){html.a11y-font .brand-name{letter-spacing:2px!important;padding-left:10px;font-size:20px}html.a11y-font .brand{gap:8px}html.a11y-font .brand-symbol{width:38px;height:38px}html.a11y-font .lang-switch button{padding-inline:5px;min-width:30px;font-size:11px}html.a11y-font .lang-switch{margin-right:2px}}
+
+/* QA de accesibilidad: contrastes mínimos 4,5:1 */
+html:not(.a11y-contrast) .principle-icon{color:#fff!important}
+.wa-fab{background:#0f7a40!important}.wa-fab:hover{background:#0b6b38!important}
+html:not(.a11y-contrast) .contact-section .eyebrow{color:#00669a!important}
+html:not(.a11y-contrast) .contact-section .contact-copy p,html:not(.a11y-contrast) .contact-section .contact-details li span:last-child,html:not(.a11y-contrast) .contact-section .demo-note{color:#555b5a!important}
+
+/* QA: fuente legible/espaciado en tablets y pantallas muy pequeñas */
+@media(max-width:1100px){html.a11y-font .header nav,html.a11y-spacing .header nav{gap:10px}html.a11y-font .nav-cta,html.a11y-spacing .nav-cta{padding-inline:10px;gap:6px}html.a11y-spacing .header .button{letter-spacing:0!important}}
+@media(max-width:340px){.brand-symbol{width:36px!important;height:36px!important}.brand-name{font-size:19px!important;letter-spacing:3px!important;padding-left:10px!important}.brand{gap:8px!important}.lang-switch .flag{display:none}.lang-switch button{padding-inline:7px;min-width:34px}.header-inner{gap:4px}}
+
+/* QA: el enlace vertical de la portada debe tener al menos 24 px de ancho táctil */
+.hero-visual a.vertical-label{padding:0 8px;box-sizing:content-box}

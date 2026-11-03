@@ -46,6 +46,7 @@ Cómo ejecutarlos: ver `README.md`.
 | 18 | Documentar todo, tecnologías y horas/días para convertirlos en costo | Este documento y `docs/ESTIMACION.md` | Hecho |
 | 19 | Primer prototipo del panel | `admin/` (ver sección 4) | Hecho |
 | 21 | Seguir con la opción A (registro manual de consultas de WhatsApp/teléfono/presencial) | Botón «Registrar consulta» en el panel: formulario con nombre, contacto, canal, área, resumen breve y opción de tomarla de inmediato; queda en historial y avisos como registrada a mano | Hecho (prototipo) |
+| 33 | Realizar pruebas de QA para pasar a desarrollo | Suite automática reutilizable en `tests/` (13 grupos, todos pasan), auditoría con axe-core, teclado, 130 combinaciones de tamaño, idiomas, privacidad y rendimiento; 10 defectos corregidos; informe en `docs/QA.md` | Hecho |
 | 32 | Por ahora no integrar la aplicación de autenticación (segundo factor) en el login | Ingreso solo con contraseña (mínimo 12 caracteres); se ocultó el código de 6 dígitos y se simplificaron las instrucciones a 2 pasos; interruptor `requireSecondFactor` en `admin/config.js` para reactivarlo; riesgo y medidas compensatorias registrados en `docs/SEGURIDAD.md` (sección 2b) | Hecho; pendiente decidir cuándo activar MFA |
 | 31 | Hacer fácil e intuitiva la edición del contenido de la página por los admin | Editor guiado (maqueta de la Etapa 2): 6 secciones del sitio, campos con ayuda y contador en español e inglés lado a lado, vista previa en vivo ES/EN, borrador guardado automáticamente, confirmación con «antes → después» antes de publicar, «Volver a lo publicado» y versiones restaurables | Hecho (prototipo) |
 | 30 | Tamaño de ficha que no requiera scroll | Ficha compacta de tamaño fijo con pestañas (Resumen, Notas, Historial, Reasignar); verificado sin desplazamiento en las 22 fichas y 4 pestañas en 5 tamaños de pantalla (1440×900, 1280×720, 390×844, 375×812, 360×740); listas largas muestran lo más reciente | Hecho |
@@ -164,7 +165,8 @@ index.html, style.css, extras.css, app.js, i18n.js   Sitio público
 assets/                                             Fuente Jost, imágenes, SVG
 admin/                                              Panel (prototipo)
   index.html, admin.css, admin.js, data.js, export.js, charts.js, content.js, editor.js, config.js
-docs/                                               Documentación (DOCUMENTACION, ESTIMACION, SEGURIDAD)
+docs/                                               Documentación (DOCUMENTACION, ESTIMACION, SEGURIDAD, QA)
+tests/                                              Suite de QA automática (no forma parte del sitio)
 README.md                                           Cómo ejecutar
 ```
 

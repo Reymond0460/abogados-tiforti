@@ -409,7 +409,7 @@
   $('#logout').addEventListener('click', () => endSession('Cerraste sesión.'));
   $('#actor').addEventListener('change', (e) => { actor = e.target.value; toast('Ahora actúas como ' + partner(actor).name + '.'); renderAll(); });
   $$('.tabs button').forEach((b) => b.addEventListener('click', () => show(b.dataset.view)));
-  $('#filters').addEventListener('input', renderRows); $('#filters').addEventListener('submit', (e) => e.preventDefault());
+  $('#filters').addEventListener('input', renderRows);
   $('#export-xlsx').addEventListener('click', exportXlsx); $('#copy-xlsx').addEventListener('click', (e) => copyForExcel(e.currentTarget)); $('#register').addEventListener('click', (e) => openRegister(e.currentTarget)); $('#sim-new').addEventListener('click', simNew); $('#sim-other').addEventListener('click', simOther);
   $('#reset').addEventListener('click', () => { init(); closeDetail(); toast('Datos de ejemplo restablecidos.'); });
   $('#send-reminders').addEventListener('click', sendReminders);
