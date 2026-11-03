@@ -1,6 +1,6 @@
 /* Panel NEXO (prototipo). Misma paleta y tipografía del sitio público. */
 @font-face{font-family:Jost;src:url('../assets/jost.ttf') format('truetype');font-weight:100 900;font-display:swap}
-:root{--navy:#0e3b83;--sky:#0077b4;--bg:#f8f9fb;--line:#e3e6ec;--muted:#5d6361;--white:#fff;--late:#a4262c;--late-bg:#fde7e9;--warn:#7a4f00;--warn-bg:#fff1cf;--ok:#0b6b3a;--ok-bg:#e3f4ea}
+:root{--navy:#0e3b83;--sky:#0077b4;--bg:#f8f9fb;--line:#e3e6ec;--muted:#5d6361;--white:#fff;--late:#a4262c;--late-bg:#fde7e9;--warn:#7a4f00;--warn-bg:#fff1cf;--ok:#0b6b3a;--ok-bg:#e3f4ea;color-scheme:light}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 html{scroll-behavior:smooth}
@@ -92,8 +92,8 @@ meter{width:100%;height:12px}
 .settings .btn{margin-top:16px}
 
 /* Ventana de detalle */
-dialog{border:0;border-radius:18px;padding:26px;width:min(620px,calc(100% - 24px));max-height:90svh;overflow:auto;color:#1c2a45}
-dialog::backdrop{background:#07234dcc}
+dialog{background:#fff;color-scheme:light;border:0;border-radius:18px;padding:26px;width:min(620px,calc(100% - 24px));max-height:90svh;overflow:auto;color:#1c2a45}
+dialog::backdrop{background:#07234d8c}
 .close{position:absolute;right:12px;top:12px;width:44px;height:44px;border:0;border-radius:50%;background:#f3f6fa;font-size:16px;cursor:pointer;color:var(--navy)}
 .eyebrow{font-size:13px;letter-spacing:1.4px;text-transform:uppercase;color:var(--sky);font-weight:600;margin-bottom:6px}
 dialog h2{font-size:26px;padding-right:44px}dialog h2:focus{outline:0}
@@ -128,3 +128,10 @@ dialog h2{font-size:26px;padding-right:44px}dialog h2:focus{outline:0}
 
 .cell-person{display:block}
 @media(max-width:820px){.cell-person{text-align:right}}
+
+/* El panel es de tema claro único: fondos y colores explícitos aunque el visor use modo oscuro */
+html,body{background:var(--bg);color:#1c2a45;color-scheme:light}
+select,input,textarea{background:#fff;color:#1c2a45;color-scheme:light}
+dialog p,dialog li,dialog dd,dialog dt,dialog label{color:inherit}
+dialog .muted,dialog .sub,dialog .facts dt{color:var(--muted)}
+dialog label,dialog h2,dialog h3{color:var(--navy)}
