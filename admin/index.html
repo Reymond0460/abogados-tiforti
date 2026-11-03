@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="es-CL">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0e3b83">
+<meta name="robots" content="noindex,nofollow">
+<title>NEXO Abogados · Panel (prototipo)</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+<a class="skip" href="#main">Saltar al contenido</a>
+
+<!-- Inicio de sesión SIMULADO -->
+<section id="login" class="login" aria-labelledby="login-title">
+  <div class="login-card">
+    <div class="brand-row">
+      <svg class="brand-symbol" viewBox="0 0 56 56" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M7 49V7h7l28 30V7h7v42h-7L14 19v30z"/><path d="M7 7 49 49M14 7v12m28 18v12"/></svg>
+      <span class="brand-name">NEXO<small>ABOGADOS</small></span>
+    </div>
+    <h1 id="login-title">Panel interno</h1>
+    <p class="muted">Prototipo con datos ficticios. El acceso real usará Firebase Authentication con segundo factor.</p>
+    <form id="login-form" novalidate>
+      <label for="login-partner">Ingresar como</label>
+      <select id="login-partner" required></select>
+      <label for="login-code">Código de verificación (simulado)</label>
+      <input id="login-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="Cualquier código de 6 dígitos" required>
+      <p id="login-error" class="error" role="alert" hidden></p>
+      <button class="btn btn-primary" type="submit">Entrar al panel</button>
+    </form>
+    <p class="fine">Esta pantalla no valida credenciales ni envía datos.</p>
+  </div>
+</section>
+
+<!-- Aplicación -->
+<div id="app" hidden>
+  <div class="demo-banner" role="note">Prototipo con datos ficticios. Los cambios viven solo en esta pestaña y se pierden al recargar. Nada se envía ni se guarda.</div>
+  <header class="top">
+    <div class="top-inner">
+      <a class="brand-row" href="index.html" aria-label="NEXO Abogados, panel">
+        <svg class="brand-symbol" viewBox="0 0 56 56" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M7 49V7h7l28 30V7h7v42h-7L14 19v30z"/><path d="M7 7 49 49M14 7v12m28 18v12"/></svg>
+        <span class="brand-name">NEXO<small>PANEL</small></span>
+      </a>
+      <div class="who">
+        <label for="actor" class="who-label">Actuando como</label>
+        <select id="actor"></select>
+        <button class="btn btn-ghost" id="logout" type="button">Salir</button>
+      </div>
+    </div>
+    <nav class="tabs" aria-label="Secciones del panel">
+      <button type="button" data-view="inbox" aria-current="page">Consultas</button>
+      <button type="button" data-view="team">Carga del equipo</button>
+      <button type="button" data-view="notices">Avisos por correo</button>
+      <button type="button" data-view="content">Contenido <span class="chip">Etapa 2</span></button>
+      <button type="button" data-view="settings">Ajustes</button>
+    </nav>
+  </header>
+
+  <main id="main" tabindex="-1">
+    <!-- CONSULTAS -->
+    <section id="view-inbox" class="view" aria-labelledby="t-inbox">
+      <div class="view-head">
+        <h1 id="t-inbox">Consultas</h1>
+        <div class="head-actions">
+          <button class="btn btn-secondary" id="sim-new" type="button">Simular consulta nueva</button>
+          <button class="btn btn-secondary" id="sim-other" type="button">Simular que otro socio toma una</button>
+          <button class="btn btn-ghost" id="reset" type="button">Restablecer datos</button>
+        </div>
+      </div>
+      <ul class="tiles" id="tiles" aria-label="Resumen"></ul>
+      <form class="filters" id="filters" role="search" aria-label="Filtrar consultas">
+        <div><label for="f-q">Buscar</label><input id="f-q" type="search" placeholder="Nombre, correo o número"></div>
+        <div><label for="f-status">Estado</label><select id="f-status"><option value="">Todos</option><option value="nueva">Nueva</option><option value="tomada">Tomada</option><option value="espera">Esperando respuesta</option><option value="cerrada">Cerrada</option><option value="vencida">Vencidas sin tomar</option></select></div>
+        <div><label for="f-area">Área</label><select id="f-area"><option value="">Todas</option><option value="civil">Derecho civil</option><option value="laboral">Derecho laboral</option><option value="empresas">Asesoría a empresas</option><option value="orientacion">Necesita orientación</option></select></div>
+        <div><label for="f-owner">Responsable</label><select id="f-owner"></select></div>
+      </form>
+      <p id="count" class="muted" role="status"></p>
+      <div class="table-wrap">
+        <table id="table">
+          <thead><tr><th scope="col">N.º</th><th scope="col">Recibida</th><th scope="col">Persona</th><th scope="col">Área</th><th scope="col">Estado</th><th scope="col">Responsable</th><th scope="col"><span class="sr">Acción</span></th></tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+      <p id="empty" class="empty" hidden>No hay consultas con estos filtros.</p>
+    </section>
+
+    <!-- EQUIPO -->
+    <section id="view-team" class="view" hidden aria-labelledby="t-team">
+      <div class="view-head"><h1 id="t-team">Carga del equipo</h1></div>
+      <p class="muted">Cada socio puede elegir consultas y distribuir la carga. Estas cifras cuentan las consultas en curso (tomadas y en espera).</p>
+      <div class="team-grid" id="team-grid"></div>
+      <h2>Sin tomar</h2>
+      <p class="muted" id="unassigned-text"></p>
+    </section>
+
+    <!-- AVISOS -->
+    <section id="view-notices" class="view" hidden aria-labelledby="t-notices">
+      <div class="view-head"><h1 id="t-notices">Avisos por correo (simulados)</h1>
+        <div class="head-actions"><button class="btn btn-secondary" id="send-reminders" type="button">Enviar recordatorios vencidos</button></div></div>
+      <p class="muted">En el sistema real cada consulta nueva avisará a la casilla compartida y a los tres socios, y un recordatorio saldrá si pasa el plazo sin tomarla. Aquí solo se muestra el registro de lo que se enviaría.</p>
+      <ol class="log" id="log" reversed></ol>
+      <p id="log-empty" class="empty">Aún no hay avisos. Prueba «Simular consulta nueva».</p>
+    </section>
+
+    <!-- CONTENIDO -->
+    <section id="view-content" class="view" hidden aria-labelledby="t-content">
+      <div class="view-head"><h1 id="t-content">Contenido del sitio</h1></div>
+      <p class="muted">Vista previa de la Etapa 2: los socios editarán los textos en español e inglés, guardarán un borrador y lo publicarán. Aquí no cambia el sitio público.</p>
+      <ul class="content-list" id="content-list"></ul>
+    </section>
+
+    <!-- AJUSTES -->
+    <section id="view-settings" class="view" hidden aria-labelledby="t-settings">
+      <div class="view-head"><h1 id="t-settings">Ajustes</h1></div>
+      <form class="settings" id="settings-form">
+        <div><label for="s-sla">Plazo para tomar una consulta nueva (horas)</label><input id="s-sla" type="number" min="1" max="168" value="24"><p class="fine">Decisión provisional: 1 día. Se usa para marcar consultas vencidas y para el recordatorio.</p></div>
+        <div><label for="s-shared">Casilla compartida de avisos</label><input id="s-shared" value="consultas@nexo-demo.example" readonly><p class="fine">Decisión provisional: casilla compartida (Zoho) más el correo de cada socio.</p></div>
+        <div><label for="s-ret">Conservación de consultas</label><input id="s-ret" value="Por definir con el abogado que revise la política" readonly><p class="fine">Pendiente. Se definirá antes de recibir consultas reales.</p></div>
+        <button class="btn btn-primary" type="submit">Aplicar plazo</button>
+        <p id="settings-msg" class="ok" role="status" hidden></p>
+      </form>
+    </section>
+  </main>
+</div>
+
+<dialog id="detail" aria-labelledby="detail-title"><div id="detail-body"></div></dialog>
+<div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+<script src="data.js"></script>
+<script src="admin.js"></script>
+</body>
+</html>
