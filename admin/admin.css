@@ -154,3 +154,7 @@ label.check input{width:24px;height:24px;min-height:24px;accent-color:var(--navy
 .legend .sw{width:14px;height:14px;border-radius:3px;flex:0 0 14px}
 .legend .lg-l{flex:1;min-width:0}.legend .lg-p{color:var(--muted);min-width:44px;text-align:right}
 @media(max-width:1000px){.tiles-5{grid-template-columns:repeat(2,1fr)}.charts{grid-template-columns:1fr}}
+
+.back-site{display:inline-flex;align-items:center;min-height:44px;margin-top:6px;color:var(--navy);font-weight:600;text-decoration:none}
+.back-site:hover{text-decoration:underline}
+a.btn{text-decoration:none}
