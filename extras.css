@@ -1,0 +1,59 @@
+/* Extras: selector de idioma, datos de contacto y panel de accesibilidad.
+   Se carga después de style.css para no alterar el diseño de referencia. */
+
+/* Idioma */
+.lang-switch{display:inline-flex;border:1px solid #d4deea;border-radius:999px;overflow:hidden;flex-shrink:0;order:3}
+.lang-switch button{width:auto;display:block;background:transparent;border:0;border-radius:0;padding:6px 11px;min-width:40px;min-height:36px;font:600 12px/1 Jost,Arial,sans-serif;letter-spacing:.8px;color:#0e3b83;text-align:center}
+.lang-switch button[aria-pressed=true]{background:#0e3b83;color:#fff}
+.lang-switch button:hover:not([aria-pressed=true]){background:#edf4fa}
+@media(max-width:800px){.lang-switch{order:0;margin-left:auto;margin-right:8px}.lang-switch button{padding:5px 9px;min-width:36px}}
+@media(max-width:380px){.header-inner{gap:6px}.lang-switch{margin-right:4px}.lang-switch button{padding:5px 7px;min-width:32px}}
+.header-inner nav{order:2}
+
+/* Datos de contacto ficticios */
+.contact-details{list-style:none;margin:26px 0 22px;padding:0;display:grid;gap:10px;max-width:420px}
+.contact-details li{display:grid;grid-template-columns:90px 1fr;gap:12px;font-size:14px;line-height:1.5;color:#6f7271;border-bottom:1px solid #d6e2ef;padding-bottom:10px}
+.contact-details li span:first-child{font-weight:600;color:#0e3b83;font-size:12px;letter-spacing:.6px;text-transform:uppercase}
+.footer-contact{list-style:none;margin:20px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:6px 26px;font-size:13px;color:#cfdcf0}
+
+/* Panel de accesibilidad */
+.a11y-fab{position:fixed;left:16px;bottom:16px;z-index:60;width:52px;height:52px;padding:0;display:grid;place-items:center;border-radius:50%;background:#0e3b83;color:#fff;border:2px solid #fff;box-shadow:0 6px 18px #07234d55;cursor:pointer}
+.a11y-fab:hover{background:#0077b4}
+.a11y-fab:focus-visible,.a11y-panel button:focus-visible,.lang-switch button:focus-visible{outline:3px solid #0077b4;outline-offset:3px}
+.a11y-panel{position:fixed;left:16px;bottom:80px;z-index:60;width:min(330px,calc(100vw - 32px));max-height:calc(100svh - 110px);overflow:auto;background:#fff;color:#0e3b83;border:1px solid #d7e0ed;border-radius:16px;padding:18px;box-shadow:0 16px 40px #07234d40;font-family:Jost,Arial,sans-serif}
+.a11y-panel[hidden]{display:none}
+.a11y-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.a11y-panel h2{margin:0;font:600 20px/1.2 Jost,Arial,sans-serif;letter-spacing:-.2px;color:#0e3b83}
+.a11y-panel button{font-family:inherit;cursor:pointer}
+.a11y-close{width:40px;height:40px;border:0;background:#f8f9fb;border-radius:50%;font-size:16px;color:#0e3b83;padding:0;display:grid;place-items:center}
+.a11y-size{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px;font-size:15px;font-weight:500}
+.a11y-size>div{display:flex;align-items:center;gap:8px}
+.a11y-size button{width:44px;height:44px;border:1px solid #cdd8e8;border-radius:10px;background:#f8f9fb;color:#0e3b83;font-weight:600;font-size:16px;padding:0;display:grid;place-items:center}
+.a11y-size button:disabled{opacity:.4;cursor:not-allowed}
+.a11y-size output{min-width:48px;text-align:center;font-size:15px;font-weight:600}
+.a11y-options{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.a11y-options button{width:100%;min-height:52px;padding:8px 10px;border:1px solid #cdd8e8;border-radius:10px;background:#f8f9fb;color:#0e3b83;font-size:14px;font-weight:500;line-height:1.25;text-align:center;display:block}
+.a11y-options button[aria-pressed=true]{background:#0e3b83;color:#fff;border-color:#0e3b83}
+.a11y-reset{width:100%;margin-top:12px;min-height:46px;border:1px solid #0e3b83;border-radius:10px;background:#fff;color:#0e3b83;font-size:14px;font-weight:600;display:block;padding:0}
+
+/* Ajustes de accesibilidad aplicados al sitio */
+html.a11y-size-1 .concept-bar,html.a11y-size-1 main,html.a11y-size-1 footer,html.a11y-size-1 dialog{zoom:1.12}
+html.a11y-size-2 .concept-bar,html.a11y-size-2 main,html.a11y-size-2 footer,html.a11y-size-2 dialog{zoom:1.25}
+html.a11y-size-3 .concept-bar,html.a11y-size-3 main,html.a11y-size-3 footer,html.a11y-size-3 dialog{zoom:1.4}
+@media(min-width:1400px){html.a11y-size-1 .header{zoom:1.12}html.a11y-size-2 .header{zoom:1.25}html.a11y-size-3 .header{zoom:1.4}}
+html.a11y-gray{filter:grayscale(1)}
+html.a11y-font body,html.a11y-font body *:not(svg):not(path){font-family:Verdana,Arial,sans-serif!important}
+html.a11y-spacing p,html.a11y-spacing li,html.a11y-spacing summary,html.a11y-spacing label,html.a11y-spacing .button,html.a11y-spacing .text-link{letter-spacing:.06em!important;word-spacing:.12em!important;line-height:1.8!important}
+html.a11y-links a,html.a11y-links .text-link,html.a11y-links .check-label button,html.a11y-links .tiforti,html.a11y-links .concept-bar button{text-decoration:underline!important;text-decoration-thickness:2px!important;text-underline-offset:4px!important;outline:2px solid #ffb400!important;outline-offset:3px!important}
+html.a11y-motion *,html.a11y-motion *::before,html.a11y-motion *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+html.a11y-contrast body,html.a11y-contrast body *:not(img):not(svg):not(path){background:#000!important;color:#fff!important;border-color:#fff!important;box-shadow:none!important;text-shadow:none!important}
+html.a11y-contrast body *::before,html.a11y-contrast body *::after{background:transparent!important;border-color:#fff!important}
+html.a11y-contrast a,html.a11y-contrast a *,html.a11y-contrast .text-link,html.a11y-contrast .text-link *,html.a11y-contrast .check-label button{color:#ffeb3b!important}
+html.a11y-contrast .button,html.a11y-contrast .a11y-options button,html.a11y-contrast input,html.a11y-contrast select{border:2px solid #fff!important}
+html.a11y-contrast .a11y-options button[aria-pressed=true]{background:#ffeb3b!important;color:#000!important}
+html.a11y-contrast dialog::backdrop{background:#000d!important}
+html.a11y-contrast :focus-visible{outline:3px solid #ffeb3b!important}
+@media(max-width:640px){.a11y-fab{width:48px;height:48px;left:12px;bottom:12px}.a11y-panel{left:12px;bottom:70px}}
+.card-bottom>.card-label{font-size:0;line-height:0;color:inherit}
+html.a11y-contrast .menu-toggle span{background:#fff!important}
+html.a11y-contrast .brand-symbol{color:#fff!important}
