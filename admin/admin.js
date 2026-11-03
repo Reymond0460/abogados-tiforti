@@ -108,7 +108,7 @@
 
   /* ---------- Detalle ---------- */
   let openId = null, opener = null;
-  function openDetail(id, from) { openId = id; opener = from; renderDetail(id); $('#detail').showModal(); $('#detail-title').focus(); }
+  function openDetail(id, from) { openId = id; opener = from; activeTab = 'resumen'; sizeDetail(false); renderDetail(id); $('#detail').showModal(); $('#detail-title').focus(); }
   function closeDetail() { $('#detail').close(); }
   function copyText(text, what) {
     const done = () => toast(what + ' copiado.');
@@ -126,41 +126,52 @@
     if (t) { const w = t - c.createdAt, okSla = w <= sla * H; return h('p', { class: 'sla ' + (okSla ? 'sla-ok' : 'sla-late') }, 'Se tomó ' + hoursLabel(w) + ' después de recibirla (' + (okSla ? 'dentro' : 'fuera') + ' del plazo de ' + sla + ' h).'); }
     return null;
   }
+  let activeTab = 'resumen';
+  const TABS = [['resumen', 'Resumen'], ['notas', 'Notas'], ['historial', 'Historial'], ['reasignar', 'Reasignar']];
+  function sizeDetail(tall) { $('#detail').classList.toggle('detail-tall', !!tall); }
   function renderDetail(id) {
     const c = find(id), body = $('#detail-body');
     const lockedBy = c.owner && c.owner !== actor ? partner(c.owner) : null, mine = c.owner === actor, own = c.owner ? partner(c.owner) : null;
-    const reassignSel = h('select', { id: 'd-to' }, ...db.partners.filter((p) => p.id !== c.owner).map((p) => h('option', { value: p.id }, p.name)));
-    const reason = h('input', { id: 'd-reason', maxlength: 120, placeholder: 'Por qué se reasigna (obligatorio)' });
-    const noteIn = h('textarea', { id: 'd-note', rows: 3, maxlength: 400, placeholder: 'Escribe una nota para el equipo' });
     const list = filtered().map((x) => x.id), idx = list.indexOf(id);
     const seg = (st, label) => h('button', { type: 'button', class: 'seg' + (c.status === st ? ' seg-on' : ''), 'aria-pressed': String(c.status === st), onclick: () => setStatus(c.id, st) }, label);
     const contact = (label, value, what) => h('div', { class: 'contact-row' }, h('span', { class: 'c-l' }, label), h('span', { class: 'c-v' }, value || 'No indicado'),
       value ? h('button', { class: 'btn btn-secondary btn-sm', type: 'button', 'aria-label': 'Copiar ' + what + ' de ' + c.name, onclick: () => copyText(value, what[0].toUpperCase() + what.slice(1)) }, 'Copiar') : null);
-    const items = [
+
+    const panels = {
+      resumen: [slaLine(c),
+        h('div', { class: 'contact' }, contact('Correo', c.email, 'correo'), contact('Teléfono', c.phone, 'teléfono'), c.summary ? h('div', { class: 'contact-row' }, h('span', { class: 'c-l' }, 'Resumen'), h('span', { class: 'c-v' }, c.summary)) : null),
+        lockedBy ? h('p', { class: 'lock', role: 'status' }, 'La tomó ' + lockedBy.name + '. Puedes reasignarla en la pestaña «Reasignar».') : null,
+        !c.owner && c.status !== 'cerrada' ? h('div', { class: 'primary-action' }, h('button', { class: 'btn btn-primary btn-lg', type: 'button', onclick: () => take(c.id) }, 'Tomar esta consulta'), h('p', { class: 'fine' }, 'Quedará a tu nombre y los otros socios la verán como tomada.')) : null,
+        c.owner && c.status !== 'cerrada' ? h('div', { class: 'block' }, h('p', { class: 'mini-h' }, 'Estado'), h('div', { class: 'segs', role: 'group', 'aria-label': 'Estado de la consulta' }, seg('tomada', 'En curso'), seg('espera', 'Esperando respuesta'), seg('cerrada', 'Cerrar consulta'))) : null,
+        c.status === 'cerrada' ? h('div', { class: 'block' }, h('p', { class: 'muted' }, 'Consulta cerrada.'), h('button', { class: 'btn btn-secondary', type: 'button', onclick: () => setStatus(c.id, 'tomada') }, 'Reabrir consulta')) : null],
+      notas: [h('label', { for: 'd-note', class: 'mini-h' }, 'Nueva nota interna'), h('textarea', { id: 'd-note', rows: 2, maxlength: 400, placeholder: 'Escribe una nota para el equipo' }),
+        h('button', { class: 'btn btn-secondary', type: 'button', onclick: () => addNote(c.id, $('#d-note').value) }, 'Agregar nota'),
+        c.notes.length ? h('ul', { class: 'notes' }, ...c.notes.slice().reverse().slice(0, 4).map((n) => h('li', {}, h('strong', {}, n.who), ' · ' + ago(n.at), h('span', { class: 'sub' }, n.text)))) : h('p', { class: 'muted' }, 'Aún no hay notas.'),
+        c.notes.length > 4 ? h('p', { class: 'fine' }, 'Se muestran las 4 más recientes de ' + c.notes.length + '.') : null],
+      historial: [h('ol', { class: 'history' }, ...c.history.slice().reverse().slice(0, 6).map((x) => h('li', {}, h('strong', {}, x.who), ' · ' + ago(x.at), h('span', { class: 'sub' }, x.text)))),
+        c.history.length > 6 ? h('p', { class: 'fine' }, 'Se muestran los 6 movimientos más recientes de ' + c.history.length + '.') : null],
+      reasignar: c.status === 'cerrada' ? [h('p', { class: 'muted' }, 'Una consulta cerrada no se reasigna. Reábrela primero desde «Resumen».')] : [
+        h('label', { for: 'd-to', class: 'mini-h' }, 'Reasignar a'), h('select', { id: 'd-to' }, ...db.partners.filter((p) => p.id !== c.owner).map((p) => h('option', { value: p.id }, p.name))),
+        h('label', { for: 'd-reason', class: 'mini-h' }, 'Motivo (obligatorio)'), h('input', { id: 'd-reason', maxlength: 120, placeholder: 'Por qué se reasigna' }),
+        h('button', { class: 'btn btn-secondary', type: 'button', onclick: () => { reassign(c.id, $('#d-to').value, $('#d-reason').value); } }, 'Reasignar')]
+    };
+    const tabs = h('div', { class: 'tabs-d', role: 'tablist', 'aria-label': 'Secciones de la consulta' }, ...TABS.map(([k, label]) => h('button', {
+      type: 'button', role: 'tab', id: 'tab-' + k, 'aria-selected': String(activeTab === k), 'aria-controls': 'panel-d', tabindex: activeTab === k ? '0' : '-1', class: 'tab-d' + (activeTab === k ? ' tab-d-on' : ''),
+      onclick: () => { activeTab = k; renderDetail(id); $('#tab-' + k).focus(); },
+      onkeydown: (e) => { const n = TABS.findIndex(([x]) => x === activeTab); let m = null; if (e.key === 'ArrowRight') m = (n + 1) % TABS.length; else if (e.key === 'ArrowLeft') m = (n + TABS.length - 1) % TABS.length; if (m !== null) { e.preventDefault(); activeTab = TABS[m][0]; renderDetail(id); $('#tab-' + activeTab).focus(); } } }, label)));
+    const navBar = h('div', { class: 'detail-nav' }, h('button', { class: 'btn btn-ghost', type: 'button', disabled: idx <= 0, onclick: () => gotoDetail(list[idx - 1]) }, '← Anterior'),
+      h('span', { class: 'muted' }, idx >= 0 ? (idx + 1) + ' de ' + list.length : ''),
+      h('button', { class: 'btn btn-ghost', type: 'button', disabled: idx < 0 || idx >= list.length - 1, onclick: () => gotoDetail(list[idx + 1]) }, 'Siguiente →'));
+    put(body,
+      h('button', { class: 'close', type: 'button', 'aria-label': 'Cerrar ventana', onclick: closeDetail }, '✕'),
       h('p', { class: 'eyebrow' }, c.id + ' · ' + AREAS[c.area]),
       h('h2', { id: 'detail-title', tabindex: '-1' }, c.name),
       h('div', { class: 'meta' }, pill(c),
         own ? h('span', { class: 'owner-chip' }, h('img', { src: own.photo, alt: '', width: 24, height: 24 }), mine ? 'Tú (' + own.short + ')' : own.short) : h('span', { class: 'muted' }, 'Sin responsable'),
-        h('span', { class: 'muted' }, CHANNELS[c.channel] + (c.manual ? ' · registrada a mano' : '') + ' · ' + fullDate(c.createdAt) + ' (' + ago(c.createdAt) + ')')),
-      slaLine(c),
-      h('div', { class: 'block block-first' }, h('h3', {}, 'Contacto'), contact('Correo', c.email, 'correo'), contact('Teléfono', c.phone, 'teléfono'),
-        c.summary ? h('div', { class: 'contact-row' }, h('span', { class: 'c-l' }, 'Resumen'), h('span', { class: 'c-v' }, c.summary)) : null),
-      lockedBy ? h('p', { class: 'lock', role: 'status' }, 'La tomó ' + lockedBy.name + '. Si hace falta, puedes reasignarla indicando un motivo.') : null,
-      !c.owner && c.status !== 'cerrada' ? h('div', { class: 'primary-action' }, h('button', { class: 'btn btn-primary btn-lg', type: 'button', onclick: () => take(c.id) }, 'Tomar esta consulta'), h('p', { class: 'fine' }, 'Quedará a tu nombre y los otros socios la verán como tomada.')) : null,
-      c.owner && c.status !== 'cerrada' ? h('div', { class: 'block' }, h('h3', {}, 'Estado'), h('div', { class: 'segs', role: 'group', 'aria-label': 'Estado de la consulta' }, seg('tomada', 'En curso'), seg('espera', 'Esperando respuesta'), seg('cerrada', 'Cerrar consulta'))) : null,
-      c.status === 'cerrada' ? h('div', { class: 'block' }, h('p', { class: 'muted' }, 'Consulta cerrada.'), h('button', { class: 'btn btn-secondary', type: 'button', onclick: () => setStatus(c.id, 'tomada') }, 'Reabrir consulta')) : null,
-      c.status !== 'cerrada' ? h('details', { class: 'fold' }, h('summary', {}, 'Reasignar a otro socio'), h('label', { for: 'd-to' }, 'Reasignar a'), reassignSel, h('label', { for: 'd-reason' }, 'Motivo'), reason,
-        h('button', { class: 'btn btn-secondary', type: 'button', onclick: () => reassign(c.id, reassignSel.value, reason.value) }, 'Reasignar')) : null,
-      h('div', { class: 'block' }, h('h3', {}, 'Notas internas'), h('label', { for: 'd-note', class: 'sr' }, 'Nueva nota'), noteIn,
-        h('button', { class: 'btn btn-secondary', type: 'button', onclick: () => addNote(c.id, noteIn.value) }, 'Agregar nota'),
-        h('ul', { class: 'notes' }, ...c.notes.slice().reverse().map((n) => h('li', {}, h('strong', {}, n.who), ' · ' + ago(n.at), h('span', { class: 'sub' }, n.text))))),
-      h('details', { class: 'fold' }, h('summary', {}, 'Historial (' + c.history.length + ')'),
-        h('ol', { class: 'history' }, ...c.history.slice().reverse().map((x) => h('li', {}, h('strong', {}, x.who), ' · ' + ago(x.at), h('span', { class: 'sub' }, x.text)))))
-    ];
-    const navBar = h('div', { class: 'detail-nav' }, h('button', { class: 'btn btn-ghost', type: 'button', disabled: idx <= 0, onclick: () => gotoDetail(list[idx - 1]) }, '← Anterior'),
-        h('span', { class: 'muted' }, idx >= 0 ? (idx + 1) + ' de ' + list.length : ''),
-        h('button', { class: 'btn btn-ghost', type: 'button', disabled: idx < 0 || idx >= list.length - 1, onclick: () => gotoDetail(list[idx + 1]) }, 'Siguiente →'));
-    put(body, h('button', { class: 'close', type: 'button', 'aria-label': 'Cerrar ventana', onclick: closeDetail }, '✕'), h('div', { class: 'detail-scroll' }, ...items.filter(Boolean)), navBar);
+        h('span', { class: 'muted' }, CHANNELS[c.channel] + (c.manual ? ' · registrada a mano' : '') + ' · ' + fullDate(c.createdAt))),
+      tabs,
+      h('div', { class: 'detail-scroll', id: 'panel-d', role: 'tabpanel', 'aria-labelledby': 'tab-' + activeTab }, ...panels[activeTab].filter(Boolean)),
+      navBar);
   }
   function gotoDetail(id) { if (!id) return; openId = id; renderDetail(id); $('#detail-title').focus(); const sc = $('#detail .detail-scroll'); if (sc) sc.scrollTop = 0; }
 
@@ -175,7 +186,7 @@
     if (reason.trim().length < 3) { toast('Indica un motivo para reasignar.', true); $('#d-reason').focus(); return; }
     const c = find(id); const prev = pname(c.owner); c.owner = to; if (c.status === 'nueva') c.status = 'tomada';
     hist(c, 'Reasignó de ' + prev + ' a ' + pname(to) + '. Motivo: ' + reason.trim()); notify('Consulta ' + id + ' reasignada a ' + pname(to), [SHARED, partner(to).short.toLowerCase() + '@nexo-demo.example']);
-    toast('Consulta reasignada a ' + pname(to) + '.'); renderAll();
+    toast('Consulta reasignada a ' + pname(to) + '.'); activeTab = 'resumen'; renderAll();
   }
   function addNote(id, text) {
     if (!text.trim()) { toast('Escribe la nota antes de agregarla.', true); $('#d-note').focus(); return; }
@@ -203,7 +214,7 @@
 
   /* ---------- Registro manual (opción A) ---------- */
   function openRegister(from) {
-    opener = from; openId = null;
+    opener = from; openId = null; sizeDetail(true);
     const f = h('form', { id: 'reg-form', novalidate: true });
     const err = h('p', { class: 'error', role: 'alert', hidden: true });
     const sel = (id, opts) => h('select', { id }, ...opts.map(([v, t]) => h('option', { value: v }, t)));
@@ -244,7 +255,7 @@
 
   /* ---------- Editor de contenido (maqueta Etapa 2) ---------- */
   function openEditor(key, from) {
-    const it = db.content.find((x) => x.key === key); opener = from; openId = null;
+    const it = db.content.find((x) => x.key === key); opener = from; openId = null; sizeDetail(true);
     const es = h('textarea', { id: 'e-es', rows: 3 }), en = h('textarea', { id: 'e-en', rows: 3 }); es.value = it.es; en.value = it.en;
     $('#detail-body').replaceChildren(
       h('button', { class: 'close', type: 'button', 'aria-label': 'Cerrar ventana', onclick: closeDetail }, '✕'),
@@ -318,7 +329,7 @@
     if (!list.length) { toast('No hay consultas para copiar con estos filtros.', true); return; }
     const tsv = window.AdminExport.toTSV(sheets[0]);
     const manual = () => {
-      opener = from; openId = null;
+      opener = from; openId = null; sizeDetail(true);
       const ta = h('textarea', { id: 'tsv', rows: 8, readonly: true, 'aria-label': 'Tabla para copiar' }); ta.value = tsv;
       put($('#detail-body'), h('button', { class: 'close', type: 'button', 'aria-label': 'Cerrar ventana', onclick: closeDetail }, '✕'), h('p', { class: 'eyebrow' }, 'COPIAR PARA EXCEL'), h('h2', { id: 'detail-title', tabindex: '-1' }, 'Copia la tabla'),
         h('p', { class: 'muted' }, 'Selecciona todo, copia (Ctrl+C o Cmd+C) y pega en la celda A1 de una hoja de Excel.'), ta);

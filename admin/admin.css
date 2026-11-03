@@ -217,3 +217,36 @@ dialog h3{margin:.2em 0 .4em}
 #detail-body .detail-nav{flex:0 0 auto;margin-top:10px;padding-top:10px}
 #detail-body .detail-nav .btn{white-space:nowrap;padding-inline:10px}
 #detail-body .detail-nav .muted{white-space:nowrap;font-size:14px}
+
+/* Ficha compacta con pestañas: cada pestaña cabe sin desplazarse */
+#detail[open]{height:min(600px,92svh)}
+#detail[open].detail-tall{height:min(780px,90svh)}
+#detail{padding:20px 24px}
+#detail h2{font-size:24px;margin-bottom:4px}
+#detail .meta{margin:0 0 8px}
+.tabs-d{display:flex;gap:2px;border-bottom:2px solid var(--line);margin:4px 0 10px;overflow-x:auto}
+.tab-d{background:none;border:0;border-bottom:3px solid transparent;margin-bottom:-2px;padding:8px 12px;min-height:44px;font-weight:600;color:var(--muted);cursor:pointer;white-space:nowrap}
+.tab-d-on{color:var(--navy);border-color:var(--sky)}
+#detail .sla{margin:0 0 8px}
+.contact-row{padding:6px 0}
+.mini-h{display:block;font-weight:600;color:var(--navy);margin:8px 0 6px}
+#detail .notes li,#detail .history li{margin:6px 0}
+#detail textarea{min-height:64px}
+@media(max-width:480px){#detail[open]{height:min(740px,92svh)}#detail[open].detail-tall{height:min(780px,92svh)}#detail{padding:16px}.tab-d{padding:8px 9px}}
+
+/* Móvil: más compacto para que cada pestaña quepa sin desplazarse */
+@media(max-width:480px){
+  #detail .segs{grid-template-columns:repeat(3,1fr);gap:6px}
+  #detail .seg{min-height:52px;font-size:14px;padding:4px 4px}
+  #detail .contact-row{grid-template-columns:64px 1fr auto;gap:2px 8px;padding:5px 0}
+  #detail .c-l{grid-column:auto;font-size:14px}
+  #detail .c-v{font-size:15px}
+  #detail .btn-sm{min-height:34px;padding:2px 10px}
+  #detail .primary-action{margin:8px 0 0}#detail .primary-action .fine{margin:4px 0 0;font-size:13px}
+  #detail .btn-lg{min-height:48px}
+  #detail .sla{font-size:14px;padding:6px 10px}
+  #detail .lock{padding:6px 10px;font-size:14px;margin:6px 0}
+  #detail h2{font-size:22px}
+  #detail .eyebrow{margin-bottom:2px}
+  #detail .detail-nav{margin-top:6px;padding-top:6px}
+}
