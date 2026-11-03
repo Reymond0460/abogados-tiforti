@@ -28,8 +28,8 @@ input,select,textarea{width:100%;min-height:44px;padding:9px 12px;border:1px sol
 textarea{resize:vertical}
 
 /* Login */
-.login{min-height:100svh;display:grid;place-items:center;padding:20px;background:linear-gradient(160deg,#0e3b83,#2a5ca3)}
-.login-card{width:min(420px,100%);background:#fff;border-radius:18px;padding:28px;box-shadow:0 20px 50px #07234d66}
+.login{min-height:100svh;display:grid;place-items:center;padding:20px;background:var(--bg);background-image:linear-gradient(180deg,#e6eefa 0,#f8f9fb 260px)}
+.login-card{width:min(420px,100%);background:#fff;color:#1c2a45;border:1px solid var(--line);border-top:5px solid var(--navy);border-radius:18px;padding:28px;box-shadow:0 12px 32px #0e3b8326}
 .login-card .btn{width:100%;margin-top:18px}
 .brand-row{display:inline-flex;align-items:center;gap:14px;color:var(--navy);text-decoration:none;margin-bottom:14px}
 .brand-symbol{width:44px;height:44px;color:var(--sky)}
