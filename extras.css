@@ -71,3 +71,6 @@ dialog{overflow:auto}
 .footer-bottom button+button{margin-left:0}
 .check-label>span button{display:inline;min-height:0;padding-block:6px}
 footer{padding-bottom:84px!important}
+
+/* El texto de la pregunta no debe heredar el estilo del signo «+» */
+.faq-list summary>span:not([aria-hidden]){font:inherit!important;color:inherit!important;transform:none!important}
