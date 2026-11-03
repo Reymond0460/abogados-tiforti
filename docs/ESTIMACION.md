@@ -61,7 +61,7 @@ Este documento traduce el trabajo a **horas y días** para que TiforTi pueda con
 | Módulo | Horas |
 |---|---|
 | Proyecto Firebase (Hosting, Auth, Firestore, Functions), entornos, alertas de presupuesto | 4 – 6 |
-| Autenticación: lista cerrada de 3 cuentas, segundo factor, roles | 6 – 8 |
+| Autenticación: lista cerrada de 3 cuentas, contraseña robusta, roles (segundo factor pospuesto; activarlo después suma ≈ 3 – 5 h) | 5 – 7 |
 | Reglas de seguridad de Firestore y sus pruebas | 6 – 8 |
 | Función de recepción del formulario: validación, anti-spam (Turnstile/App Check), límite de envíos | 10 – 14 |
 | Correo con Zoho: casilla compartida, correos de socios, plantillas, secretos | 6 – 8 |
@@ -74,7 +74,7 @@ Este documento traduce el trabajo a **horas y días** para que TiforTi pueda con
 | Dominio, DNS (Cloudflare/NIC) y despliegue | 4 – 6 |
 | Pruebas de extremo a extremo y revisión de seguridad | 10 – 14 |
 | Documentación y capacitación a los socios | 4 – 6 |
-| **Subtotal B1** | **90 – 128 h** |
+| **Subtotal B1** | **89 – 127 h** |
 
 ### B2. Etapa 2 · Edición de textos por los socios
 | Módulo | Horas |
@@ -99,10 +99,10 @@ Notas: C depende de B y de una agenda real (hoy no incluida). Meta y el proveedo
 ### Resumen de producción (B1 + B2)
 | | Horas | Días de 8 h |
 |---|---|---|
-| B1 (consultas reales) | 90 – 128 | ≈ 11 – 16 |
+| B1 (consultas reales) | 89 – 127 | ≈ 11 – 16 |
 | B2 (edición de textos) | 40 – 57 | ≈ 5 – 7 |
 | Contingencia sugerida (15 %) | 20 – 28 | ≈ 3 – 4 |
-| **Total B** | **150 – 213 h** | **≈ 19 – 27 días** |
+| **Total B** | **149 – 212 h** | **≈ 19 – 27 días** |
 
 ---
 

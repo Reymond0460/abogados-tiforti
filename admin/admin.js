@@ -336,7 +336,13 @@
   init();
 
   /* ---------- Acceso: demostración de controles ---------- */
-  const SEC = Object.assign({ maxAttempts: 5, lockSeconds: 30, sessionMinutes: 15, warnSeconds: 60 }, (window.ADMIN_CONFIG || {}).security);
+  const SEC = Object.assign({ maxAttempts: 5, lockSeconds: 30, sessionMinutes: 15, warnSeconds: 60, requireSecondFactor: false, minPassword: 12 }, (window.ADMIN_CONFIG || {}).security);
+  document.querySelectorAll('.mfa-only').forEach((el) => { el.hidden = !SEC.requireSecondFactor; });
+  document.querySelectorAll('.nomfa-only').forEach((el) => { el.hidden = SEC.requireSecondFactor; });
+  document.querySelectorAll('.min-pass').forEach((el) => { el.textContent = String(SEC.minPassword); });
+  $('#login-code').required = !!SEC.requireSecondFactor; $('#login-pass').minLength = SEC.minPassword;
+  $('#pass-help').textContent = 'Mínimo ' + SEC.minPassword + ' caracteres. Mejor una frase larga que solo tú conozcas.';
+  $('#login-title').nextElementSibling.textContent = SEC.requireSecondFactor ? 'Acceso exclusivo para los socios del estudio.' : 'Acceso exclusivo para los socios del estudio. Ingresa con tu contraseña.';
   let attempts = 0, lockTimer = null, idleTimer = null, warnTimer = null, tickTimer = null;
   const loginErr = $('#login-error'), loginMsg = $('#login-msg'), submit = $('#login-submit');
   function lockLogin() {
@@ -360,14 +366,14 @@
     const pass = $('#login-pass').value, code = $('#login-code').value.trim();
     passIn.removeAttribute('aria-invalid'); codeIn.removeAttribute('aria-invalid');
     const fmtErr = (m, el) => { loginErr.textContent = m; loginErr.hidden = false; el.setAttribute('aria-invalid', 'true'); el.focus(); };
-    if (pass.length < 8) return fmtErr('Escribe tu contraseña (mínimo 8 caracteres).', passIn);
-    if (!/^\d{6}$/.test(code)) return fmtErr('El código tiene 6 dígitos. Revisa tu aplicación autenticadora.', codeIn);
-    const valid = code !== '000000';
+    if (pass.length < SEC.minPassword) return fmtErr('Escribe tu contraseña (mínimo ' + SEC.minPassword + ' caracteres).', passIn);
+    if (SEC.requireSecondFactor && !/^\d{6}$/.test(code)) return fmtErr('El código tiene 6 dígitos. Revisa tu aplicación autenticadora.', codeIn);
+    const valid = SEC.requireSecondFactor ? code !== '000000' : pass !== 'incorrecta123';
     if (!valid) {
       attempts++;
-      $('#login-code').value = '';
-      if (attempts >= SEC.maxAttempts) { $('#login-pass').value = ''; lockLogin(); return; }
-      loginErr.textContent = 'No pudimos verificar tus datos. Revisa la contraseña y el código, y vuelve a intentarlo. Te quedan ' + (SEC.maxAttempts - attempts) + (SEC.maxAttempts - attempts === 1 ? ' intento.' : ' intentos.'); loginErr.hidden = false; codeIn.setAttribute('aria-invalid', 'true'); codeIn.focus(); return;
+      codeIn.value = '';
+      if (attempts >= SEC.maxAttempts) { passIn.value = ''; lockLogin(); return; }
+      loginErr.textContent = 'No pudimos verificar tus datos. Revisa ' + (SEC.requireSecondFactor ? 'la contraseña y el código' : 'tu contraseña') + ' y vuelve a intentarlo. Te quedan ' + (SEC.maxAttempts - attempts) + (SEC.maxAttempts - attempts === 1 ? ' intento.' : ' intentos.'); loginErr.hidden = false; (SEC.requireSecondFactor ? codeIn : passIn).setAttribute('aria-invalid', 'true'); (SEC.requireSecondFactor ? codeIn : passIn).focus(); return;
     }
     attempts = 0; loginErr.hidden = true; actor = $('#login-partner').value; $('#actor').value = actor;
     $('#login-pass').value = ''; $('#login-code').value = ''; $('#login-pass').type = 'password'; $('#pass-toggle').textContent = 'Mostrar'; $('#pass-toggle').setAttribute('aria-pressed', 'false');

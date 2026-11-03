@@ -12,7 +12,7 @@ Objetivo: proteger la información de los **socios** y de las **personas que con
 
 | Control | Qué se ve en el prototipo | Quién lo aplica en producción |
 |---|---|---|
-| Contraseña + segundo factor | Dos campos (contraseña y código de 6 dígitos) | Firebase Authentication + MFA (TOTP) |
+| Contraseña (sin segundo factor por ahora) | Un campo de contraseña de 12+ caracteres. El segundo factor (código de 6 dígitos) queda desactivado, pero el prototipo puede reactivarlo con `requireSecondFactor: true` | Firebase Authentication (correo + contraseña). MFA pospuesto por decisión del cliente |
 | Límite de intentos | Tras 5 intentos fallidos se bloquea el formulario 30 s con cuenta regresiva | Firebase Authentication (límite y bloqueo del lado servidor) + App Check |
 | Mensajes que no revelan datos | «No pudimos verificar tus datos…» (no dice si falló la contraseña o el código) | Firebase Authentication |
 | Cierre por inactividad | Aviso a los 14 min y cierre a los 15 min; la pantalla se vacía | Cliente + expiración de sesión en servidor |
@@ -29,7 +29,8 @@ Valores configurables en `admin/config.js` (`security`).
 
 ### 2.1 Identidad y acceso
 - **Cuentas cerradas:** solo las 3 cuentas de los socios. Sin registro público. Alta y baja controladas.
-- **Segundo factor obligatorio** (aplicación autenticadora, TOTP). Evaluar llaves de seguridad / passkeys.
+- **Segundo factor: POSPUESTO por decisión del cliente (3-nov-2026)**: por ahora no se integra aplicación autenticadora. Es la medida que más reduce el riesgo de robo de cuentas, por lo que se recomienda reactivarla (TOTP o passkeys) antes de operar con consultas reales. Firebase Authentication lo soporta sin rehacer el panel.
+- **Medidas compensatorias mientras no haya segundo factor:** contraseña de **mínimo 12 caracteres** (frase larga) revisada contra contraseñas filtradas, límite de intentos y bloqueo temporal en el servidor, aviso por correo ante cada inicio de sesión desde un dispositivo nuevo, sesiones cortas, cierre por inactividad, registro de auditoría con alertas, restablecimiento de acceso solo por otro socio (con registro), y lista cerrada de las 3 cuentas.
 - **Contraseñas largas** (mínimo 12 caracteres) y verificación contra contraseñas filtradas; recomendar gestor de contraseñas.
 - **Roles** mediante *custom claims*: `socio` (tres iguales). Un eventual rol de asistente con menos permisos.
 - **Sesiones cortas** con renovación; cierre por inactividad; cierre de todas las sesiones desde el panel.
@@ -87,6 +88,11 @@ La política exacta se ajusta cuando se conecten los servicios (dominios de Fire
 - **Actualización de dependencias** y revisión periódica de cuentas y permisos.
 - **Plan de respuesta a incidentes:** quién decide, cómo se avisa a los socios y a las personas afectadas, y los plazos legales de notificación (a validar con el abogado).
 - **Pruebas de seguridad** antes de salir: revisión de reglas, pruebas de acceso no autorizado y revisión del formulario.
+
+---
+
+## 2b. Riesgo aceptado: acceso solo con contraseña
+Sin segundo factor, si una contraseña se filtra o la roban (phishing, reutilización, malware), quien la tenga podría entrar al panel y ver consultas de clientes. El estudio acepta este riesgo de forma temporal. Recomendaciones: contraseñas únicas y largas con gestor de contraseñas, no compartir cuentas, y reactivar el segundo factor al pasar a producción real.
 
 ---
 

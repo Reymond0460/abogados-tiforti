@@ -46,6 +46,7 @@ Cómo ejecutarlos: ver `README.md`.
 | 18 | Documentar todo, tecnologías y horas/días para convertirlos en costo | Este documento y `docs/ESTIMACION.md` | Hecho |
 | 19 | Primer prototipo del panel | `admin/` (ver sección 4) | Hecho |
 | 21 | Seguir con la opción A (registro manual de consultas de WhatsApp/teléfono/presencial) | Botón «Registrar consulta» en el panel: formulario con nombre, contacto, canal, área, resumen breve y opción de tomarla de inmediato; queda en historial y avisos como registrada a mano | Hecho (prototipo) |
+| 32 | Por ahora no integrar la aplicación de autenticación (segundo factor) en el login | Ingreso solo con contraseña (mínimo 12 caracteres); se ocultó el código de 6 dígitos y se simplificaron las instrucciones a 2 pasos; interruptor `requireSecondFactor` en `admin/config.js` para reactivarlo; riesgo y medidas compensatorias registrados en `docs/SEGURIDAD.md` (sección 2b) | Hecho; pendiente decidir cuándo activar MFA |
 | 31 | Hacer fácil e intuitiva la edición del contenido de la página por los admin | Editor guiado (maqueta de la Etapa 2): 6 secciones del sitio, campos con ayuda y contador en español e inglés lado a lado, vista previa en vivo ES/EN, borrador guardado automáticamente, confirmación con «antes → después» antes de publicar, «Volver a lo publicado» y versiones restaurables | Hecho (prototipo) |
 | 30 | Tamaño de ficha que no requiera scroll | Ficha compacta de tamaño fijo con pestañas (Resumen, Notas, Historial, Reasignar); verificado sin desplazamiento en las 22 fichas y 4 pestañas en 5 tamaños de pantalla (1440×900, 1280×720, 390×844, 375×812, 360×740); listas largas muestran lo más reciente | Hecho |
 | 29 | Todas las fichas con el mismo tamaño (22 consultas) | Ventana de tamaño fijo (620×600 px en escritorio; ancho completo en móvil) y navegación Anterior/Siguiente fija abajo; el registro manual, el editor y «Copiar para Excel» usan una variante más alta | Hecho |
@@ -73,6 +74,7 @@ Los socios indicaron que **ninguna es oficial todavía**; se documentan para pod
 | Avisos por correo | **Casilla compartida** (Zoho, p. ej. `consultas@…`) **y** correo de cada socio | Registro de avisos simulados |
 | Conservación de datos | **Por definir** con el abogado que revise la política | Ajustes: «Por definir» |
 | Edición de textos por los socios | **Próximamente** (Etapa 2) | Maqueta en la pestaña «Contenido» |
+| Segundo factor (app autenticadora) | **Pospuesto**: por ahora solo contraseña | `requireSecondFactor: false` en `admin/config.js` |
 | Panel en el mismo sitio | Ruta `/admin`, sin indexar | `admin/` con `noindex` |
 
 Datos ficticios en uso: nombres de los socios, perfiles, teléfono `+56 9 0000 0000` (también en WhatsApp), correos `@nexo-demo.example`, dirección, horario y la condición «primera consulta de 30 minutos sin costo».
@@ -92,7 +94,7 @@ Datos ficticios en uso: nombres de los socios, perfiles, teléfono `+56 9 0000 0
 
 ### 4.2 Panel interno (prototipo) — `admin/`
 Pantallas:
-1. **Inicio de sesión simulado** (elegir socio + código de 6 dígitos cualquiera).
+1. **Inicio de sesión simulado** (elegir socio + contraseña de 12+ caracteres; la contraseña `incorrecta123` simula una equivocada). El segundo factor está desactivado por decisión del cliente.
 2. **Consultas**: resumen (sin tomar, vencidas, en curso, cerradas), filtros (texto, estado, área, responsable), tabla que en móvil se vuelve tarjetas.
 3. **Detalle de consulta**: datos, **tomar** (con bloqueo si otro socio ya la tomó), cambiar estado, **reasignar con motivo obligatorio**, notas internas, historial.
 4. **Carga del equipo**: consultas en curso y cerradas por socio.

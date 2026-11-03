@@ -24,18 +24,18 @@
     <ol class="steps" aria-label="Cómo ingresar">
       <li><span class="step-n" aria-hidden="true">1</span><span>Elige tu nombre.</span></li>
       <li><span class="step-n" aria-hidden="true">2</span><span>Escribe tu contraseña.</span></li>
-      <li><span class="step-n" aria-hidden="true">3</span><span>Escribe el código de 6 dígitos de tu aplicación autenticadora.</span></li>
+      <li class="mfa-only"><span class="step-n" aria-hidden="true">3</span><span>Escribe el código de 6 dígitos de tu aplicación autenticadora.</span></li>
     </ol>
     <form id="login-form" novalidate>
       <label for="login-partner">Ingresar como</label>
       <div class="who-pick"><img id="login-avatar" src="../assets/partner-1.jpg" alt="" width="44" height="44"><select id="login-partner" required></select></div>
       <label for="login-pass">Contraseña</label>
-      <div class="pass-row"><input id="login-pass" type="password" autocomplete="current-password" minlength="8" maxlength="128" aria-describedby="pass-help caps-warn" required><button class="btn btn-secondary" id="pass-toggle" type="button" aria-pressed="false" aria-label="Mostrar contraseña">Mostrar</button></div>
-      <p id="pass-help" class="field-help">Mínimo 8 caracteres.</p>
+      <div class="pass-row"><input id="login-pass" type="password" autocomplete="current-password" minlength="12" maxlength="128" aria-describedby="pass-help caps-warn" required><button class="btn btn-secondary" id="pass-toggle" type="button" aria-pressed="false" aria-label="Mostrar contraseña">Mostrar</button></div>
+      <p id="pass-help" class="field-help">Mínimo 12 caracteres. Mejor una frase larga que solo tú conozcas.</p>
       <p id="caps-warn" class="field-warn" role="status" hidden>Tienes activadas las mayúsculas (Bloq Mayús).</p>
-      <label for="login-code">Código de verificación</label>
-      <input id="login-code" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code" maxlength="6" placeholder="000 000" aria-describedby="code-help" required>
-      <p id="code-help" class="field-help">6 dígitos que muestra tu aplicación autenticadora. Cambian cada 30 segundos.</p>
+      <label for="login-code" class="mfa-only">Código de verificación</label>
+      <input class="mfa-only" id="login-code" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code" maxlength="6" placeholder="000 000" aria-describedby="code-help" required>
+      <p id="code-help" class="field-help mfa-only">6 dígitos que muestra tu aplicación autenticadora. Cambian cada 30 segundos.</p>
       <p id="login-msg" class="ok" role="status" hidden></p>
       <p id="login-error" class="error" role="alert" hidden></p>
       <button class="btn btn-primary" id="login-submit" type="submit">Entrar al panel</button>
@@ -43,16 +43,18 @@
     <details class="help">
       <summary>¿Problemas para ingresar?</summary>
       <ul>
-        <li>Revisa que la hora de tu teléfono esté en automático: el código depende de ella.</li>
+        <li class="mfa-only">Revisa que la hora de tu teléfono esté en automático: el código depende de ella.</li>
         <li>Tras 5 intentos fallidos el acceso se bloquea unos segundos; espera y vuelve a intentar.</li>
-        <li>Si perdiste tu teléfono o crees que alguien entró a tu cuenta, avisa de inmediato a otro socio.</li>
+        <li class="mfa-only">Si perdiste tu teléfono o crees que alguien entró a tu cuenta, avisa de inmediato a otro socio.</li>
+        <li class="nomfa-only">Si olvidaste tu contraseña, pídele a otro socio que restablezca tu acceso.</li>
+        <li class="nomfa-only">Si crees que alguien conoce tu contraseña, cámbiala y avisa de inmediato a los otros socios.</li>
       </ul>
     </details>
     <div class="demo-tip" role="note">
       <strong>Para probar este prototipo</strong>
       <ul>
-        <li>Sirve cualquier contraseña de 8 o más caracteres y cualquier código de 6 dígitos.</li>
-        <li>El código <strong>000000</strong> simula uno incorrecto (5 fallos bloquean 30 s).</li>
+        <li class="nomfa-only">Sirve cualquier contraseña de <span class="min-pass">12</span> o más caracteres. La contraseña <strong>incorrecta123</strong> simula una equivocada (5 fallos bloquean 30 s).</li>
+        <li class="mfa-only">Sirve cualquier contraseña de 8 o más caracteres y cualquier código de 6 dígitos. El código <strong>000000</strong> simula uno incorrecto.</li>
         <li>La sesión se cierra tras 15 minutos sin actividad.</li>
         <li>Los datos son ficticios y no se envía nada. La seguridad real la aplica el servidor.</li>
       </ul>
