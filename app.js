@@ -48,9 +48,28 @@ function renderDialog(key) {
   }
   add('h2', c.title).id = 'dialog-title';
   add('p', c.body);
-  const ul = add('ul', '');
-  c.list.forEach((item) => { const li = document.createElement('li'); li.textContent = item; ul.append(li); });
+  const addList = (items) => {
+    const ul = add('ul', '');
+    items.forEach((item) => { const li = document.createElement('li'); li.textContent = item; ul.append(li); });
+  };
+  if (c.list) addList(c.list);
+  (c.sections || []).forEach((s) => {
+    add('h3', s.h, 'dialog-sub');
+    if (s.p) add('p', s.p);
+    if (s.list) addList(s.list);
+  });
   add('p', c.end);
+  if (c.clear) {
+    const b = add('button', c.clear, 'button button-navy');
+    b.type = 'button';
+    b.addEventListener('click', () => {
+      try { localStorage.removeItem('nexo-lang'); localStorage.removeItem('nexo-a11y'); } catch (e) { /* sin almacenamiento */ }
+      prefs = { size: 0, contrast: false, gray: false, links: false, font: false, spacing: false, motion: false };
+      applyPrefs(false);
+      const m = add('p', c.cleared, 'dialog-ok');
+      m.setAttribute('role', 'status');
+    });
+  }
   if (c.cta) {
     const a = add('a', t('dlg.cta'), 'button button-navy');
     a.href = '#contacto';

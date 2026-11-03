@@ -18,7 +18,7 @@ y abrir http://localhost:8000. (También funciona abriendo `index.html` directam
 - **Español / inglés**: selector ES | EN en la cabecera. Todos los textos, ventanas, formulario y mensajes están en `i18n.js`; para cambiar un texto se edita ahí.
 - **Panel de accesibilidad** (botón inferior izquierdo): tamaño de texto (100–140 %), alto contraste, escala de grises, resaltar enlaces, fuente legible, espaciado de texto, detener animaciones y restablecer. Nota: no se pudo consultar el panel de tiforti.cl (su página no lo expone), por lo que las opciones son un conjunto estándar.
 - **Contenido ficticio** para los campos pendientes: nombres, formación y experiencia de los socios, dirección, teléfono, correo, horario y condición de la primera consulta. Todo está rotulado como ficticio.
-- Idioma y preferencias de accesibilidad se guardan solo en `localStorage` del navegador (nada del formulario). El aviso de privacidad lo indica.
+- Idioma y preferencias de accesibilidad se guardan solo en `localStorage` del navegador (nada del formulario). La política de privacidad y la de cookies lo indican.
 
 ## Firebase Hosting (cuando se acuerde)
 Sitio estático: esta carpeta puede usarse como `public`. No se incluyó `firebase.json` ni `projectId`. NIC Chile (dominio), Cloudflare (DNS) y Zoho Mail (correo) no se modifican.
