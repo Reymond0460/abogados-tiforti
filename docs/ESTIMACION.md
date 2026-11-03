@@ -81,7 +81,16 @@ Este documento traduce el trabajo a **horas y días** para que TiforTi pueda con
 | Documentación | 2 – 3 |
 | **Subtotal B2** | **42 – 59 h** |
 
-### Resumen de producción
+### B3. Opcional · WhatsApp (fuera de la cotización base)
+| Módulo | Horas |
+|---|---|
+| A. Registro manual de consultas de WhatsApp en el panel | 4 – 6 |
+| B. WhatsApp Business Platform: cuenta y número en Meta, webhook, creación automática de consultas, deduplicación, avisos, plantillas de mensaje | 20 – 30 |
+| C. Agente de IA: diseño de reglas y conversación, modelo de lenguaje, traspaso a humano, reserva de horas (requiere agenda real), pruebas con casos de riesgo | 40 – 70 |
+
+Notas: C depende de B y de una agenda real (hoy no incluida). Meta y el proveedor del modelo cobran por uso; verificar precios vigentes. Estas cifras son muy preliminares y requieren definir antes el alcance con los socios.
+
+### Resumen de producción (B1 + B2)
 | | Horas | Días de 8 h |
 |---|---|---|
 | B1 (consultas reales) | 74 – 104 | ≈ 9 – 13 |

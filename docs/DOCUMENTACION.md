@@ -45,6 +45,7 @@ Cómo ejecutarlos: ver `README.md`.
 | 17 | Asesoría sobre un panel admin para tres socios | Recomendación por etapas (ver sección 5) | Hecho |
 | 18 | Documentar todo, tecnologías y horas/días para convertirlos en costo | Este documento y `docs/ESTIMACION.md` | Hecho |
 | 19 | Primer prototipo del panel | `admin/` (ver sección 4) | Hecho |
+| 20 | Pregunta (comentario): ¿cómo sabe el sistema que una consulta llegó por WhatsApp y se atiende con IA/automatización con reservas? | Respondida: hoy es solo una etiqueta en datos de ejemplo. Opciones y alcance en sección 5b; no desarrollado | Respondido, sin desarrollo |
 
 ---
 
@@ -119,6 +120,20 @@ Limitaciones del prototipo (a propósito): datos en memoria que se pierden al re
 | Dominio / DNS | NIC Chile (registrador) y Cloudflare (DNS) |
 
 Requisito: las Cloud Functions necesitan el plan **Blaze** de Firebase (pago por uso). Con ~30 consultas al mes el uso esperado es mínimo; verificar precios vigentes y configurar una alerta de presupuesto.
+
+---
+
+## 5b. WhatsApp: estado actual y opciones (no desarrollado)
+
+**Hoy:** el botón flotante solo abre un chat (`wa.me`) con un número ficticio. En el panel, la etiqueta «WhatsApp» de algunas consultas es **solo dato de ejemplo**. El sistema no sabe lo que ocurre dentro de WhatsApp, y **no hay ninguna IA ni automatización**; tampoco se está entrenando nada.
+
+| Opción | Cómo sabría el sistema que llegó por WhatsApp | Alcance |
+|---|---|---|
+| A. Registro manual | Un socio pulsa «Registrar consulta de WhatsApp» en el panel y la ingresa | Se puede sumar al panel; no automatiza |
+| B. WhatsApp Business Platform (API Cloud de Meta) | Un *webhook* (Cloud Function) recibe cada mensaje y crea la consulta con canal «WhatsApp», avisa y la deja «sin tomar» | Requiere número dedicado y cuenta verificada en Meta; condiciones y costos de Meta |
+| C. Agente de IA sobre B | La IA conversa, recopila datos y propone horarios de consulta | Requiere B, un modelo de lenguaje, reglas estrictas (no dar asesoría jurídica, derivar urgencias y datos sensibles a una persona, traspaso a un socio), calendario/agenda real y revisión legal de privacidad y consentimiento |
+
+Recomendación: A como primer paso, B cuando el volumen lo justifique y C solo tras definir con los socios qué puede y qué no puede responder una IA. Las horas orientativas están en `docs/ESTIMACION.md`, sección B3 (opcional, fuera de la cotización base).
 
 ---
 
