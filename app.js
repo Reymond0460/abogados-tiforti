@@ -192,21 +192,27 @@ document.querySelectorAll('a[href="#inicio"]').forEach((a) => a.addEventListener
   document.querySelector('.brand').focus({ preventScroll: true });
 }));
 
-/* ---------- Sección activa en el menú ---------- */
+/* ---------- Sección activa en el menú ----------
+   La sección actual es la última (de TODAS las de la página) cuyo borde superior ya pasó
+   la línea de lectura; solo se resalta si tiene enlace en el menú. */
 (() => {
   const links = [...nav.querySelectorAll('a[href^="#"]')].filter((a) => a.getAttribute('href').length > 1);
-  const map = new Map();
-  links.forEach((a) => { const s = document.querySelector(a.getAttribute('href')); if (s) map.set(s, a); });
-  if (!('IntersectionObserver' in window) || !map.size) return;
-  const visible = new Set();
+  const byId = new Map(links.map((a) => [a.getAttribute('href').slice(1), a]));
+  const sections = [...document.querySelectorAll('main section[id], main .section, main section.hero')];
+  const header = document.querySelector('.header');
+  let ticking = false;
   const update = () => {
+    ticking = false;
+    const line = header.getBoundingClientRect().bottom + window.innerHeight * 0.2;
     let current = null;
-    map.forEach((a, s) => { if (visible.has(s) && !current) current = a; });
-    links.forEach((a) => { if (a === current) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current'); });
+    sections.forEach((s) => { if (s.getBoundingClientRect().top <= line) current = s; });
+    const atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4;
+    if (atBottom) current = document.querySelector('#contacto');
+    const target = current && current.id ? byId.get(current.id) : null;
+    links.forEach((a) => { if (a === target) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current'); });
   };
-  const io = new IntersectionObserver((entries) => {
-    entries.forEach((en) => { if (en.isIntersecting) visible.add(en.target); else visible.delete(en.target); });
-    update();
-  }, { rootMargin: '-35% 0px -55% 0px' });
-  map.forEach((_, s) => io.observe(s));
+  const request = () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } };
+  window.addEventListener('scroll', request, { passive: true });
+  window.addEventListener('resize', request);
+  update();
 })();
