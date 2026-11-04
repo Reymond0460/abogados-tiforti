@@ -24,7 +24,7 @@ window.AdminEditor = (() => {
   function reset() {
     sections = JSON.parse(RAW).map((s) => { s.fields.forEach((f) => { f.pes = f.es; f.pen = f.en; }); return s; });
     versions = {}; sections.forEach((s) => { versions[s.id] = [{ at: Date.now() - 6 * 86400000, who: 'Andrés', n: s.fields.length, snap: Object.fromEntries(s.fields.map((f) => [f.key, { es: f.es, en: f.en }])) }]; });
-    current = 'hero';
+    current = 'hero'; langView = window.matchMedia && window.matchMedia('(max-width: 820px)').matches ? 'es' : 'both';
   }
   reset();
 

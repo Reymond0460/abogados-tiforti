@@ -1,3 +1,4 @@
+const {go,act,filters}=require('./lib');
 const {chromium}=require('playwright');const B=process.env.BASE||'http://localhost:8123';const issues=[];const ok=(c,m)=>{if(!c)issues.push(m)};
 (async()=>{const b=await chromium.launch();
 for(const w of [1440,390]){const tag=''+w;const p=await b.newPage({viewport:{width:w,height:900}});
@@ -19,12 +20,12 @@ await p.click('#rows tr >> nth=1 >> button');
 await p.evaluate(()=>{});// abrir la 2da (sin tomar) y simular conflicto
 await p.click('.close');
 // conflicto: abrir consulta sin tomar, luego otro la toma (simOther toma la primera 'nueva' sin dueño)
-await p.selectOption('#f-status','nueva');const first=await p.textContent('#rows tr >> nth=0 >> td');await p.click('#rows tr >> nth=0 >> button');
+await (await filters(p),p).selectOption('#f-status','nueva');const first=await p.textContent('#rows tr >> nth=0 >> td');await p.click('#rows tr >> nth=0 >> button');
 await p.evaluate(()=>{document.querySelector('#sim-other').click()}); // click via JS (detras del modal)
 ok(await p.evaluate(()=>!!document.querySelector('.lock')),tag+' bloqueo tras toma de otro');
 await p.click('.close');
 // reasignar sin motivo
-await p.selectOption('#f-status','');await p.selectOption('#f-owner','p1');
+await (await filters(p),p).selectOption('#f-status','');await (await filters(p),p).selectOption('#f-owner','p1');
 await p.click('#rows tr >> nth=0 >> button');
 await p.click('[role=tab]:has-text("Reasignar")');await p.click('button.btn:text-is("Reasignar")');
 ok(await p.evaluate(()=>/motivo/i.test(document.querySelector('#toast').textContent)),tag+' reasignar exige motivo');
@@ -32,18 +33,18 @@ await p.fill('#d-reason','Equilibrar carga');await p.click('button.btn:text-is("
 ok(await p.evaluate(()=>/reasignada/i.test(document.querySelector('#toast').textContent)),tag+' reasignar');
 await p.click('[role=tab]:has-text("Notas")');await p.fill('#d-note','Nota de prueba');await p.click('text=Agregar nota');ok(await p.evaluate(()=>document.querySelector('.notes')?.textContent.includes('Nota de prueba')),tag+' nota');
 await p.keyboard.press('Escape');ok(!(await p.evaluate(()=>document.querySelector('#detail').open)),tag+' esc');
-await p.selectOption('#f-owner','');
+await (await filters(p),p).selectOption('#f-owner','');
 // simular nueva + avisos
-await p.click('#sim-new');await p.click('[data-view=notices]');ok(await p.evaluate(()=>document.querySelectorAll('#log li').length>=1),tag+' aviso nueva');
+await act(p,'simnew');await go(p,'notices');ok(await p.evaluate(()=>document.querySelectorAll('#log li').length>=1),tag+' aviso nueva');
 ok(await p.evaluate(()=>[...document.querySelectorAll('#log li')].some(l=>l.textContent.includes('Nueva consulta')&&l.textContent.includes('consultas@nexo-demo.example'))),tag+' casilla compartida');
 await p.click('#send-reminders');
-await p.click('[data-view=team]');ok(await p.evaluate(()=>document.querySelectorAll('.team-card').length)===3,tag+' equipo');
-await p.click('[data-view=content]');await p.fill('#f-hero_title-es','Titular nuevo de prueba');ok(await p.evaluate(()=>document.querySelector('#ed-preview').textContent.includes('Titular nuevo')),tag+' editor vista previa');
-await p.click('[data-view=settings]');await p.fill('#s-sla','2');await p.click('text=Aplicar plazo');
-await p.click('[data-view=inbox]');ok(await p.evaluate(()=>document.querySelector('.tile-late')!==null),tag+' sla cambia vencidas');
-await p.click('#reset');ok(await p.evaluate(()=>document.querySelectorAll('#rows tr').length)===rows0,tag+' reset');
+await go(p,'team');ok(await p.evaluate(()=>document.querySelectorAll('.team-card').length)===3,tag+' equipo');
+await go(p,'content');await p.fill('#f-hero_title-es','Titular nuevo de prueba');ok(await p.evaluate(()=>document.querySelector('#ed-preview').textContent.includes('Titular nuevo')),tag+' editor vista previa');
+await go(p,'settings');await p.fill('#s-sla','2');await p.click('text=Aplicar plazo');
+await go(p,'inbox');ok(await p.evaluate(()=>document.querySelector('.tile-late')!==null),tag+' sla cambia vencidas');
+await act(p,'reset');ok(await p.evaluate(()=>document.querySelectorAll('#rows tr').length)===rows0,tag+' reset');
 ok((await p.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth))<=0,tag+' overflow final');
 ok(!reqs.some(m=>m!=='GET'),tag+' requests no GET');
-await p.click('#logout');ok(await p.evaluate(()=>!document.querySelector('#login').hidden),tag+' logout');
+await act(p,'logout');ok(await p.evaluate(()=>!document.querySelector('#login').hidden),tag+' logout');
 await p.close()}
 console.log(issues.length?issues.join('\n'):'SIN HALLAZGOS');await b.close()})();

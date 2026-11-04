@@ -1,8 +1,9 @@
+const {go,act,filters}=require('./lib');
 const {chromium}=require('playwright');const B=process.env.BASE||'http://localhost:8123';(async()=>{const b=await chromium.launch();const issues=[];const ok=(c,m)=>{if(!c)issues.push(m)};
 for(const w of [1440,390]){const t=''+w;const p=await b.newPage({viewport:{width:w,height:900}});p.on('pageerror',e=>issues.push(t+' JS '+e.message));p.on('console',m=>{if(m.type()==='error')issues.push(t+' CONSOLE '+m.text())});
 const reqs=[];p.on('request',r=>{if(r.method()!=='GET')reqs.push(r.method())});
 await p.goto(B+'/admin/index.html');await p.fill('#login-pass','contrasena123');await p.click('#login-submit');
-await p.click('[data-view=content]');
+await go(p,'content');await p.click('.ed-lang >> nth=0 >> button >> nth=0');
 ok(await p.evaluate(()=>document.querySelectorAll('.ed-nav button').length)===6,t+' 6 secciones');
 ok(await p.evaluate(()=>document.querySelectorAll('.ed-field').length)===4,t+' 4 campos portada');
 const title='#f-hero_title-es';

@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es-CL">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0e3b83">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#0e3b83">
 <meta name="robots" content="noindex,nofollow,noarchive">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
@@ -72,6 +72,8 @@
         <svg class="brand-symbol" viewBox="0 0 56 56" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M7 49V7h7l28 30V7h7v42h-7L14 19v30z"/><path d="M7 7 49 49M14 7v12m28 18v12"/></svg>
         <span class="brand-name">NEXO<small> PANEL</small></span>
       </a>
+      <span class="top-title" id="top-title" aria-hidden="true">Consultas</span>
+      <button class="avatar-btn" id="avatar-btn" type="button" aria-label="Cuenta y más opciones"><img id="avatar-img" src="../assets/partner-1.jpg" alt="" width="40" height="40"></button>
       <div class="who">
         <label for="actor" class="who-label">Actuando como</label>
         <select id="actor"></select>
@@ -105,10 +107,10 @@
       </div>
       <ul class="tiles" id="tiles" aria-label="Resumen"></ul>
       <div class="filters" id="filters" role="search" aria-label="Filtrar consultas">
-        <div><label for="f-q">Buscar</label><input id="f-q" type="search" placeholder="Nombre, correo o número"></div>
-        <div><label for="f-status">Estado</label><select id="f-status"><option value="">Todos</option><option value="nueva">Nueva</option><option value="tomada">Tomada</option><option value="espera">Esperando respuesta</option><option value="cerrada">Cerrada</option><option value="vencida">Vencidas sin tomar</option></select></div>
-        <div><label for="f-area">Área</label><select id="f-area"><option value="">Todas</option><option value="civil">Derecho civil</option><option value="laboral">Derecho laboral</option><option value="empresas">Asesoría a empresas</option><option value="orientacion">Necesita orientación</option></select></div>
-        <div><label for="f-owner">Responsable</label><select id="f-owner"></select></div>
+        <div class="f-search"><label for="f-q">Buscar</label><input id="f-q" type="search" placeholder="Buscar nombre o correo" enterkeyhint="search"><button type="button" class="btn btn-secondary f-toggle" id="f-toggle" aria-expanded="false" aria-controls="filters"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"/></svg><span>Filtros</span><span class="f-badge" id="f-badge" hidden></span></button></div>
+        <div class="f-adv"><label for="f-status">Estado</label><select id="f-status"><option value="">Todos</option><option value="nueva">Nueva</option><option value="curso">En curso (tomadas y en espera)</option><option value="tomada">Tomada</option><option value="espera">Esperando respuesta</option><option value="cerrada">Cerrada</option><option value="vencida">Vencidas sin tomar</option></select></div>
+        <div class="f-adv"><label for="f-area">Área</label><select id="f-area"><option value="">Todas</option><option value="civil">Derecho civil</option><option value="laboral">Derecho laboral</option><option value="empresas">Asesoría a empresas</option><option value="orientacion">Necesita orientación</option></select></div>
+        <div class="f-adv"><label for="f-owner">Responsable</label><select id="f-owner"></select></div>
       </div>
       <p id="count" class="muted" role="status"></p>
       <div class="table-wrap">
@@ -165,6 +167,30 @@
       <div id="editor-root" class="editor"></div>
     </section>
 
+    <!-- MÁS (móvil) -->
+    <section id="view-more" class="view" hidden aria-labelledby="t-more">
+      <div class="view-head"><h1 id="t-more">Más</h1></div>
+      <div class="more-account"><img id="more-avatar" src="../assets/partner-1.jpg" alt="" width="56" height="56"><div><p class="more-name" id="more-name"></p><label for="actor-m">Actuando como</label><select id="actor-m"></select></div></div>
+      <h2 class="more-h">Secciones</h2>
+      <ul class="more-list">
+        <li><button type="button" data-go="notices"><span>Avisos por correo</span><span class="chev" aria-hidden="true">›</span></button></li>
+        <li><button type="button" data-go="settings"><span>Ajustes</span><span class="chev" aria-hidden="true">›</span></button></li>
+        <li><a href="../index.html"><span>Ver sitio principal</span><span class="chev" aria-hidden="true">›</span></a></li>
+      </ul>
+      <h2 class="more-h">Datos</h2>
+      <ul class="more-list">
+        <li><button type="button" id="m-export"><span>Exportar a Excel</span><span class="chev" aria-hidden="true">›</span></button></li>
+        <li><button type="button" id="m-copy"><span>Copiar para Excel</span><span class="chev" aria-hidden="true">›</span></button></li>
+      </ul>
+      <h2 class="more-h">Herramientas de demostración</h2>
+      <ul class="more-list">
+        <li><button type="button" id="m-sim-new"><span>Simular consulta nueva</span><span class="chev" aria-hidden="true">›</span></button></li>
+        <li><button type="button" id="m-sim-other"><span>Simular que otro socio toma una</span><span class="chev" aria-hidden="true">›</span></button></li>
+        <li><button type="button" id="m-reset"><span>Restablecer datos</span><span class="chev" aria-hidden="true">›</span></button></li>
+      </ul>
+      <button class="btn btn-secondary more-out" id="m-logout" type="button">Salir</button>
+    </section>
+
     <!-- AJUSTES -->
     <section id="view-settings" class="view" hidden aria-labelledby="t-settings">
       <div class="view-head"><h1 id="t-settings">Ajustes</h1></div>
@@ -177,6 +203,15 @@
       </form>
     </section>
   </main>
+
+  <nav class="bottom-nav" aria-label="Navegación principal">
+    <button type="button" data-view="inbox" aria-current="page"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/></svg><span>Consultas</span><span class="bn-badge" id="bn-badge" hidden></span></button>
+    <button type="button" data-view="dash"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 20V10M12 20V4M19 20v-7"/></svg><span>Dashboard</span></button>
+    <button type="button" data-view="team"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M16 5a3 3 0 0 1 0 6M18 14c1.8.7 3 2.5 3 6"/></svg><span>Equipo</span></button>
+    <button type="button" data-view="content"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16z"/></svg><span>Contenido</span></button>
+    <button type="button" data-view="more"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="19" cy="12" r="1.4"/></svg><span>Más</span></button>
+  </nav>
+  <button class="fab" id="fab-register" type="button" aria-label="Registrar consulta"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>Registrar</span></button>
 </div>
 
 <dialog id="confirm-dialog" aria-labelledby="confirm-title"><h2 id="confirm-title">Confirmar publicación</h2><p class="muted">Estos textos cambiarán en el sitio público.</p><ul class="confirm-list" id="confirm-list"></ul><div class="row-btns"><button class="btn btn-primary" id="confirm-ok" type="button">Sí, publicar</button><button class="btn btn-secondary" id="confirm-cancel" type="button">Cancelar</button></div></dialog>

@@ -14,6 +14,7 @@ const TESTS = [
   ['Sitio público · funcional (menú, ventanas, formulario, accesibilidad, idiomas)', 'public-funcional.test.js', /SIN HALLAZGOS/],
   ['Panel · funcional (bandeja, ficha, avisos, ajustes, editor, restablecer)', 'panel-funcional.test.js', /SIN HALLAZGOS/],
   ['Panel · seguridad del ingreso (bloqueo, inactividad, limpieza)', 'panel-seguridad-login.test.js', /SIN HALLAZGOS/],
+  ['Panel · UX móvil (barra inferior, lista compacta, filtros, ficha a pantalla completa, zonas táctiles)', 'panel-movil-ux.test.js', /SIN HALLAZGOS/],
   ['Panel · ficha de consulta (copiar, navegar, estado, reabrir)', 'panel-ficha.test.js', /SIN HALLAZGOS/],
   ['Panel · ficha sin scroll (22 fichas × 4 pestañas × 5 pantallas)', 'panel-ficha-sin-scroll.test.js', /SIN SCROLL EN NINGUNA PESTAÑA/],
   ['Panel · registro manual de consultas', 'panel-registro.test.js', /SIN HALLAZGOS/],

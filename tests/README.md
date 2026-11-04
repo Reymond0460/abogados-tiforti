@@ -21,6 +21,7 @@ Salida: «PASA/FALLA» por grupo y un resumen. El código de salida es 0 solo si
 |---|---|
 | `public-funcional` | Enlaces, menú móvil, 8 ventanas, acordeones, formulario, panel de accesibilidad, idiomas, tamaños táctiles |
 | `panel-funcional` | Ingreso, bandeja, ficha, avisos, equipo, ajustes, editor, restablecer |
+| `panel-movil-ux` | Experiencia móvil del panel: barra inferior, cabecera compacta, tarjetas ≤ 130 px y ≥ 3 visibles, chips de filtro, ficha a pantalla completa, botón flotante, menú «Más», zonas táctiles ≥ 44 px (360, 390 y 430 px) |
 | `panel-seguridad-login` | Errores de formato, bloqueo tras intentos, cierre por inactividad, limpieza de pantalla |
 | `panel-ficha` / `panel-ficha-sin-scroll` | Copiar, navegar, estado; las 22 fichas × 4 pestañas × 5 tamaños de pantalla sin scroll |
 | `panel-registro` | Registro manual de consultas |

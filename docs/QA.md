@@ -3,7 +3,7 @@
 Fecha: 3 de noviembre de 2026. Alcance: sitio público (demo) y panel interno (prototipo), antes de pasar a desarrollo.
 
 ## 1. Resultado general
-**13 de 13 grupos de pruebas pasan** (`node tests/run-all.js`). Durante el QA se encontraron y corrigieron 10 defectos (sección 3). Quedan observaciones y límites declarados (sección 4) que no impiden pasar a desarrollo, pero deben considerarse.
+**14 de 14 grupos de pruebas pasan** (`node tests/run-all.js`). Durante el QA se encontraron y corrigieron 10 defectos (sección 3). Quedan observaciones y límites declarados (sección 4) que no impiden pasar a desarrollo, pero deben considerarse.
 
 ## 2. Qué se probó y cómo
 
@@ -11,6 +11,7 @@ Fecha: 3 de noviembre de 2026. Alcance: sitio público (demo) y panel interno (p
 |---|---|---|
 | Funcional del sitio | Enlaces internos y de salida, menú móvil, 8 ventanas (X, Escape, clic fuera, foco de retorno, bloqueo de scroll), acordeones, formulario (válido, inválido, sin envío), panel de accesibilidad (7 ajustes), idioma ES/EN, WhatsApp, enlaces a tiforti.cl | Playwright (Chromium), escritorio 1440 px y móvil 390 px, ES y EN |
 | Funcional del panel | Ingreso, bandeja con filtros, ficha (tomar, estado, reasignar con motivo, notas, historial, copiar, navegar), registro manual, equipo, avisos, dashboard (5 gráficos), exportar a Excel, editor de contenido, ajustes, restablecer, cierre de sesión | Playwright |
+| UX móvil del panel | Barra inferior, cabecera ≤ 140 px (mide 90), tarjetas ≤ 130 px (mide 116) y ≥ 3 completas en la primera pantalla, chips de filtro, ficha a pantalla completa, botón flotante, menú «Más», zonas táctiles ≥ 44 px, textos ≥ 12 px, campo de búsqueda ≥ 16 px, área segura | Playwright con emulación táctil (360×740, 390×844, 430×932) |
 | Seguridad del ingreso (demostración) | Errores de formato sin gastar intentos, mensaje genérico, bloqueo tras 5 intentos, cierre por inactividad con aviso, pantalla vaciada al salir, política de contenido sin violaciones | Playwright |
 | Accesibilidad automática | WCAG 2.0/2.1/2.2 A y AA y buenas prácticas en unos 48 estados (sitio ES/EN, con panel y ventanas abiertas, alto contraste; panel en todas sus pantallas, pestañas y ventanas) | axe-core 4.14.0 |
 | Teclado | 88 paradas de tabulación en el sitio, foco visible en todas, «Saltar al contenido» primero, ventanas sin trampa, flechas en las pestañas de la ficha, menú y panel con Enter/Escape | Playwright |

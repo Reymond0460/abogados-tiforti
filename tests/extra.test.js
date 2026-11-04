@@ -1,4 +1,5 @@
 'use strict';
+const {go,act,filters}=require('./lib');
 /* QA adicional: teclado, matriz de tamaños, idiomas, rendimiento y almacenamiento. */
 const { chromium } = require('playwright');
 const B = process.env.BASE || B;
@@ -34,7 +35,7 @@ async function login(p) { await p.fill('#login-pass', 'contrasena123'); await p.
     if (o > 0) issues.push(`panel ${w}px ingreso: desborde ${o}px`);
     await login(p);
     for (const v of ['inbox', 'dash', 'team', 'notices', 'content', 'settings']) {
-      await p.click(`[data-view=${v}]`);
+      await go(p,v);
       o = await p.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth); cells++;
       if (o > 0) issues.push(`panel ${w}px vista ${v}: desborde ${o}px`);
     }
@@ -158,7 +159,7 @@ async function login(p) { await p.fill('#login-pass', 'contrasena123'); await p.
     await p.goto(B + '/index.html'); await p.waitForLoadState('networkidle');
     const sb = await p.evaluate(() => getComputedStyle(document.documentElement).scrollBehavior); ok(sb === 'auto', 'scroll-behavior suave con movimiento reducido: ' + sb);
     for (const s of ['#estudio', '#areas', '#equipo', '#contacto']) await p.evaluate((x) => document.querySelector(x).scrollIntoView(), s);
-    await p.goto(B + '/admin/index.html'); await login(p); for (const v of ['dash', 'team', 'notices', 'content', 'settings', 'inbox']) await p.click(`[data-view=${v}]`);
+    await p.goto(B + '/admin/index.html'); await login(p); for (const v of ['dash', 'team', 'notices', 'content', 'settings', 'inbox']) await go(p,v);
     ok(errs.length === 0, 'consola con errores/avisos: ' + errs.slice(0, 4).join(' | '));
     await ctx.close();
   }

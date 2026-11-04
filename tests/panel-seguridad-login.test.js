@@ -1,3 +1,4 @@
+const {go,act,filters}=require('./lib');
 const {chromium}=require('playwright');const B=process.env.BASE||'http://localhost:8123';(async()=>{const b=await chromium.launch();const issues=[];const ok=(c,m)=>{if(!c)issues.push(m)};
 const ctx=await b.newContext({viewport:{width:390,height:844}});const p=await ctx.newPage();
 p.on('console',m=>{if(m.type()==='error')issues.push('CONSOLE '+m.text())});p.on('pageerror',e=>issues.push('JS '+e.message));
@@ -30,5 +31,5 @@ ok(await p.evaluate(()=>/inactividad/.test(document.querySelector('#login-msg').
 await p.fill('#login-pass','contrasena123');await p.click('#login-submit');
 await p.waitForSelector('#session-dialog[open]',{timeout:5000});await p.click('#session-keep');ok(await p.evaluate(()=>!document.querySelector('#app').hidden&&!document.querySelector('#session-dialog').open),'seguir conectado');
 // salir manual
-await p.click('#logout');ok(await p.evaluate(()=>document.querySelectorAll('#rows tr').length===0&&!document.querySelector('#login').hidden),'logout limpia');
+await act(p,'logout');ok(await p.evaluate(()=>document.querySelectorAll('#rows tr').length===0&&!document.querySelector('#login').hidden),'logout limpia');
 console.log(issues.length?issues.join('\n'):'SIN HALLAZGOS');await b.close()})();

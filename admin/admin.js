@@ -45,19 +45,22 @@
   /* ---------- Render ---------- */
   function renderTiles() {
     const open = db.consultations.filter((c) => c.status !== 'cerrada');
+    const cur = $('#f-status').value;
     const tiles = [
-      ['Sin tomar', db.consultations.filter((c) => c.status === 'nueva' && !c.owner).length, ''],
-      ['Vencidas (+' + sla + ' h)', db.consultations.filter(overdue).length, 'late'],
-      ['En curso', open.filter((c) => c.owner).length, ''],
-      ['Cerradas', db.consultations.filter((c) => c.status === 'cerrada').length, '']
+      ['Sin tomar', db.consultations.filter((c) => c.status === 'nueva' && !c.owner).length, '', 'nueva'],
+      ['Vencidas (+' + sla + ' h)', db.consultations.filter(overdue).length, 'late', 'vencida'],
+      ['En curso', open.filter((c) => c.owner).length, '', 'curso'],
+      ['Cerradas', db.consultations.filter((c) => c.status === 'cerrada').length, '', 'cerrada']
     ];
-    $('#tiles').replaceChildren(...tiles.map(([l, n, k]) => h('li', { class: 'tile ' + (k && n ? 'tile-' + k : '') }, h('span', { class: 'tile-n' }, String(n)), h('span', { class: 'tile-l' }, l))));
+    $('#tiles').replaceChildren(...tiles.map(([l, n, k, f]) => h('li', {}, h('button', { type: 'button', class: 'tile ' + (k && n ? 'tile-' + k : ''), 'aria-pressed': String(cur === f), 'aria-label': n + ' ' + l + (cur === f ? '. Filtro activo, pulsa para quitarlo.' : '. Pulsa para filtrar.'),
+      onclick: () => { $('#f-status').value = cur === f ? '' : f; renderRows(); renderTiles(); } }, h('span', { class: 'tile-n' }, String(n)), ' ', h('span', { class: 'tile-l' }, l)))));
+    const sin = tiles[0][1] + 0, bn = $('#bn-badge'); if (bn) { bn.hidden = sin === 0; bn.textContent = String(sin); bn.setAttribute('aria-label', sin + ' sin tomar'); }
   }
   function filtered() {
     const q = $('#f-q').value.trim().toLowerCase(), st = $('#f-status').value, ar = $('#f-area').value, ow = $('#f-owner').value;
     return db.consultations.filter((c) => {
       if (q && !(c.name + ' ' + c.email + ' ' + c.id + ' ' + c.phone).toLowerCase().includes(q)) return false;
-      if (st === 'vencida' ? !overdue(c) : st && c.status !== st) return false;
+      if (st === 'vencida' ? !overdue(c) : st === 'curso' ? !(c.owner && c.status !== 'cerrada') : st && c.status !== st) return false;
       if (ar && c.area !== ar) return false;
       if (ow === 'none' ? c.owner : ow && c.owner !== ow) return false;
       return true;
@@ -65,7 +68,7 @@
   }
   function renderRows() {
     const list = filtered();
-    $('#rows').replaceChildren(...list.map((c) => h('tr', { class: overdue(c) ? 'row-late' : '' },
+    $('#rows').replaceChildren(...list.map((c) => h('tr', { class: (overdue(c) ? 'row-late ' : '') + 'row-s-' + c.status },
       h('td', { 'data-label': 'N.º' }, c.id),
       h('td', { 'data-label': 'Recibida' }, ago(c.createdAt), c.channel !== 'formulario' ? h('span', { class: 'chip' }, CHANNELS[c.channel] || c.channel) : null),
       h('td', { 'data-label': 'Persona' }, h('div', { class: 'cell-person' }, h('strong', {}, c.name), h('span', { class: 'sub' }, c.email))),
@@ -76,6 +79,7 @@
     $('#empty').hidden = list.length > 0;
     $('#table').hidden = list.length === 0;
     $('#count').textContent = list.length + (list.length === 1 ? ' consulta' : ' consultas');
+    const nf = ['#f-status', '#f-area', '#f-owner'].filter((s) => $(s).value).length; const fb = $('#f-badge'); if (fb) { fb.hidden = nf === 0; fb.textContent = String(nf); }
   }
   function renderTeam() {
     $('#team-grid').replaceChildren(...db.partners.map((p) => {
@@ -133,11 +137,11 @@
 
     const panels = {
       resumen: [slaLine(c),
-        h('div', { class: 'contact' }, contact('Correo', c.email, 'correo'), contact('Teléfono', c.phone, 'teléfono'), c.summary ? h('div', { class: 'contact-row' }, h('span', { class: 'c-l' }, 'Resumen'), h('span', { class: 'c-v' }, c.summary)) : null),
         lockedBy ? h('p', { class: 'lock', role: 'status' }, 'La tomó ' + lockedBy.name + '. Puedes reasignarla en la pestaña «Reasignar».') : null,
         !c.owner && c.status !== 'cerrada' ? h('div', { class: 'primary-action' }, h('button', { class: 'btn btn-primary btn-lg', type: 'button', onclick: () => take(c.id) }, 'Tomar esta consulta'), h('p', { class: 'fine' }, 'Quedará a tu nombre y los otros socios la verán como tomada.')) : null,
         c.owner && c.status !== 'cerrada' ? h('div', { class: 'block' }, h('p', { class: 'mini-h' }, 'Estado'), h('div', { class: 'segs', role: 'group', 'aria-label': 'Estado de la consulta' }, seg('tomada', 'En curso'), seg('espera', 'Esperando respuesta'), seg('cerrada', 'Cerrar consulta'))) : null,
-        c.status === 'cerrada' ? h('div', { class: 'block' }, h('p', { class: 'muted' }, 'Consulta cerrada.'), h('button', { class: 'btn btn-secondary', type: 'button', onclick: () => setStatus(c.id, 'tomada') }, 'Reabrir consulta')) : null],
+        c.status === 'cerrada' ? h('div', { class: 'block' }, h('p', { class: 'muted' }, 'Consulta cerrada.'), h('button', { class: 'btn btn-secondary', type: 'button', onclick: () => setStatus(c.id, 'tomada') }, 'Reabrir consulta')) : null,
+        h('div', { class: 'contact' }, contact('Correo', c.email, 'correo'), contact('Teléfono', c.phone, 'teléfono'), c.summary ? h('div', { class: 'contact-row' }, h('span', { class: 'c-l' }, 'Resumen'), h('span', { class: 'c-v' }, c.summary)) : null)],
       notas: [h('label', { for: 'd-note', class: 'mini-h' }, 'Nueva nota interna'), h('textarea', { id: 'd-note', rows: 2, maxlength: 400, placeholder: 'Escribe una nota para el equipo' }),
         h('button', { class: 'btn btn-secondary', type: 'button', onclick: () => addNote(c.id, $('#d-note').value) }, 'Agregar nota'),
         c.notes.length ? h('ul', { class: 'notes' }, ...c.notes.slice().reverse().slice(0, 4).map((n) => h('li', {}, h('strong', {}, n.who), ' · ' + ago(n.at), h('span', { class: 'sub' }, n.text)))) : h('p', { class: 'muted' }, 'Aún no hay notas.'),
@@ -260,7 +264,7 @@
     const avg = waits.length ? waits.reduce((a, b) => a + b, 0) / waits.length : 0;
     const inSla = waits.length ? Math.round((waits.filter((w) => w <= sla).length / waits.length) * 100) : 0;
     const closed = all.filter((c) => c.status === 'cerrada').length;
-    const kpis = [['Recibidas', String(n)], ['Cerradas', String(closed) + (n ? ' (' + Math.round((closed / n) * 100) + ' %)' : '')], ['Tiempo medio hasta tomar', avg.toFixed(1).replace('.', ',') + ' h'], ['Tomadas dentro del plazo (' + sla + ' h)', inSla + ' %'], ['Vencidas hoy', String(all.filter(overdue).length)]];
+    const kpis = [['Recibidas', String(n)], ['Cerradas' + (n ? ' · ' + Math.round((closed / n) * 100) + ' %' : ''), String(closed)], ['Tiempo medio hasta tomar', avg.toFixed(1).replace('.', ',') + ' h'], ['Tomadas dentro del plazo (' + sla + ' h)', inSla + ' %'], ['Vencidas hoy', String(all.filter(overdue).length)]];
     put($('#dash-kpis'), ...kpis.map(([l, v], i) => h('li', { class: 'tile' + (i === 4 && v !== '0' ? ' tile-late' : '') }, h('span', { class: 'tile-n' }, v), h('span', { class: 'tile-l' }, l))));
 
     const load = db.partners.map((p) => ({ open: all.filter((c) => c.owner === p.id && c.status !== 'cerrada').length, done: all.filter((c) => c.owner === p.id && c.status === 'cerrada').length }));
@@ -317,19 +321,26 @@
   }
 
   /* ---------- Navegación y arranque ---------- */
+  const TITLES = { inbox: 'Consultas', dash: 'Dashboard', team: 'Equipo', notices: 'Avisos', content: 'Contenido', settings: 'Ajustes', more: 'Más' };
   function show(v) {
     view = v; $$('.view').forEach((s) => { s.hidden = s.id !== 'view-' + v; });
     $$('.tabs button').forEach((b) => { if (b.dataset.view === v) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current'); });
+    const bnKey = ['notices', 'settings'].includes(v) ? 'more' : v;
+    $$('.bottom-nav button').forEach((b) => { if (b.dataset.view === bnKey) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current'); });
+    $('#top-title').textContent = TITLES[v] || ''; $('#fab-register').hidden = v !== 'inbox';
     if (v === 'content') window.AdminEditor.render();
+    if (v === 'more') renderMore();
+    window.scrollTo(0, 0);
     $('#main').focus({ preventScroll: true });
   }
+  function renderMore() { const p = partner(actor); if (!p) return; $('#more-avatar').src = p.photo; $('#more-name').textContent = p.name; $('#actor-m').value = actor; $('#m-copy').parentElement.hidden = !!$('#copy-xlsx').hidden; }
   function init() {
     db = JSON.parse(RAW); log = []; seq = 1043; sla = 24; $('#s-sla').value = 24;
     window.AdminEditor.reset(); renderOwnerFilter(); renderAll(); if (view === 'content') window.AdminEditor.render();
   }
   function fillActors() {
     const opts = () => db.partners.map((p) => h('option', { value: p.id }, p.name));
-    $('#login-partner').replaceChildren(...opts()); $('#actor').replaceChildren(...opts());
+    $('#login-partner').replaceChildren(...opts()); $('#actor').replaceChildren(...opts()); $('#actor-m').replaceChildren(...opts());
   }
   db = JSON.parse(RAW); fillActors();
   window.AdminEditor.setCtx({ toast, who: () => pname(actor), partnerPhoto: (i) => db.partners[i].photo });
@@ -375,7 +386,7 @@
       if (attempts >= SEC.maxAttempts) { passIn.value = ''; lockLogin(); return; }
       loginErr.textContent = 'No pudimos verificar tus datos. Revisa ' + (SEC.requireSecondFactor ? 'la contraseña y el código' : 'tu contraseña') + ' y vuelve a intentarlo. Te quedan ' + (SEC.maxAttempts - attempts) + (SEC.maxAttempts - attempts === 1 ? ' intento.' : ' intentos.'); loginErr.hidden = false; (SEC.requireSecondFactor ? codeIn : passIn).setAttribute('aria-invalid', 'true'); (SEC.requireSecondFactor ? codeIn : passIn).focus(); return;
     }
-    attempts = 0; loginErr.hidden = true; actor = $('#login-partner').value; $('#actor').value = actor;
+    attempts = 0; loginErr.hidden = true; actor = $('#login-partner').value; $('#actor').value = actor; $('#actor-m').value = actor; $('#avatar-img').src = partner(actor).photo;
     $('#login-pass').value = ''; $('#login-code').value = ''; $('#login-pass').type = 'password'; $('#pass-toggle').textContent = 'Mostrar'; $('#pass-toggle').setAttribute('aria-pressed', 'false');
     $('#login').hidden = true; $('#app').hidden = false; renderAll(); show('inbox'); $('#main').focus(); startSession();
   });
@@ -407,8 +418,18 @@
   $('#session-dialog').addEventListener('cancel', (e) => e.preventDefault());
   ['click', 'keydown', 'pointerdown', 'touchstart'].forEach((ev) => document.addEventListener(ev, () => { if (!$('#app').hidden && startSession.reset) startSession.reset(); }, { passive: true }));
   $('#logout').addEventListener('click', () => endSession('Cerraste sesión.'));
-  $('#actor').addEventListener('change', (e) => { actor = e.target.value; toast('Ahora actúas como ' + partner(actor).name + '.'); renderAll(); });
-  $$('.tabs button').forEach((b) => b.addEventListener('click', () => show(b.dataset.view)));
+  const setActor = (id) => { actor = id; $('#actor').value = id; $('#actor-m').value = id; $('#avatar-img').src = partner(id).photo; toast('Ahora actúas como ' + partner(id).name + '.'); renderAll(); if (view === 'more') renderMore(); };
+  $('#actor').addEventListener('change', (e) => setActor(e.target.value));
+  $('#actor-m').addEventListener('change', (e) => setActor(e.target.value));
+  $('#avatar-btn').addEventListener('click', () => show('more'));
+  $$('[data-go]').forEach((b) => b.addEventListener('click', () => show(b.dataset.go)));
+  $('#fab-register').addEventListener('click', (e) => openRegister(e.currentTarget));
+  window.addEventListener('scroll', () => { $('#fab-register').classList.toggle('fab-mini', window.scrollY > 140); }, { passive: true });
+  $('#m-export').addEventListener('click', () => $('#export-xlsx').click()); $('#m-copy').addEventListener('click', () => $('#copy-xlsx').click());
+  $('#m-sim-new').addEventListener('click', () => $('#sim-new').click()); $('#m-sim-other').addEventListener('click', () => $('#sim-other').click()); $('#m-reset').addEventListener('click', () => $('#reset').click());
+  $('#m-logout').addEventListener('click', () => endSession('Cerraste sesión.'));
+  $('#f-toggle').addEventListener('click', (e) => { const open = $('#filters').classList.toggle('open'); e.currentTarget.setAttribute('aria-expanded', String(open)); });
+  $$('.tabs button, .bottom-nav button').forEach((b) => b.addEventListener('click', () => show(b.dataset.view)));
   $('#filters').addEventListener('input', renderRows);
   $('#export-xlsx').addEventListener('click', exportXlsx); $('#copy-xlsx').addEventListener('click', (e) => copyForExcel(e.currentTarget)); $('#register').addEventListener('click', (e) => openRegister(e.currentTarget)); $('#sim-new').addEventListener('click', simNew); $('#sim-other').addEventListener('click', simOther);
   $('#reset').addEventListener('click', () => { init(); closeDetail(); toast('Datos de ejemplo restablecidos.'); });

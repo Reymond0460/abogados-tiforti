@@ -1,3 +1,4 @@
+const {go,act,filters}=require('./lib');
 const {chromium}=require('playwright');const B=process.env.BASE||'http://localhost:8123';const fs=require('fs');
 const AXE=fs.readFileSync(process.env.AXE_PATH||require.resolve('axe-core/axe.min.js'),'utf8');
 const all=[];
@@ -22,9 +23,9 @@ for(const [w,h] of [[1440,900],[390,844]]){
  await p.fill('#login-pass','contrasena123');await p.click('#login-submit');
  await scan(p,`admin ${w} consultas`);
  await p.click('#rows tr >> nth=0 >> button');for(const t of ['Resumen','Notas','Historial','Reasignar']){await p.click(`[role=tab]:has-text("${t}")`);await scan(p,`admin ${w} ficha ${t}`)}await p.keyboard.press('Escape');
- await p.click('#register');await scan(p,`admin ${w} registrar`);await p.keyboard.press('Escape');
- for(const v of ['dash','team','notices','content','settings']){await p.click(`[data-view=${v}]`);await scan(p,`admin ${w} ${v}`)}
- await p.click('[data-view=content]');await p.fill('#f-hero_title-es','Nuevo titular de prueba. Segunda frase.');await p.click('#ed-publish');await scan(p,`admin ${w} confirmar publicación`);await p.close()}
+ await act(p,'register');await scan(p,`admin ${w} registrar`);await p.keyboard.press('Escape');
+ for(const v of ['dash','team','notices','content','settings']){await go(p,v);await scan(p,`admin ${w} ${v}`)}
+ await go(p,'content');await p.fill('#f-hero_title-es','Nuevo titular de prueba. Segunda frase.');await p.click('#ed-publish');await scan(p,`admin ${w} confirmar publicación`);await p.close()}
 await b.close();
 const by={};all.forEach(v=>{const k=v.id;(by[k]=by[k]||{impact:v.impact,help:v.help,where:new Set(),n:0,ex:v.ex});by[k].where.add(v.name);by[k].n+=v.n});
 const out=Object.entries(by).map(([id,v])=>({id,impact:v.impact,help:v.help,pantallas:v.where.size,nodos:v.n,ejemplo:v.ex,donde:[...v.where].slice(0,4)}));
