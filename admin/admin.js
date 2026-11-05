@@ -31,10 +31,12 @@
   const find = (id) => db.consultations.find((c) => c.id === id);
   const hist = (c, text, who) => c.history.push({ at: Date.now(), who: who || pname(actor), text });
 
-  function toast(msg, isError) {
-    const t = $('#toast'); t.textContent = msg; t.hidden = false; t.className = 'toast' + (isError ? ' toast-error' : '');
-    clearTimeout(toast.t); toast.t = setTimeout(() => { t.hidden = true; }, 4500);
+  function toast(msg, isError, action) {
+    const t = $('#toast'); t.replaceChildren(document.createTextNode(msg)); t.hidden = false; t.className = 'toast' + (isError ? ' toast-error' : '') + (action ? ' toast-action' : '');
+    if (action) { const b = h('button', { type: 'button', class: 'toast-btn', onclick: () => { t.hidden = true; clearTimeout(toast.t); action.onClick(); } }, action.label); t.append(b); }
+    clearTimeout(toast.t); toast.t = setTimeout(() => { t.hidden = true; }, action ? 8000 : 4500);
   }
+  function slaText(c) { const left = sla * H - age(c.createdAt); const m = Math.round(Math.abs(left) / 60000); const t = m < 60 ? m + ' min' : m < 2880 ? Math.round(m / 60) + ' h' : Math.round(m / 1440) + ' d'; return left >= 0 ? 'Quedan ' + t : 'Vencida hace ' + t; }
   function pill(c) {
     if (overdue(c)) return h('span', { class: 'pill pill-late' }, 'Vencida · sin tomar');
     return h('span', { class: 'pill pill-' + c.status }, STATUS[c.status]);
@@ -68,14 +70,16 @@
   }
   function renderRows() {
     const list = filtered();
-    $('#rows').replaceChildren(...list.map((c) => h('tr', { class: (overdue(c) ? 'row-late ' : '') + 'row-s-' + c.status },
+    $('#rows').replaceChildren(...list.map((c) => h('tr', { class: (overdue(c) ? 'row-late ' : '') + 'row-s-' + c.status + (!c.owner && c.status === 'nueva' ? ' has-quick' : '') },
       h('td', { 'data-label': 'N.º' }, c.id),
       h('td', { 'data-label': 'Recibida' }, ago(c.createdAt), c.channel !== 'formulario' ? h('span', { class: 'chip' }, CHANNELS[c.channel] || c.channel) : null),
       h('td', { 'data-label': 'Persona' }, h('div', { class: 'cell-person' }, h('strong', {}, c.name), h('span', { class: 'sub' }, c.email))),
       h('td', { 'data-label': 'Área' }, AREAS[c.area]),
       h('td', { 'data-label': 'Estado' }, pill(c)),
       h('td', { 'data-label': 'Responsable' }, pname(c.owner)),
-      h('td', { class: 'td-action' }, h('button', { class: 'btn btn-secondary', type: 'button', 'aria-label': 'Abrir consulta ' + c.id + ' de ' + c.name, onclick: (e) => openDetail(c.id, e.currentTarget) }, 'Abrir')))));
+      h('td', { class: 'td-action' }, h('button', { class: 'btn btn-secondary', type: 'button', 'aria-label': 'Abrir consulta ' + c.id + ' de ' + c.name, onclick: (e) => openDetail(c.id, e.currentTarget) }, 'Abrir')),
+      !c.owner && c.status === 'nueva' ? h('td', { class: 'td-quick' }, h('span', { class: 'quick-info ' + (overdue(c) ? 'q-late' : 'q-ok') }, c.id + ' · ' + slaText(c)),
+        h('span', { class: 'btn btn-primary btn-take', role: 'button', tabindex: '0', 'aria-label': 'Tomar la consulta ' + c.id + ' de ' + c.name, onclick: (e) => { e.stopPropagation(); takeQuick(c.id); }, onkeydown: (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); takeQuick(c.id); } } }, 'Tomar')) : null)));
     $('#empty').hidden = list.length > 0;
     $('#table').hidden = list.length === 0;
     $('#count').textContent = list.length + (list.length === 1 ? ' consulta' : ' consultas');
@@ -178,6 +182,12 @@
     const c = find(id);
     if (c.owner && c.owner !== actor) { toast('Ya la tomó ' + pname(c.owner) + '. No se puede tomar dos veces.', true); renderAll(); return; }
     c.owner = actor; c.status = 'tomada'; hist(c, 'Tomó la consulta.'); toast('Consulta ' + id + ' tomada.'); renderAll();
+  }
+  function takeQuick(id) {
+    const c = find(id);
+    if (c.owner && c.owner !== actor) { toast('Ya la tomó ' + pname(c.owner) + '. No se puede tomar dos veces.', true); renderAll(); return; }
+    take(id);
+    toast('Tomaste la consulta ' + id + '.', false, { label: 'Deshacer', onClick: () => { const x = find(id); if (x.owner === actor && x.status === 'tomada') { x.owner = null; x.status = 'nueva'; x.history.pop(); hist(x, 'Se deshizo la toma de la consulta.'); toast('Se deshizo: la consulta volvió a «Sin tomar».'); renderAll(); } } });
   }
   function setStatus(id, st) { const c = find(id); c.status = st; hist(c, 'Cambió el estado a «' + STATUS[st] + '».'); toast('Estado actualizado.'); renderAll(); }
   function reassign(id, to, reason) {

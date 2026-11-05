@@ -26,9 +26,25 @@ const issues = []; const ok = (c, m) => { if (!c) issues.push(m); };
 
     // Lista compacta: tarjetas ≤ 130 px y al menos 3 completas en la primera pantalla
     const cards = await p.evaluate(() => [...document.querySelectorAll('#rows tr')].slice(0, 8).map((e) => { const r = e.getBoundingClientRect(); return { h: Math.round(r.height), bottom: Math.round(r.bottom) }; }));
-    ok(cards.every((c) => c.h <= 130), t + ' tarjetas más altas de 130 px: ' + cards.map((c) => c.h));
+    ok(cards.every((c) => c.h <= 150), t + ' tarjetas más altas de 150 px: ' + cards.map((c) => c.h));
     const navTop = navBox.top; const visibleFull = cards.filter((c) => c.bottom <= navTop).length;
-    ok(visibleFull >= 3, t + ' solo ' + visibleFull + ' tarjetas completas en la primera pantalla');
+    ok(visibleFull >= (h >= 800 ? 3 : 2), t + ' solo ' + visibleFull + ' tarjetas completas en la primera pantalla');
+
+    // Acción rápida: «Tomar» desde la tarjeta, con aviso y «Deshacer»
+    const q0 = await p.evaluate(() => document.querySelectorAll('#rows tr.has-quick').length);
+    ok(q0 >= 3, t + ' faltan tarjetas con acción rápida (' + q0 + ')');
+    const tb = await p.evaluate(() => { const r = document.querySelector('.btn-take').getBoundingClientRect(); return [Math.round(r.width), Math.round(r.height)]; });
+    ok(tb[0] >= 44 && tb[1] >= 44, t + ' el botón Tomar mide ' + tb);
+    ok(/Quedan|Vencida/.test(await p.textContent('#rows tr.has-quick .quick-info')), t + ' falta el plazo en la tarjeta');
+    await p.tap('#rows tr.has-quick >> nth=0 >> .btn-take');
+    ok(!(await p.evaluate(() => document.querySelector('#detail').open)), t + ' «Tomar» abrió la ficha en vez de tomar');
+    ok((await p.evaluate(() => document.querySelectorAll('#rows tr.has-quick').length)) === q0 - 1, t + ' «Tomar» no cambió la lista');
+    ok(/Tomaste la consulta/.test(await p.textContent('#toast')) && (await p.isVisible('.toast-btn')), t + ' sin aviso con «Deshacer»');
+    await p.tap('.toast-btn');
+    ok((await p.evaluate(() => document.querySelectorAll('#rows tr.has-quick').length)) === q0, t + ' «Deshacer» no restauró la consulta');
+    await p.focus('#rows tr.has-quick >> nth=0 >> .btn-take'); await p.keyboard.press('Enter');
+    ok((await p.evaluate(() => document.querySelectorAll('#rows tr.has-quick').length)) === q0 - 1, t + ' «Tomar» no responde al teclado');
+    await p.tap('.toast-btn');
 
     // Una tarjeta entera es tocable
     await p.tap('#rows tr >> nth=1', { position: { x: 30, y: 20 } });

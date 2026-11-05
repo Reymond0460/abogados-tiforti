@@ -45,15 +45,15 @@ Este documento traduce el trabajo a **horas y días** para que TiforTi pueda con
 | Ajustes (plazo, casilla compartida, retención) | 1 – 2 |
 | Responsive y accesibilidad | 4 – 6 |
 | Pruebas automáticas y correcciones | 4 – 6 |
-| Rediseño UX móvil del panel: barra inferior, cabecera compacta, lista en tarjetas, chips de filtro, hoja a pantalla completa, menú «Más», botón flotante, área segura, pruebas móviles | 14 – 20 |
+| Rediseño UX móvil del panel: barra inferior, cabecera compacta, lista en tarjetas, chips de filtro, hoja a pantalla completa, menú «Más», botón flotante, área segura, acción rápida «Tomar» con «Deshacer», pruebas móviles | 17 – 24 |
 | QA integral: suite reutilizable (13 grupos), auditoría axe-core, teclado, tamaños, idiomas, privacidad, corrección de 10 defectos e informe | 14 – 20 |
 | Documentación | 2 – 3 |
-| **Subtotal A2** | **106 – 151 h** |
+| **Subtotal A2** | **109 – 155 h** |
 
 ### Total de los prototipos (A1 + A2)
 | | Horas | Días de 8 h |
 |---|---|---|
-| **Referencia manual** | **144 – 206 h** | **≈ 18 – 26 días** |
+| **Referencia manual** | **147 – 210 h** | **≈ 19 – 27 días** |
 
 ---
 

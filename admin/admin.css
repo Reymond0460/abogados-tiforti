@@ -416,3 +416,19 @@ dialog h3{margin:.2em 0 .4em}
   .ed-actions .row-btns .btn-primary{flex:1.5 1 0}
 }
 @media(max-width:820px){#view-notices .head-actions{display:flex;margin:0 0 10px}#view-notices .head-actions .btn{width:100%;min-height:48px}}
+
+/* Acción rápida «Tomar» en cada consulta sin tomar (solo móvil) */
+.td-quick{display:none}
+.toast-btn{margin-left:14px;background:none;border:0;color:#fff;font:inherit;font-weight:700;text-decoration:underline;text-underline-offset:3px;min-height:44px;padding:0 6px;cursor:pointer}
+.toast-action{display:flex;align-items:center;gap:4px}
+@media(max-width:820px){
+  #rows tr.has-quick{grid-template-areas:"name time" "area status" "quick quick"}
+  #rows tr.has-quick td[data-label="N.º"],#rows tr.has-quick td[data-label="Responsable"]{display:none}
+  #rows td.td-quick{display:flex;grid-area:quick;align-items:center;justify-content:space-between;gap:10px;margin-top:4px;padding-top:8px;border-top:1px dashed var(--line);position:relative;z-index:2}
+  .quick-info{font-size:14px;font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .q-ok{color:var(--ok)}.q-late{color:var(--late)}
+  .btn-take{min-height:44px;min-width:92px;padding:0 20px;border-radius:12px;font-size:16px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;touch-action:manipulation}
+  .btn-take:focus-visible{outline:3px solid var(--sky);outline-offset:2px}
+  .toast-action{left:12px;right:12px;transform:none;justify-content:space-between}
+}
+@media(max-width:820px){#rows td.td-quick{margin-top:2px;padding-top:6px}#rows tr{padding-top:10px;padding-bottom:10px}}
