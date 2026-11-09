@@ -70,7 +70,7 @@ es: {
  'contact.note1': 'Una conversación con el equipo',
  'contact.note2': 'Atención por videollamada o en oficina, previa coordinación. Los datos de esta sección son ficticios.',
  'cd.addr.l': 'Oficina', 'cd.addr.v': 'Av. Ejemplo 1234, oficina 56, Santiago',
- 'cd.phone.l': 'Teléfono', 'cd.mail.l': 'Correo',
+ 'cd.phone.l': 'Teléfono', 'cd.mail.l': 'Correo', 'cd.phone.v': '+56 2 0000 0000', 'cd.mail.v': 'contacto@nexo-demo.example',
  'cd.hours.l': 'Horario', 'cd.hours.v': 'Lunes a viernes, 09:00 a 18:00',
  'contact.demo': 'Formulario de demostración. No envía ni guarda información.',
  'form.title': 'Solicitar una consulta',
@@ -210,7 +210,7 @@ en: {
  'contact.note1': 'A conversation with the team',
  'contact.note2': 'Video call or in-office service, by prior arrangement. The details in this section are fictitious.',
  'cd.addr.l': 'Office', 'cd.addr.v': 'Av. Ejemplo 1234, office 56, Santiago, Chile',
- 'cd.phone.l': 'Phone', 'cd.mail.l': 'Email',
+ 'cd.phone.l': 'Phone', 'cd.mail.l': 'Email', 'cd.phone.v': '+56 2 0000 0000', 'cd.mail.v': 'contacto@nexo-demo.example',
  'cd.hours.l': 'Hours', 'cd.hours.v': 'Monday to Friday, 9:00 am to 6:00 pm',
  'contact.demo': 'Demo form. It does not send or store any information.',
  'form.title': 'Request a consultation',
@@ -282,4 +282,49 @@ en: {
   list: ['Education: Law degree (fictitious data).', 'Experience: over 10 years of professional practice (fictitious data).', 'Specialties: business advisory and corporate law.', 'Languages and service: Spanish and English; in person and by video call.'],
   end: 'Approved material from the partner is still missing: real name and verifiable education and experience.', cta: true}
 }
+};
+
+/* Textos del modo «en vivo» (Firebase): el formulario guarda de verdad las solicitudes, y los textos legales lo reflejan.
+   BORRADOR sujeto a revisión legal antes de recibir consultas reales. */
+window.I18N_LIVE = {
+ es: {
+  'form.sending': 'Enviando su solicitud…',
+  'form.ok': 'Solicitud enviada. El equipo del estudio se pondrá en contacto con usted. Su código de seguimiento es {id}.',
+  'form.err': 'No pudimos enviar su solicitud. Inténtelo nuevamente en unos minutos o escríbanos por WhatsApp.',
+  'form.wait': 'Espere unos segundos antes de enviar otra solicitud.',
+  'contact.demo': 'Sus datos llegan de forma segura al equipo del estudio y solo los ven los socios.',
+  'faq.a1': 'Puede dejar sus datos y seleccionar un área de interés en el formulario. El equipo se pondrá en contacto para revisar disponibilidad y condiciones.',
+  'faq.a4': 'No. Un primer contacto no constituye por sí solo una relación abogado–cliente ni la aceptación de un encargo. El alcance y las condiciones deben acordarse expresamente. Este formulario no atiende urgencias.',
+  'dlg.privacy': {tag: 'POLÍTICA DE PRIVACIDAD · BORRADOR', title: 'Privacidad y protección de datos',
+   body: 'Borrador sujeto a revisión legal. Cuando usted envía el formulario, sus datos se guardan para que el estudio pueda responderle.',
+   sections: [
+    {h: 'Qué datos se guardan', list: ['Nombre, correo electrónico y teléfono (uno de los dos medios de contacto es obligatorio).', 'Área de interés e idioma.', 'La fecha de su solicitud y la aceptación de esta política.']},
+    {h: 'Quién los ve y dónde se guardan', p: 'Solo los socios del estudio autorizados, con cuenta personal. Se almacenan en Firebase (Google Cloud), región Santiago de Chile. El sitio no usa publicidad ni analítica de terceros.'},
+    {h: 'Para qué se usan', p: 'Únicamente para responder su solicitud y coordinar una primera conversación. No se venden ni se ceden a terceros, salvo proveedores de infraestructura (alojamiento y correo) o requerimiento legal.'},
+    {h: 'Cuánto tiempo se conservan', p: 'El plazo está por definir con el abogado que revise esta política y se informará aquí antes de recibir consultas reales.'},
+    {h: 'Sus derechos', p: 'Conforme a la normativa chilena de protección de datos personales (Ley N° 19.628 y sus modificaciones, incluida la Ley N° 21.719), puede solicitar acceso, rectificación, supresión, oposición, bloqueo y portabilidad de sus datos, y retirar su consentimiento, escribiendo al contacto del estudio indicado en esta página.'},
+    {h: 'Datos sensibles y urgencias', p: 'No envíe documentos, antecedentes de su caso ni datos sensibles. Este sitio no es un canal para urgencias o vencimientos legales. Un contacto no implica aceptación de un encargo.'}
+   ],
+   end: 'Sus preferencias de idioma y accesibilidad se guardan localmente en su navegador; vea «Cookies y almacenamiento».'}
+ },
+ en: {
+  'form.sending': 'Sending your request…',
+  'form.ok': 'Request sent. The firm\'s team will get in touch with you. Your reference code is {id}.',
+  'form.err': 'We could not send your request. Please try again in a few minutes or message us on WhatsApp.',
+  'form.wait': 'Please wait a few seconds before sending another request.',
+  'contact.demo': 'Your details reach the firm\'s team securely and are seen only by the partners.',
+  'faq.a1': 'You can leave your details and choose an area of interest in the form. The team will contact you to review availability and terms.',
+  'faq.a4': 'No. A first contact does not by itself create an attorney–client relationship or the acceptance of a matter. The scope and terms must be expressly agreed. This form does not handle emergencies.',
+  'dlg.privacy': {tag: 'PRIVACY POLICY · DRAFT', title: 'Privacy and data protection',
+   body: 'Draft subject to legal review. When you submit the form, your details are stored so the firm can reply to you.',
+   sections: [
+    {h: 'What data is stored', list: ['Name, email address and phone number (at least one contact method is required).', 'Area of interest and language.', 'The date of your request and your acceptance of this policy.']},
+    {h: 'Who sees it and where it is stored', p: 'Only authorized partners of the firm, with personal accounts. It is stored in Firebase (Google Cloud), Santiago, Chile region. The site uses no advertising or third-party analytics.'},
+    {h: 'What it is used for', p: 'Only to reply to your request and arrange a first conversation. It is not sold or shared with third parties, except infrastructure providers (hosting and email) or where required by law.'},
+    {h: 'How long it is kept', p: 'The period is yet to be defined with the lawyer reviewing this policy and will be stated here before real enquiries are received.'},
+    {h: 'Your rights', p: 'Under Chilean personal data protection law (Law No. 19.628 and its amendments, including Law No. 21.719), you may request access, rectification, erasure, objection, blocking and portability of your data, and withdraw your consent, by writing to the firm\'s contact shown on this page.'},
+    {h: 'Sensitive data and emergencies', p: 'Do not send documents, case details or sensitive data. This site is not a channel for emergencies or legal deadlines. Contacting us does not mean we accept a matter.'}
+   ],
+   end: 'Language and accessibility preferences are stored locally in your browser; see "Cookies and storage".'}
+ }
 };

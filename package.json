@@ -1,0 +1,22 @@
+{
+  "name": "nexo-abogados",
+  "version": "1.0.0",
+  "private": true,
+  "description": "NEXO Abogados: sitio público y panel de socios sobre Firebase (Hosting, Auth, Firestore).",
+  "scripts": {
+    "build": "node scripts/build.js",
+    "build:emulator": "node scripts/build.js --emulator",
+    "test:rules": "firebase emulators:exec --only firestore --project demo-nexo \"node tests/firebase/reglas.test.js\"",
+    "test:e2e": "node scripts/e2e.js",
+    "deploy": "npm run build && firebase deploy"
+  },
+  "dependencies": {
+    "firebase": "^11.0.0"
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "^4.0.0",
+    "esbuild": "^0.24.0",
+    "firebase-admin": "^14.5.0",
+    "firebase-tools": "^14.0.0"
+  }
+}

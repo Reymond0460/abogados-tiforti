@@ -2,7 +2,8 @@
 /* Editor de contenido del sitio (maqueta de la Etapa 2). Datos ficticios en memoria; no cambia el sitio público. */
 window.AdminEditor = (() => {
   const RAW = JSON.stringify(window.ADMIN_CONTENT);
-  let ctx = { toast() {}, who: () => 'Socio', partnerPhoto: () => '' };
+  let ctx = { toast() {}, who: () => 'Socio', partnerPhoto: () => '', live: null, audit: null };
+  let pubVersion = {}, saveTimer = null;
   let sections, current = 'hero', langView = 'both', prevLang = 'es', versions = {};
   const $ = (s, r = document) => r.querySelector(s);
   function h(tag, attrs, ...kids) {
@@ -19,6 +20,24 @@ window.AdminEditor = (() => {
   const changed = (f) => f.es !== f.pes || f.en !== f.pen;
   const changes = (s) => s.fields.filter(changed);
   const get = (key) => { for (const s of sections) { const f = s.fields.find((x) => x.key === key); if (f) return f; } return null; };
+  const mapCampos = (s) => Object.fromEntries(s.fields.map((f) => [f.key, { es: f.es, en: f.en }]));
+  function scheduleSave(s) {
+    if (!ctx.live) return; clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => { ctx.live.saveDraft(s.id, mapCampos(s), versions[s.id]).catch(() => ctx.toast('No se pudo guardar el borrador. Revisa tu conexión.', true)); }, 900);
+  }
+  /* Modo en vivo: carga lo publicado y los borradores guardados en Firestore */
+  function hydrate(c) {
+    sections.forEach((s) => {
+      s.fields.forEach((f) => {
+        const p = (c.publicado[s.id] || {})[f.key], b = (c.borrador[s.id] || {})[f.key];
+        if (p) { f.pes = p.es; f.pen = p.en; }
+        f.es = b ? b.es : f.pes; f.en = b ? b.en : f.pen;
+      });
+      versions[s.id] = c.versiones[s.id] && c.versiones[s.id].length ? c.versiones[s.id] : [{ at: Date.now(), who: 'Carga inicial', n: s.fields.length, snap: mapCampos(s) }];
+      pubVersion[s.id] = c.version[s.id] || 1;
+    });
+    if ($('#editor-root') && $('#editor-root').children.length) render();
+  }
   const short = (t) => (t.length > 60 ? t.slice(0, 57) + '…' : t);
 
   function reset() {
@@ -59,7 +78,7 @@ window.AdminEditor = (() => {
     const col = (l, name) => {
       const input = f.type === 'area' ? h('textarea', { id: id(l), rows: 3, 'aria-describedby': 'cnt-' + f.key.replace(/\W/g, '_') + '-' + l }) : h('input', { id: id(l), 'aria-describedby': 'cnt-' + f.key.replace(/\W/g, '_') + '-' + l });
       input.value = f[l]; if (f.type !== 'area') input.setAttribute('type', 'text');
-      input.addEventListener('input', () => { f[l] = input.value; input.removeAttribute('aria-invalid'); const st = $('#ed-status'); if (st) { delete st.dataset.lock; } refreshMeta(); });
+      input.addEventListener('input', () => { f[l] = input.value; input.removeAttribute('aria-invalid'); const st = $('#ed-status'); if (st) { delete st.dataset.lock; } refreshMeta(); scheduleSave(sec(current)); });
       return h('div', { class: 'ed-col', 'data-l': l }, h('label', { for: id(l) }, name), input, h('span', { class: 'cnt', id: 'cnt-' + f.key.replace(/\W/g, '_') + '-' + l }, f[l].length + ' / ' + f.max));
     };
     return h('fieldset', { class: 'ed-field' }, h('legend', {}, f.label), f.help ? h('p', { class: 'field-help' }, f.help) : null, h('div', { class: 'ed-cols' }, col('es', 'Español'), col('en', 'English')));
@@ -85,8 +104,8 @@ window.AdminEditor = (() => {
   }
 
   /* ---------- Acciones ---------- */
-  function revert() { const s = sec(current); changes(s).forEach((f) => { f.es = f.pes; f.en = f.pen; }); ctx.toast('Se volvió a lo publicado en «' + s.name + '».'); render(); }
-  function restore(s, v) { s.fields.forEach((f) => { if (v.snap[f.key]) { f.es = v.snap[f.key].es; f.en = v.snap[f.key].en; } }); ctx.toast('Versión restaurada como borrador. Revisa y publica si es lo que quieres.'); render(); }
+  function revert() { const s = sec(current); changes(s).forEach((f) => { f.es = f.pes; f.en = f.pen; }); scheduleSave(s); ctx.toast('Se volvió a lo publicado en «' + s.name + '».'); render(); }
+  function restore(s, v) { s.fields.forEach((f) => { if (v.snap[f.key]) { f.es = v.snap[f.key].es; f.en = v.snap[f.key].en; } }); scheduleSave(s); ctx.toast('Versión restaurada como borrador. Revisa y publica si es lo que quieres.'); render(); }
   function validate(s) {
     for (const f of s.fields) for (const l of ['es', 'en']) {
       const el = $('#f-' + f.key.replace(/\W/g, '_') + '-' + l), name = l === 'es' ? 'español' : 'inglés';
@@ -104,13 +123,19 @@ window.AdminEditor = (() => {
     $('#confirm-ok').onclick = () => { dlg.close(); publish(s); };
     dlg.showModal(); $('#confirm-ok').focus();
   }
-  function publish(s) {
+  async function publish(s) {
     const n = changes(s).length;
+    if (ctx.live) {
+      try { await ctx.live.publish(s.id, mapCampos(s), (pubVersion[s.id] || 1) + 1); } catch (err) { ctx.toast('No se pudo publicar. Revisa tu conexión y tus permisos.', true); return; }
+      pubVersion[s.id] = (pubVersion[s.id] || 1) + 1;
+    }
     versions[s.id].push({ at: Date.now(), who: ctx.who(), n, snap: Object.fromEntries(s.fields.map((f) => [f.key, { es: f.es, en: f.en }])) });
+    if (versions[s.id].length > 8) versions[s.id].shift();
     s.fields.forEach((f) => { f.pes = f.es; f.pen = f.en; });
-    ctx.toast('Publicado «' + s.name + '» (simulado). El sitio público no cambió.'); render();
+    if (ctx.live) { clearTimeout(saveTimer); ctx.live.saveDraft(s.id, mapCampos(s), versions[s.id]).catch(() => {}); if (ctx.audit) ctx.audit('contenido.publicar', s.name); }
+    ctx.toast(ctx.live ? 'Publicado «' + s.name + '». Ya se ve en el sitio.' : 'Publicado «' + s.name + '» (simulado). El sitio público no cambió.'); render();
     const st = $('#ed-status'); if (st) { st.dataset.lock = '1'; st.textContent = 'Publicado ahora por ' + ctx.who() + '.'; st.className = 'ed-status ed-ok'; setTimeout(() => { if (st) delete st.dataset.lock; }, 100); }
   }
   $('#confirm-cancel') && $('#confirm-cancel').addEventListener('click', () => $('#confirm-dialog').close());
-  return { render, reset, setCtx: (c) => { ctx = Object.assign(ctx, c); }, count: () => sections.reduce((a, s) => a + changes(s).length, 0) };
+  return { render, reset, hydrate, setCtx: (c) => { ctx = Object.assign(ctx, c); }, count: () => sections.reduce((a, s) => a + changes(s).length, 0) };
 })();

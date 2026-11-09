@@ -4,7 +4,6 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#0e3b83">
 <meta name="robots" content="noindex,nofollow,noarchive">
 <meta name="referrer" content="no-referrer">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <title>NEXO Abogados · Panel (prototipo)</title>
 <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="admin.css">
@@ -27,8 +26,9 @@
       <li class="mfa-only"><span class="step-n" aria-hidden="true">3</span><span>Escribe el código de 6 dígitos de tu aplicación autenticadora.</span></li>
     </ol>
     <form id="login-form" novalidate>
-      <label for="login-partner">Ingresar como</label>
-      <div class="who-pick"><img id="login-avatar" src="../assets/partner-1.jpg" alt="" width="44" height="44"><select id="login-partner" required></select></div>
+      <label for="login-email" class="live-only" hidden>Correo</label><input id="login-email" class="live-only" type="email" autocomplete="username" maxlength="180" placeholder="nombre@estudio.cl" hidden>
+      <label for="login-partner" class="mock-only">Ingresar como</label>
+      <div class="who-pick mock-only"><img id="login-avatar" src="../assets/partner-1.jpg" alt="" width="44" height="44"><select id="login-partner" required></select></div>
       <label for="login-pass">Contraseña</label>
       <div class="pass-row"><input id="login-pass" type="password" autocomplete="current-password" minlength="12" maxlength="128" aria-describedby="pass-help caps-warn" required><button class="btn btn-secondary" id="pass-toggle" type="button" aria-pressed="false" aria-label="Mostrar contraseña">Mostrar</button></div>
       <p id="pass-help" class="field-help">Mínimo 12 caracteres. Mejor una frase larga que solo tú conozcas.</p>
@@ -50,7 +50,7 @@
         <li class="nomfa-only">Si crees que alguien conoce tu contraseña, cámbiala y avisa de inmediato a los otros socios.</li>
       </ul>
     </details>
-    <div class="demo-tip" role="note">
+    <div class="demo-tip mock-only" role="note">
       <strong>Para probar este prototipo</strong>
       <ul>
         <li class="nomfa-only">Sirve cualquier contraseña de <span class="min-pass">12</span> o más caracteres. La contraseña <strong>incorrecta123</strong> simula una equivocada (5 fallos bloquean 30 s).</li>
@@ -75,8 +75,8 @@
       <span class="top-title" id="top-title" aria-hidden="true">Consultas</span>
       <button class="avatar-btn" id="avatar-btn" type="button" aria-label="Cuenta y más opciones"><img id="avatar-img" src="../assets/partner-1.jpg" alt="" width="40" height="40"></button>
       <div class="who">
-        <label for="actor" class="who-label">Actuando como</label>
-        <select id="actor"></select>
+        <label for="actor" class="who-label mock-only">Actuando como</label>
+        <select id="actor" class="mock-only"></select>
         <a class="btn btn-secondary site-link" href="../index.html"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg><span>Ver sitio principal</span></a>
         <button class="btn btn-ghost" id="logout" type="button">Salir</button>
       </div>
@@ -100,9 +100,9 @@
           <button class="btn btn-primary" id="register" type="button">Registrar consulta</button>
           <button class="btn btn-secondary" id="export-xlsx" type="button">Exportar a Excel</button>
           <button class="btn btn-secondary" id="copy-xlsx" type="button">Copiar para Excel</button>
-          <button class="btn btn-secondary" id="sim-new" type="button">Simular consulta nueva</button>
-          <button class="btn btn-secondary" id="sim-other" type="button">Simular que otro socio toma una</button>
-          <button class="btn btn-ghost" id="reset" type="button">Restablecer datos</button>
+          <button class="btn btn-secondary mock-only" id="sim-new" type="button">Simular consulta nueva</button>
+          <button class="btn btn-secondary mock-only" id="sim-other" type="button">Simular que otro socio toma una</button>
+          <button class="btn btn-ghost mock-only" id="reset" type="button">Restablecer datos</button>
         </div>
       </div>
       <ul class="tiles" id="tiles" aria-label="Resumen"></ul>
@@ -148,7 +148,7 @@
     <!-- AVISOS -->
     <section id="view-notices" class="view" hidden aria-labelledby="t-notices">
       <div class="view-head"><h1 id="t-notices">Avisos por correo (simulados)</h1>
-        <div class="head-actions"><button class="btn btn-secondary" id="send-reminders" type="button">Enviar recordatorios vencidos</button></div></div>
+        <div class="head-actions mock-only"><button class="btn btn-secondary" id="send-reminders" type="button">Enviar recordatorios vencidos</button></div></div>
       <p class="muted">En el sistema real cada consulta nueva avisará a la casilla compartida y a los tres socios, y un recordatorio saldrá si pasa el plazo sin tomarla. Aquí solo se muestra el registro de lo que se enviaría.</p>
       <ol class="log" id="log" reversed></ol>
       <p id="log-empty" class="empty">Aún no hay avisos. Prueba «Simular consulta nueva».</p>
@@ -170,7 +170,7 @@
     <!-- MÁS (móvil) -->
     <section id="view-more" class="view" hidden aria-labelledby="t-more">
       <div class="view-head"><h1 id="t-more">Más</h1></div>
-      <div class="more-account"><img id="more-avatar" src="../assets/partner-1.jpg" alt="" width="56" height="56"><div><p class="more-name" id="more-name"></p><label for="actor-m">Actuando como</label><select id="actor-m"></select></div></div>
+      <div class="more-account"><img id="more-avatar" src="../assets/partner-1.jpg" alt="" width="56" height="56"><div><p class="more-name" id="more-name"></p><span class="mock-only"><label for="actor-m">Actuando como</label><select id="actor-m"></select></span></div></div>
       <h2 class="more-h">Secciones</h2>
       <ul class="more-list">
         <li><button type="button" data-go="notices"><span>Avisos por correo</span><span class="chev" aria-hidden="true">›</span></button></li>
@@ -182,8 +182,8 @@
         <li><button type="button" id="m-export"><span>Exportar a Excel</span><span class="chev" aria-hidden="true">›</span></button></li>
         <li><button type="button" id="m-copy"><span>Copiar para Excel</span><span class="chev" aria-hidden="true">›</span></button></li>
       </ul>
-      <h2 class="more-h">Herramientas de demostración</h2>
-      <ul class="more-list">
+      <h2 class="more-h mock-only">Herramientas de demostración</h2>
+      <ul class="more-list mock-only">
         <li><button type="button" id="m-sim-new"><span>Simular consulta nueva</span><span class="chev" aria-hidden="true">›</span></button></li>
         <li><button type="button" id="m-sim-other"><span>Simular que otro socio toma una</span><span class="chev" aria-hidden="true">›</span></button></li>
         <li><button type="button" id="m-reset"><span>Restablecer datos</span><span class="chev" aria-hidden="true">›</span></button></li>
@@ -201,6 +201,7 @@
         <button class="btn btn-primary" type="submit">Aplicar plazo</button>
         <p id="settings-msg" class="ok" role="status" hidden></p>
       </form>
+    <div class="settings live-only" hidden><h2>Datos de demostración</h2><p class="fine">Elimina de una vez las consultas ficticias cargadas para la demostración. Las consultas reales no se pueden borrar desde el panel.</p><button class="btn btn-secondary" id="del-demo" type="button">Eliminar consultas de demostración</button><p id="del-msg" class="ok" role="status" hidden></p></div>
     </section>
   </main>
 
@@ -219,12 +220,14 @@
 <dialog id="detail" aria-labelledby="detail-title"><div id="detail-body"></div></dialog>
 <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
 
+<script src="../backend.js"></script>
 <script src="config.js"></script>
 <script src="data.js"></script>
 <script src="export.js"></script>
 <script src="charts.js"></script>
 <script src="content.js"></script>
 <script src="editor.js"></script>
+<script src="live.js"></script>
 <script src="admin.js"></script>
 </body>
 </html>

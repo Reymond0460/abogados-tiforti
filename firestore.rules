@@ -1,0 +1,133 @@
+rules_version = '2';
+
+/* NEXO Abogados · reglas de seguridad de Firestore.
+   Principios: denegar todo por defecto; el público SOLO puede crear una consulta (nunca leer ni modificar);
+   solo los socios activos (documento socios/{uid}) leen y gestionan datos; el historial y las notas solo crecen. */
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function socioDoc() { return get(/databases/$(database)/documents/socios/$(request.auth.uid)).data; }
+    function isSocio() {
+      return signedIn()
+        && exists(/databases/$(database)/documents/socios/$(request.auth.uid))
+        && socioDoc().activo == true;
+    }
+    function isStr(v, min, max) { return v is string && v.size() >= min && v.size() <= max; }
+    function validArea(v) { return v in ['civil', 'laboral', 'empresas', 'orientacion']; }
+    function validEstado(v) { return v in ['nueva', 'tomada', 'espera', 'cerrada']; }
+
+    /* ---------- Consultas (datos personales de clientes) ---------- */
+    match /consultas/{id} {
+
+      function contactOk(d) {
+        return d.email is string && d.email.size() <= 180
+          && d.telefono is string && d.telefono.size() <= 20
+          && (d.email.size() > 0 || d.telefono.size() > 0)
+          && (d.email.size() == 0 || d.email.matches('^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$'))
+          && (d.telefono.size() == 0 || d.telefono.matches('^[0-9+()\\-\\s]{7,20}$'));
+      }
+      function baseOk(d) {
+        return isStr(d.nombre, 2, 100) && contactOk(d) && validArea(d.area)
+          && d.idioma in ['es', 'en']
+          && d.createdAt == request.time && d.actualizadoAt == request.time
+          && d.historial is list && d.historial.size() == 1
+          && d.notas is list && d.notas.size() == 0;
+      }
+
+      // Formulario público: solo crear, con campos exactos, sin responsable y en estado «nueva».
+      function publicCreate() {
+        let d = request.resource.data;
+        return id.matches('^C-[0-9A-Z]{8,12}$')
+          && d.keys().hasOnly(['nombre', 'email', 'telefono', 'area', 'canal', 'estado', 'responsable', 'manual', 'idioma', 'consentimiento', 'createdAt', 'actualizadoAt', 'historial', 'notas'])
+          && d.keys().hasAll(['nombre', 'email', 'telefono', 'area', 'canal', 'estado', 'responsable', 'manual', 'idioma', 'consentimiento', 'createdAt', 'actualizadoAt', 'historial', 'notas'])
+          && baseOk(d)
+          && d.canal == 'formulario' && d.estado == 'nueva' && d.responsable == null && d.manual == false
+          && d.consentimiento is map && d.consentimiento.keys().hasOnly(['aceptado', 'version']) && d.consentimiento.aceptado == true && isStr(d.consentimiento.version, 1, 40)
+          && d.historial[0].keys().hasOnly(['at', 'quien', 'texto']) && d.historial[0].quien == 'Sistema' && isStr(d.historial[0].texto, 1, 200);
+      }
+
+      // Registro manual por un socio (WhatsApp, teléfono, presencial).
+      function socioCreate() {
+        let d = request.resource.data;
+        return isSocio()
+          && id.matches('^C-[0-9A-Z]{8,12}$')
+          && d.keys().hasOnly(['nombre', 'email', 'telefono', 'area', 'canal', 'estado', 'responsable', 'responsableNombre', 'manual', 'idioma', 'resumen', 'createdAt', 'actualizadoAt', 'historial', 'notas'])
+          && d.keys().hasAll(['nombre', 'email', 'telefono', 'area', 'canal', 'estado', 'responsable', 'manual', 'idioma', 'createdAt', 'actualizadoAt', 'historial', 'notas'])
+          && d.canal in ['whatsapp', 'telefono', 'presencial', 'otro'] && d.manual == true
+          && validEstado(d.estado) && d.estado in ['nueva', 'tomada']
+          && (d.responsable == null || d.responsable == request.auth.uid)
+          && d.nombre is string && d.nombre.size() >= 2 && d.nombre.size() <= 100
+          && contactOk(d) && validArea(d.area) && d.idioma in ['es', 'en']
+          && d.createdAt == request.time && d.actualizadoAt == request.time
+          && d.historial is list && d.historial.size() >= 1 && d.historial.size() <= 3
+          && d.notas is list && d.notas.size() == 0
+          && (!('resumen' in d.keys()) || isStr(d.resumen, 0, 300));
+      }
+
+      allow create: if publicCreate() || socioCreate();
+      allow read: if isSocio();
+
+      // Solo socios; solo ciertos campos; el historial y las notas únicamente crecen (nada se borra ni se reescribe).
+      allow update: if isSocio()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['estado', 'responsable', 'responsableNombre', 'historial', 'notas', 'actualizadoAt'])
+        && validEstado(request.resource.data.estado)
+        && request.resource.data.actualizadoAt == request.time
+        && (request.resource.data.responsable == null
+            || exists(/databases/$(database)/documents/socios/$(request.resource.data.responsable)))
+        && request.resource.data.historial.size() > resource.data.historial.size()
+        && request.resource.data.historial.hasAll(resource.data.historial)
+        && request.resource.data.notas.size() >= resource.data.notas.size()
+        && request.resource.data.notas.hasAll(resource.data.notas);
+
+      // Solo se pueden borrar consultas marcadas como demostración.
+      allow delete: if isSocio() && resource.data.get('demo', false) == true;
+    }
+
+    /* ---------- Socios (perfiles). Alta y baja solo desde la consola o el servidor. ---------- */
+    match /socios/{uid} {
+      allow read: if signedIn() && (request.auth.uid == uid || isSocio());
+      allow update: if signedIn() && request.auth.uid == uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['ultimoAcceso']);
+      allow create, delete: if false;
+    }
+
+    /* ---------- Contenido del sitio: lo publicado es público; el borrador es solo de socios ---------- */
+    match /contenido_publicado/{seccion} {
+      allow read: if true;
+      allow create, update: if isSocio()
+        && request.resource.data.keys().hasOnly(['campos', 'version', 'actualizadoPor', 'actualizadoAt'])
+        && request.resource.data.campos is map && request.resource.data.campos.size() <= 30
+        && request.resource.data.version is int
+        && request.resource.data.actualizadoAt == request.time
+        && request.resource.data.actualizadoPor == request.auth.uid;
+      allow delete: if false;
+    }
+    match /contenido_borrador/{seccion} {
+      allow read, write: if isSocio();
+    }
+
+    /* ---------- Configuración ---------- */
+    match /config/{doc} {
+      allow read: if isSocio();
+      allow write: if isSocio() && doc == 'general'
+        && request.resource.data.keys().hasOnly(['slaHoras', 'actualizadoAt'])
+        && request.resource.data.slaHoras is int && request.resource.data.slaHoras >= 1 && request.resource.data.slaHoras <= 168;
+    }
+
+    /* ---------- Auditoría: solo se agrega ---------- */
+    match /auditoria/{id} {
+      allow read: if isSocio();
+      allow create: if isSocio()
+        && request.resource.data.keys().hasOnly(['at', 'uid', 'nombre', 'accion', 'detalle', 'consultaId'])
+        && request.resource.data.keys().hasAll(['at', 'uid', 'nombre', 'accion'])
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.at == request.time
+        && isStr(request.resource.data.accion, 1, 60)
+        && (!('detalle' in request.resource.data.keys()) || isStr(request.resource.data.detalle, 0, 300));
+      allow update, delete: if false;
+    }
+
+    match /{document=**} { allow read, write: if false; }
+  }
+}

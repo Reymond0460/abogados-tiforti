@@ -53,6 +53,15 @@ function serve() {
   code.forEach((f) => { const t = fs.readFileSync(path.join(ROOT, f), 'utf8'); (t.match(/(?:src|href)=["']https?:\/\/[^"']+/g) || []).forEach((m) => { if (!/tiforti\.cl|wa\.me|claude\.ai/.test(m)) ext.push(f + ': ' + m); }); if (/AIza[0-9A-Za-z_-]{20,}|firebaseConfig|apiKey\s*[:=]\s*["'][^"']{8,}/.test(t)) secrets.push(f); });
   results.push(['Revisión estática · sin recursos externos inesperados ni credenciales', ext.length === 0 && secrets.length === 0, ext.concat(secrets).join('; ')]);
 
+  // 2b) Firebase (opcional, requiere Java y red para descargar los emuladores): node tests/run-all.js --firebase
+  if (process.argv.includes('--firebase')) {
+    for (const [name, args] of [['Firebase · reglas de seguridad de Firestore', ['run', 'test:rules']], ['Firebase · punta a punta con emuladores (Auth + Firestore + Hosting)', ['run', 'test:e2e']]]) {
+      const t0 = Date.now(); const r = spawnSync(process.platform === 'win32' ? 'npm.cmd' : 'npm', args, { cwd: ROOT, encoding: 'utf8', timeout: 900000 });
+      const out = (r.stdout || '') + (r.stderr || ''); const okRun = r.status === 0 && /SIN HALLAZGOS/.test(out);
+      results.push([name, okRun, okRun ? '' : out.split('\n').filter(Boolean).slice(-8).join('\n    '), ((Date.now() - t0) / 1000).toFixed(0) + ' s']);
+    }
+  }
+
   // 3) Pruebas de navegador
   for (const [name, file, pass] of TESTS) {
     const t0 = Date.now();

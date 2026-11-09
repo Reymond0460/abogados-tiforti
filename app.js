@@ -99,15 +99,36 @@ dialog.addEventListener('close', () => {
 /* ---------- Formulario de demostración ---------- */
 const form = document.querySelector('#contact-form');
 const status = document.querySelector('#form-status');
-let statusShown = false;
-form.addEventListener('submit', (e) => {
+let statusFn = null;
+const LIVE = window.NEXO_BACKEND === 'firebase';
+const POLICY_VERSION = 'v1-2026-11';
+let fbReady = null;
+function loadFB() {
+  if (!fbReady) fbReady = new Promise((resolve, reject) => {
+    const s = document.createElement('script'); s.src = 'nexo-firebase.js';
+    s.onload = () => resolve(window.NexoFB); s.onerror = () => reject(new Error('No se pudo cargar Firebase'));
+    document.head.append(s);
+  });
+  return fbReady;
+}
+function showStatus(fn, isError) {
+  statusFn = fn; status.hidden = false; status.setAttribute('role', isError ? 'alert' : 'status'); status.textContent = fn(); status.focus();
+}
+const newId = () => 'C-' + Date.now().toString(36).toUpperCase().slice(-6) + Math.random().toString(36).toUpperCase().replace(/[^0-9A-Z]/g, '').padEnd(4, '0').slice(0, 4);
+let lastSend = 0;
+form.addEventListener('submit', async (e) => {
   e.preventDefault();
   if (!form.reportValidity()) return;
-  form.reset();
-  statusShown = true;
-  status.hidden = false;
-  status.textContent = t('form.ok');
-  status.focus();
+  if (!LIVE) { form.reset(); showStatus(() => t('form.ok')); return; }
+  if (form.elements.website && form.elements.website.value) { form.reset(); showStatus(() => t('form.ok').replace('{id}', '—')); return; } // trampa anti-bots
+  if (Date.now() - lastSend < 30000) { showStatus(() => t('form.wait'), true); return; }
+  const btn = form.querySelector('.submit-button'); btn.disabled = true;
+  showStatus(() => t('form.sending'));
+  try {
+    const fb = await loadFB(); const id = newId();
+    await fb.crearConsulta(id, { nombre: form.elements.nombre.value.trim(), email: form.elements.correo.value.trim(), telefono: (form.elements.telefono.value || '').trim(), area: form.elements.area.value, idioma: lang, version: POLICY_VERSION });
+    lastSend = Date.now(); form.reset(); showStatus(() => t('form.ok').replace('{id}', id));
+  } catch (err) { showStatus(() => t('form.err'), true); } finally { btn.disabled = false; }
 });
 
 /* ---------- Idioma ---------- */
@@ -124,7 +145,7 @@ function applyLang(next, save) {
   });
   document.querySelectorAll('[data-lang]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.lang === lang)));
   menuButton.setAttribute('aria-label', t(menuButton.getAttribute('aria-expanded') === 'true' ? 'menu.close' : 'menu.open'));
-  if (statusShown) status.textContent = t('form.ok');
+  if (statusFn) status.textContent = statusFn();
   if (currentKey) renderDialog(currentKey);
   const wa = document.querySelector('#wa-fab');
   if (wa) wa.href = 'https://wa.me/56900000000?text=' + encodeURIComponent(t('wa.msg'));
@@ -181,6 +202,25 @@ document.querySelector('#a11y-reset').addEventListener('click', () => {
 });
 
 /* ---------- Inicio ---------- */
+/* ---------- Modo en vivo: textos legales reales y contenido publicado por los socios ---------- */
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const twoLines = (s) => { const i = s.indexOf('. '); return i > 0 ? esc(s.slice(0, i + 1)) + '<br><em>' + esc(s.slice(i + 2)) + '</em>' : esc(s); };
+const KEYMAP = { 'cd.addr': 'cd.addr.v', 'cd.hours': 'cd.hours.v', 'cd.phone': 'cd.phone.v', 'cd.mail': 'cd.mail.v' };
+const HTMLKEYS = { 'hero.title': 1, 'studio.title': 1 };
+function applyContent(secciones) {
+  const campos = Object.assign({}, ...Object.values(secciones));
+  LANGS.forEach((l) => Object.entries(campos).forEach(([key, v]) => {
+    const val = v && typeof v[l] === 'string' ? v[l].slice(0, 400) : null; if (!val) return;
+    const tk = KEYMAP[key] || key;
+    I18N[l][tk] = HTMLKEYS[key] ? twoLines(val) : val;
+    const m = key.match(/^p([123])\.name$/); if (m && I18N[l]['dlg.socio' + m[1]]) I18N[l]['dlg.socio' + m[1]].title = val;
+    const a2 = key.match(/^area\.(civil|laboral|empresas)\.t$/); if (a2 && I18N[l]['dlg.' + a2[1]]) I18N[l]['dlg.' + a2[1]].title = val;
+  }));
+}
+if (LIVE) {
+  LANGS.forEach((l) => Object.assign(I18N[l], I18N_LIVE[l]));
+  loadFB().then((fb) => fb.cargarContenido()).then((c) => { applyContent(c); applyLang(lang, false); }).catch(() => { /* se mantienen los textos por defecto */ });
+}
 const savedLang = store.get('nexo-lang');
 applyLang(LANGS.includes(savedLang) ? savedLang : 'es', false);
 applyPrefs(false);

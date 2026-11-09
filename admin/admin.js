@@ -5,6 +5,18 @@
   const H = 3600 * 1000;
   const RAW = JSON.stringify(ADMIN_DATA);
   let db, actor, sla = 24, view = 'inbox', log = [], seq = 1043;
+  const LIVE = window.NEXO_BACKEND === 'firebase', L = window.AdminLive;
+  const EMPTY = () => ({ partners: [], consultations: [], content: [] });
+  const newId = () => 'C-' + Date.now().toString(36).toUpperCase().slice(-6) + Math.random().toString(36).toUpperCase().replace(/[^0-9A-Z]/g, '').padEnd(4, '0').slice(0, 4);
+  const ACCIONES = { 'sesion.inicio': 'Inició sesión', 'consulta.tomar': 'Tomó una consulta', 'consulta.deshacer_toma': 'Deshizo la toma de una consulta', 'consulta.estado': 'Cambió el estado de una consulta', 'consulta.reasignar': 'Reasignó una consulta', 'consulta.nota': 'Agregó una nota', 'consulta.registrar': 'Registró una consulta a mano', 'config.sla': 'Cambió el plazo para tomar consultas', 'datos.exportar': 'Exportó datos a Excel', 'contenido.publicar': 'Publicó contenido del sitio', 'demo.eliminar': 'Eliminó consultas de demostración' };
+  function liveError(e) {
+    if (e && e.code === 'app/conflicto') return e.message;
+    if (e && e.code === 'permission-denied') return 'No tienes permiso para esta acción.';
+    return 'No se pudo guardar. Revisa tu conexión e inténtalo de nuevo.';
+  }
+  async function liveRun(fn, okMsg, action, id, detail) {
+    try { await fn(); if (okMsg) toast(okMsg); if (action) L.audit(action, detail || id, id); return true; } catch (e) { toast(liveError(e), true); return false; }
+  }
   const AREAS = { civil: 'Derecho civil', laboral: 'Derecho laboral', empresas: 'Asesoría a empresas', orientacion: 'Necesita orientación' };
   const STATUS = { nueva: 'Nueva', tomada: 'Tomada', espera: 'Esperando respuesta', cerrada: 'Cerrada' };
   const CHANNELS = { formulario: 'Formulario web', whatsapp: 'WhatsApp', telefono: 'Teléfono', presencial: 'Presencial', otro: 'Otro canal' };
@@ -73,7 +85,7 @@
     $('#rows').replaceChildren(...list.map((c) => h('tr', { class: (overdue(c) ? 'row-late ' : '') + 'row-s-' + c.status + (!c.owner && c.status === 'nueva' ? ' has-quick' : '') },
       h('td', { 'data-label': 'N.º' }, c.id),
       h('td', { 'data-label': 'Recibida' }, ago(c.createdAt), c.channel !== 'formulario' ? h('span', { class: 'chip' }, CHANNELS[c.channel] || c.channel) : null),
-      h('td', { 'data-label': 'Persona' }, h('div', { class: 'cell-person' }, h('strong', {}, c.name), h('span', { class: 'sub' }, c.email))),
+      h('td', { 'data-label': 'Persona' }, h('div', { class: 'cell-person' }, h('strong', {}, c.name, c.demo ? h('span', { class: 'chip' }, 'Demo') : null), h('span', { class: 'sub' }, c.email))),
       h('td', { 'data-label': 'Área' }, AREAS[c.area]),
       h('td', { 'data-label': 'Estado' }, pill(c)),
       h('td', { 'data-label': 'Responsable' }, pname(c.owner)),
@@ -98,7 +110,7 @@
     $('#unassigned-text').textContent = n ? n + ' consultas esperan que un socio las tome. Se muestran en «Consultas» con el filtro «Todos».' : 'No hay consultas sin tomar.';
   }
   function renderLog() {
-    $('#log').replaceChildren(...log.map((l) => h('li', {}, h('strong', {}, l.subject), h('span', { class: 'sub' }, 'Para: ' + l.to.join(', ')), h('span', { class: 'sub' }, new Date(l.at).toLocaleTimeString('es-CL')))));
+    $('#log').replaceChildren(...log.map((l) => h('li', {}, h('strong', {}, l.subject), h('span', { class: 'sub' }, l.to ? 'Para: ' + l.to.join(', ') : 'Por ' + l.who), h('span', { class: 'sub' }, new Date(l.at).toLocaleString('es-CL')))));
     $('#log-empty').hidden = log.length > 0;
   }
   function renderOwnerFilter() {
@@ -106,7 +118,7 @@
     sel.replaceChildren(h('option', { value: '' }, 'Todos'), h('option', { value: 'none' }, 'Sin asignar'), ...db.partners.map((p) => h('option', { value: p.id }, p.short)));
     sel.value = cur;
   }
-  function renderAll() { renderDashboard(); renderTiles(); renderRows(); renderTeam(); renderLog(); if ($('#detail').open && openId) renderDetail(openId); }
+  function renderAll() { renderDashboard(); renderTiles(); renderRows(); renderTeam(); renderLog(); if ($('#detail').open && openId && !(document.activeElement && /^(TEXTAREA|INPUT|SELECT)$/.test(document.activeElement.tagName) && $('#detail').contains(document.activeElement))) renderDetail(openId); }
 
   /* ---------- Detalle ---------- */
   let openId = null, opener = null;
@@ -179,40 +191,50 @@
 
   /* ---------- Acciones ---------- */
   function take(id) {
+    if (LIVE) return liveRun(() => L.take(id, db.partners), 'Consulta ' + id + ' tomada.', 'consulta.tomar', id);
     const c = find(id);
     if (c.owner && c.owner !== actor) { toast('Ya la tomó ' + pname(c.owner) + '. No se puede tomar dos veces.', true); renderAll(); return; }
     c.owner = actor; c.status = 'tomada'; hist(c, 'Tomó la consulta.'); toast('Consulta ' + id + ' tomada.'); renderAll();
   }
-  function takeQuick(id) {
+  async function takeQuick(id) {
+    if (LIVE) {
+      if (!(await liveRun(() => L.take(id, db.partners), null, 'consulta.tomar', id))) return;
+      toast('Tomaste la consulta ' + id + '.', false, { label: 'Deshacer', onClick: () => liveRun(() => L.undoTake(id), 'Se deshizo: la consulta volvió a «Sin tomar».', 'consulta.deshacer_toma', id) }); return;
+    }
     const c = find(id);
     if (c.owner && c.owner !== actor) { toast('Ya la tomó ' + pname(c.owner) + '. No se puede tomar dos veces.', true); renderAll(); return; }
     take(id);
     toast('Tomaste la consulta ' + id + '.', false, { label: 'Deshacer', onClick: () => { const x = find(id); if (x.owner === actor && x.status === 'tomada') { x.owner = null; x.status = 'nueva'; x.history.pop(); hist(x, 'Se deshizo la toma de la consulta.'); toast('Se deshizo: la consulta volvió a «Sin tomar».'); renderAll(); } } });
   }
-  function setStatus(id, st) { const c = find(id); c.status = st; hist(c, 'Cambió el estado a «' + STATUS[st] + '».'); toast('Estado actualizado.'); renderAll(); }
+  function setStatus(id, st) { if (LIVE) return liveRun(() => L.setStatus(id, st, STATUS[st]), 'Estado actualizado.', 'consulta.estado', id, STATUS[st]); const c = find(id); c.status = st; hist(c, 'Cambió el estado a «' + STATUS[st] + '».'); toast('Estado actualizado.'); renderAll(); }
   function reassign(id, to, reason) {
     if (reason.trim().length < 3) { toast('Indica un motivo para reasignar.', true); $('#d-reason').focus(); return; }
+    if (LIVE) { activeTab = 'resumen'; return liveRun(() => L.reassign(id, to, pname(to), reason.trim()), 'Consulta reasignada a ' + pname(to) + '.', 'consulta.reasignar', id, 'a ' + pname(to)); }
     const c = find(id); const prev = pname(c.owner); c.owner = to; if (c.status === 'nueva') c.status = 'tomada';
     hist(c, 'Reasignó de ' + prev + ' a ' + pname(to) + '. Motivo: ' + reason.trim()); notify('Consulta ' + id + ' reasignada a ' + pname(to), [SHARED, partner(to).short.toLowerCase() + '@nexo-demo.example']);
     toast('Consulta reasignada a ' + pname(to) + '.'); activeTab = 'resumen'; renderAll();
   }
   function addNote(id, text) {
     if (!text.trim()) { toast('Escribe la nota antes de agregarla.', true); $('#d-note').focus(); return; }
+    if (LIVE) return liveRun(() => L.addNote(id, text.trim()), 'Nota agregada.', 'consulta.nota', id);
     const c = find(id); c.notes.push({ at: Date.now(), who: pname(actor), text: text.trim() }); hist(c, 'Agregó una nota interna.'); toast('Nota agregada.'); renderAll();
   }
   function simNew() {
+    if (LIVE) return;
     const names = ['Nicolás Rivas', 'Daniela Paredes', 'Comercial Andes SpA', 'Héctor Mella'], areas = Object.keys(AREAS);
     const n = names[seq % names.length], area = areas[seq % areas.length];
     const c = { id: 'C-' + seq++, createdAt: Date.now(), name: n, email: 'contacto' + seq + '@example.com', phone: '+56 9 0000 ' + String(1000 + seq), area, channel: 'formulario', status: 'nueva', owner: null, notes: [], history: [{ at: Date.now(), who: 'Sistema', text: 'Consulta recibida por formulario web.' }] };
     db.consultations.unshift(c); notify('Nueva consulta ' + c.id + ' · ' + AREAS[area], allRecipients()); toast('Llegó la consulta ' + c.id + '. Se avisó a la casilla compartida y a los tres socios.'); renderAll();
   }
   function simOther() {
+    if (LIVE) return;
     const c = db.consultations.find((x) => x.status === 'nueva' && !x.owner);
     if (!c) { toast('No hay consultas sin tomar para simular.', true); return; }
     const other = db.partners.find((p) => p.id !== actor); c.owner = other.id; c.status = 'tomada'; hist(c, 'Tomó la consulta.', other.short);
     toast(other.short + ' acaba de tomar ' + c.id + '. Si la tenías abierta, ahora aparece bloqueada.'); renderAll();
   }
   function sendReminders() {
+    if (LIVE) return;
     const late = db.consultations.filter(overdue);
     if (!late.length) { toast('No hay consultas vencidas.'); return; }
     late.forEach((c) => notify('Recordatorio: ' + c.id + ' lleva más de ' + sla + ' h sin tomar', allRecipients()));
@@ -229,7 +251,7 @@
     f.append(
       h('label', { for: 'r-name' }, 'Nombre de la persona'), h('input', { id: 'r-name', maxlength: 100, autocomplete: 'off' }),
       h('label', { for: 'r-email' }, 'Correo (opcional si hay teléfono)'), h('input', { id: 'r-email', type: 'email', maxlength: 180, autocomplete: 'off' }),
-      h('label', { for: 'r-phone' }, 'Teléfono o WhatsApp (opcional si hay correo)'), h('input', { id: 'r-phone', type: 'tel', inputmode: 'tel', maxlength: 20, pattern: '[0-9+()\\-\\s]{7,20}', autocomplete: 'off' }),
+      h('label', { for: 'r-phone' }, 'Teléfono o WhatsApp (opcional si hay correo)'), h('input', { id: 'r-phone', type: 'tel', inputmode: 'tel', maxlength: 20, pattern: '[0-9+\\(\\)\\-\\s]{7,20}', autocomplete: 'off' }),
       h('label', { for: 'r-channel' }, 'Por dónde llegó'), sel('r-channel', [['whatsapp', 'WhatsApp'], ['telefono', 'Teléfono'], ['presencial', 'Presencial'], ['otro', 'Otro canal']]),
       h('label', { for: 'r-area' }, 'Área de interés'), sel('r-area', Object.entries(AREAS)),
       h('label', { for: 'r-summary' }, 'Resumen breve (opcional)'), h('textarea', { id: 'r-summary', rows: 3, maxlength: 300 }),
@@ -250,6 +272,12 @@
       if (email && !$('#r-email').checkValidity()) return fail('El correo no tiene un formato válido.', $('#r-email'));
       if (phone && !$('#r-phone').checkValidity()) return fail('Usa solo números, espacios, +, paréntesis o guiones en el teléfono.', $('#r-phone'));
       const ch = $('#r-channel').value, take = $('#r-take').checked;
+      if (LIVE) {
+        const id = newId(); const btn = f.querySelector('[type=submit]'); btn.disabled = true;
+        liveRun(() => L.register(id, { nombre: name, email, telefono: phone, area: $('#r-area').value, canal: ch, canalLabel: CHANNELS[ch], tomar: take, resumen: $('#r-summary').value.trim() }), 'Consulta ' + id + ' registrada' + (take ? ' y tomada por ti.' : ' y dejada sin tomar.'), 'consulta.registrar', id, CHANNELS[ch])
+          .then((okk) => { btn.disabled = false; if (okk) { opener = null; closeDetail(); show('inbox'); } });
+        return;
+      }
       const c = { id: 'C-' + seq++, createdAt: Date.now(), name, email, phone, area: $('#r-area').value, channel: ch, manual: true, summary: $('#r-summary').value.trim(),
         status: take ? 'tomada' : 'nueva', owner: take ? actor : null, notes: [],
         history: [{ at: Date.now(), who: pname(actor), text: 'Registró la consulta a mano (canal: ' + CHANNELS[ch] + ').' }] };
@@ -314,6 +342,7 @@
     const d = new Date(), p = (x) => String(x).padStart(2, '0'), name = 'consultas-nexo-' + d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + '.xlsx';
     const url = URL.createObjectURL(window.AdminExport.toXlsx(sheets));
     const a = h('a', { href: url, download: name }); document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 4000);
+    if (LIVE) L.audit('datos.exportar', list.length + ' consultas');
     toast('Exportadas ' + list.length + ' consultas a ' + name + '. Si no se descarga (por ejemplo, en la vista previa), usa «Copiar para Excel».');
   }
   function copyForExcel(from) {
@@ -345,16 +374,29 @@
   }
   function renderMore() { const p = partner(actor); if (!p) return; $('#more-avatar').src = p.photo; $('#more-name').textContent = p.name; $('#actor-m').value = actor; $('#m-copy').parentElement.hidden = !!$('#copy-xlsx').hidden; }
   function init() {
-    db = JSON.parse(RAW); log = []; seq = 1043; sla = 24; $('#s-sla').value = 24;
+    db = LIVE ? EMPTY() : JSON.parse(RAW); log = []; seq = 1043; sla = 24; $('#s-sla').value = 24;
     window.AdminEditor.reset(); renderOwnerFilter(); renderAll(); if (view === 'content') window.AdminEditor.render();
   }
   function fillActors() {
     const opts = () => db.partners.map((p) => h('option', { value: p.id }, p.name));
     $('#login-partner').replaceChildren(...opts()); $('#actor').replaceChildren(...opts()); $('#actor-m').replaceChildren(...opts());
   }
-  db = JSON.parse(RAW); fillActors();
-  window.AdminEditor.setCtx({ toast, who: () => pname(actor), partnerPhoto: (i) => db.partners[i].photo });
+  db = LIVE ? EMPTY() : JSON.parse(RAW); if (!LIVE) fillActors();
+  window.AdminEditor.setCtx({ toast, who: () => pname(actor), partnerPhoto: (i) => (db.partners[i] || {}).photo || '' });
   init();
+
+  /* ---------- Modo en vivo: elementos según el modo ---------- */
+  document.querySelectorAll('.mock-only').forEach((el) => { el.hidden = LIVE; });
+  document.querySelectorAll('.live-only').forEach((el) => { el.hidden = !LIVE; });
+  if (LIVE) {
+    $('#login-email').required = true;
+    const tab = document.querySelector('.tabs [data-view=notices]'); if (tab) tab.textContent = 'Actividad';
+    const go = document.querySelector('#view-more [data-go=notices] span'); if (go) go.textContent = 'Actividad';
+    $('#t-notices').textContent = 'Actividad reciente';
+    const np = $('#view-notices > p.muted'); if (np) np.textContent = 'Registro de lo que hacen los socios en el panel (últimos 60 movimientos). El aviso por correo de cada consulta nueva se activará con el servicio de correo del estudio.';
+    $('#log-empty').textContent = 'Aún no hay actividad registrada.';
+    window.AdminEditor.setCtx({ audit: (a, d) => L.audit(a, d) });
+  }
 
   /* ---------- Acceso: demostración de controles ---------- */
   const SEC = Object.assign({ maxAttempts: 5, lockSeconds: 30, sessionMinutes: 15, warnSeconds: 60, requireSecondFactor: false, minPassword: 12 }, (window.ADMIN_CONFIG || {}).security);
@@ -385,10 +427,11 @@
     e.preventDefault(); if (submit.disabled) return;
     loginMsg.hidden = true;
     const pass = $('#login-pass').value, code = $('#login-code').value.trim();
-    passIn.removeAttribute('aria-invalid'); codeIn.removeAttribute('aria-invalid');
+    passIn.removeAttribute('aria-invalid'); codeIn.removeAttribute('aria-invalid'); $('#login-email').removeAttribute('aria-invalid');
     const fmtErr = (m, el) => { loginErr.textContent = m; loginErr.hidden = false; el.setAttribute('aria-invalid', 'true'); el.focus(); };
     if (pass.length < SEC.minPassword) return fmtErr('Escribe tu contraseña (mínimo ' + SEC.minPassword + ' caracteres).', passIn);
     if (SEC.requireSecondFactor && !/^\d{6}$/.test(code)) return fmtErr('El código tiene 6 dígitos. Revisa tu aplicación autenticadora.', codeIn);
+    if (LIVE) { liveLogin(); return; }
     const valid = SEC.requireSecondFactor ? code !== '000000' : pass !== 'incorrecta123';
     if (!valid) {
       attempts++;
@@ -400,11 +443,45 @@
     $('#login-pass').value = ''; $('#login-code').value = ''; $('#login-pass').type = 'password'; $('#pass-toggle').textContent = 'Mostrar'; $('#pass-toggle').setAttribute('aria-pressed', 'false');
     $('#login').hidden = true; $('#app').hidden = false; renderAll(); show('inbox'); $('#main').focus(); startSession();
   });
+  async function liveLogin() {
+    const emailIn = $('#login-email'), email = emailIn.value.trim(), pass = $('#login-pass').value;
+    if (!email || !emailIn.checkValidity()) { loginErr.textContent = 'Escribe tu correo.'; loginErr.hidden = false; emailIn.setAttribute('aria-invalid', 'true'); emailIn.focus(); return; }
+    submit.disabled = true; loginMsg.textContent = 'Verificando…'; loginMsg.hidden = false; loginErr.hidden = true;
+    try {
+      const me = await L.signIn(email, pass);
+      actor = me.id;
+      let ready = false;
+      await L.start({
+        socios: (list) => { db.partners = list; renderOwnerFilter(); const p = partner(actor); if (p) { $('#avatar-img').src = p.photo; } if (ready) renderAll(); },
+        consultas: (list, changes) => {
+          db.consultations = list;
+          if (ready) changes.filter((c) => c.type === 'added' && !c.doc.metadata.hasPendingWrites).forEach((c) => toast('Llegó una consulta nueva: ' + c.doc.id + '.'));
+          renderAll();
+        },
+        config: (cfg) => { sla = cfg.slaHoras || 24; $('#s-sla').value = sla; if (ready) renderAll(); },
+        auditoria: (list) => { log = list.map((x) => ({ at: x.at, subject: (ACCIONES[x.action] || x.action) + (x.detail ? ': ' + x.detail : ''), who: x.who })); renderLog(); }
+      });
+      ready = true;
+      window.AdminEditor.setCtx({ live: { saveDraft: L.saveDraft, publish: L.publish } });
+      L.loadContent().then((c) => window.AdminEditor.hydrate(c)).catch(() => {});
+      attempts = 0; loginMsg.hidden = true;
+      $('#login-pass').value = ''; $('#login-pass').type = 'password'; $('#pass-toggle').textContent = 'Mostrar'; $('#pass-toggle').setAttribute('aria-pressed', 'false');
+      $('#login').hidden = true; $('#app').hidden = false; renderAll(); show('inbox'); $('#main').focus(); startSession(); L.audit('sesion.inicio');
+    } catch (e) {
+      loginMsg.hidden = true; passIn.value = '';
+      if (e.code === 'app/sin-acceso') loginErr.textContent = 'Tu cuenta no tiene acceso al panel. Pide a otro socio que revise tu alta.';
+      else if (e.code === 'auth/too-many-requests') loginErr.textContent = 'Demasiados intentos. Espera unos minutos e inténtalo de nuevo.';
+      else if (e.code === 'auth/network-request-failed') loginErr.textContent = 'No hay conexión. Revisa tu internet e inténtalo de nuevo.';
+      else { attempts++; loginErr.textContent = 'No pudimos verificar tus datos. Revisa tu correo y contraseña, y vuelve a intentarlo. Te quedan ' + Math.max(0, SEC.maxAttempts - attempts) + ' intentos.'; if (attempts >= SEC.maxAttempts) { loginErr.hidden = false; submit.disabled = false; lockLogin(); return; } }
+      loginErr.hidden = false; passIn.setAttribute('aria-invalid', 'true'); passIn.focus();
+    } finally { if (!submit.disabled || !lockTimer) submit.disabled = false; }
+  }
   /* Cierre de sesión (manual o por inactividad): se vacía la información de la pantalla. */
   function endSession(reason) {
     clearTimeout(idleTimer); clearTimeout(warnTimer); clearInterval(tickTimer);
     if ($('#session-dialog').open) $('#session-dialog').close();
     if ($('#detail').open) $('#detail').close();
+    if (LIVE) { L.signOut(); db = EMPTY(); log = []; }
     ['#rows', '#tiles', '#team-grid', '#log', '#editor-root', '#dash-kpis', '#ch-load', '#ch-days', '#ch-area', '#ch-status', '#ch-channel'].forEach((s) => $(s).replaceChildren());
     $('#app').hidden = true; $('#login').hidden = false;
     loginMsg.textContent = reason || 'Cerraste sesión.'; loginMsg.hidden = false; $('#login-pass').focus();
@@ -447,7 +524,15 @@
   $('#settings-form').addEventListener('submit', (e) => {
     e.preventDefault(); const v = parseInt($('#s-sla').value, 10), m = $('#settings-msg');
     if (!(v >= 1 && v <= 168)) { m.textContent = 'Usa un plazo entre 1 y 168 horas.'; m.hidden = false; return; }
+    if (LIVE) { liveRun(() => L.setSla(v), null, 'config.sla', null, v + ' h').then((okk) => { if (okk) { m.textContent = 'Plazo guardado: ' + v + ' h.'; m.hidden = false; } }); return; }
     sla = v; m.textContent = 'Plazo aplicado: ' + sla + ' h (solo en esta sesión de prueba).'; m.hidden = false; renderAll();
+  });
+  let delArm = false;
+  if (LIVE) $('#del-demo').addEventListener('click', async (e) => {
+    const b = e.currentTarget;
+    if (!delArm) { delArm = true; b.textContent = '¿Seguro? Pulsa de nuevo para eliminar'; setTimeout(() => { delArm = false; b.textContent = 'Eliminar consultas de demostración'; }, 6000); return; }
+    delArm = false; b.textContent = 'Eliminar consultas de demostración'; b.disabled = true;
+    try { const n = await L.deleteDemo(); $('#del-msg').textContent = n + ' consulta(s) de demostración eliminadas.'; $('#del-msg').hidden = false; L.audit('demo.eliminar', String(n)); } catch (err) { toast(liveError(err), true); } finally { b.disabled = false; }
   });
   $('#copy-xlsx').hidden = !(window.ADMIN_CONFIG && window.ADMIN_CONFIG.showCopyFallback);
   const dlg = $('#detail');

@@ -126,3 +126,6 @@ html:not(.a11y-contrast) .contact-section .contact-copy p,html:not(.a11y-contras
 
 /* QA: el enlace vertical de la portada debe tener al menos 24 px de ancho táctil */
 .hero-visual a.vertical-label{padding:0 8px;box-sizing:content-box}
+
+/* Campo trampa anti-bots: invisible para personas */
+.hp{position:absolute!important;left:-9999px!important;width:1px;height:1px;overflow:hidden}
