@@ -1,6 +1,6 @@
 # NEXO Abogados · Despliegue en Firebase
 
-> **Estado:** proyecto `nexo-abogados-908e` creado, Hosting y reglas desplegados en https://nexo-abogados-908e.web.app (9-nov-2026). Falta activar Authentication (paso manual, sección 2) y cargar cuentas y datos (`node scripts/seed.js --project nexo-abogados-908e`).
+> **Estado (9-nov-2026): DESPLEGADO.** Proyecto `nexo-abogados-908e`. Sitio: https://nexo-abogados-908e.web.app · Panel: https://nexo-abogados-908e.web.app/admin/ · Consola: https://console.firebase.google.com/project/nexo-abogados-908e/overview. Authentication activado, 3 cuentas de socios con correos de ejemplo (`@nexo-demo.example`, contraseñas temporales entregadas al cliente) y 22 consultas de demostración marcadas «Demo».
 
 Última actualización: 9 de noviembre de 2026.
 
