@@ -8,7 +8,7 @@
   const LIVE = window.NEXO_BACKEND === 'firebase', L = window.AdminLive;
   const EMPTY = () => ({ partners: [], consultations: [], content: [] });
   const newId = () => 'C-' + Date.now().toString(36).toUpperCase().slice(-6) + Math.random().toString(36).toUpperCase().replace(/[^0-9A-Z]/g, '').padEnd(4, '0').slice(0, 4);
-  const ACCIONES = { 'sesion.inicio': 'Inició sesión', 'consulta.tomar': 'Tomó una consulta', 'consulta.deshacer_toma': 'Deshizo la toma de una consulta', 'consulta.estado': 'Cambió el estado de una consulta', 'consulta.reasignar': 'Reasignó una consulta', 'consulta.nota': 'Agregó una nota', 'consulta.registrar': 'Registró una consulta a mano', 'config.sla': 'Cambió el plazo para tomar consultas', 'datos.exportar': 'Exportó datos a Excel', 'contenido.publicar': 'Publicó contenido del sitio', 'demo.eliminar': 'Eliminó consultas de demostración' };
+  const ACCIONES = { 'sesion.inicio': 'Inició sesión', 'consulta.tomar': 'Tomó una consulta', 'consulta.deshacer_toma': 'Deshizo la toma de una consulta', 'consulta.estado': 'Cambió el estado de una consulta', 'consulta.reasignar': 'Reasignó una consulta', 'consulta.nota': 'Agregó una nota', 'consulta.registrar': 'Registró una consulta a mano', 'config.sla': 'Cambió el plazo para tomar consultas', 'datos.exportar': 'Exportó datos a Excel', 'contenido.publicar': 'Publicó contenido del sitio', 'demo.eliminar': 'Eliminó consultas de demostración', 'cuenta.contrasena': 'Cambió su contraseña' };
   function liveError(e) {
     if (e && e.code === 'app/conflicto') return e.message;
     if (e && e.code === 'permission-denied') return 'No tienes permiso para esta acción.';
@@ -527,6 +527,26 @@
     if (LIVE) { liveRun(() => L.setSla(v), null, 'config.sla', null, v + ' h').then((okk) => { if (okk) { m.textContent = 'Plazo guardado: ' + v + ' h.'; m.hidden = false; } }); return; }
     sla = v; m.textContent = 'Plazo aplicado: ' + sla + ' h (solo en esta sesión de prueba).'; m.hidden = false; renderAll();
   });
+  if (LIVE) {
+    $('#forgot').addEventListener('click', async () => {
+      const em = $('#login-email').value.trim();
+      if (!em || !$('#login-email').checkValidity()) { loginErr.textContent = 'Escribe tu correo y vuelve a pulsar «¿Olvidaste tu contraseña?».'; loginErr.hidden = false; $('#login-email').focus(); return; }
+      await L.resetPassword(em); loginErr.hidden = true; loginMsg.textContent = 'Si el correo está registrado, recibirás instrucciones para crear una contraseña nueva.'; loginMsg.hidden = false;
+    });
+    $('#pw-form').addEventListener('submit', async (e) => {
+      e.preventDefault(); const msg = $('#pw-msg'), err = $('#pw-err'); msg.hidden = true; err.hidden = true;
+      const o = $('#pw-old').value, n = $('#pw-new').value, n2 = $('#pw-new2').value;
+      const fail = (m, el) => { err.textContent = m; err.hidden = false; el.focus(); };
+      if (!o) return fail('Escribe tu contraseña actual.', $('#pw-old'));
+      if (n.length < 12) return fail('La contraseña nueva debe tener al menos 12 caracteres.', $('#pw-new'));
+      if (n !== n2) return fail('Las contraseñas nuevas no coinciden.', $('#pw-new2'));
+      if (n === o) return fail('La contraseña nueva debe ser distinta de la actual.', $('#pw-new'));
+      const btn = e.currentTarget.querySelector('[type=submit]'); btn.disabled = true;
+      try { await L.changePassword(o, n); msg.textContent = 'Contraseña cambiada. Úsala la próxima vez que ingreses.'; msg.hidden = false; $('#pw-old').value = ''; $('#pw-new').value = ''; $('#pw-new2').value = ''; L.audit('cuenta.contrasena', ''); }
+      catch (ex) { fail(ex.code === 'auth/invalid-credential' || ex.code === 'auth/wrong-password' ? 'La contraseña actual no es correcta.' : ex.code === 'auth/too-many-requests' ? 'Demasiados intentos. Espera unos minutos.' : 'No se pudo cambiar la contraseña. Inténtalo de nuevo.', $('#pw-old')); }
+      finally { btn.disabled = false; }
+    });
+  }
   let delArm = false;
   if (LIVE) $('#del-demo').addEventListener('click', async (e) => {
     const b = e.currentTarget;

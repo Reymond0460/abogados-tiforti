@@ -46,6 +46,7 @@ Cómo ejecutarlos: ver `README.md`.
 | 18 | Documentar todo, tecnologías y horas/días para convertirlos en costo | Este documento y `docs/ESTIMACION.md` | Hecho |
 | 19 | Primer prototipo del panel | `admin/` (ver sección 4) | Hecho |
 | 21 | Seguir con la opción A (registro manual de consultas de WhatsApp/teléfono/presencial) | Botón «Registrar consulta» en el panel: formulario con nombre, contacto, canal, área, resumen breve y opción de tomarla de inmediato; queda en historial y avisos como registrada a mano | Hecho (prototipo) |
+| 36 | Alojar el proyecto en Firebase como app web (Hosting + Firestore), con los 3 perfiles, clientes y lo delicado | Sitio y panel conectados a Firebase: formulario real a Firestore, login real, consultas en tiempo real, transacciones, historial/notas que solo crecen, auditoría, contenido publicado leído por el sitio, cambio y recuperación de contraseña, reglas de seguridad (63 pruebas), cabeceras de Hosting, build, semilla y script de despliegue de un comando (`scripts/provision.js`); pruebas de punta a punta con emuladores. **El despliegue lo ejecuta el cliente** (yo no pude acceder a su sesión de Firebase); ver `docs/DESPLIEGUE.md` | Código listo y probado en emuladores; pendiente ejecutar el despliegue |
 | 35 | Mejorar cada consulta recibida, específicamente en teléfonos (comentarios del 3 y 5 de noviembre) | Acción rápida en cada consulta sin tomar: plazo visible («Quedan 21 h» en verde o «Vencida hace 6 h» en rojo) y botón «Tomar» de 44 px que toma la consulta sin abrir la ficha, con aviso y «Deshacer» (8 s); también con teclado | Hecho |
 | 34 | Rediseñar al 100 % la experiencia del panel en teléfonos (la versión móvil era el escritorio encogido) | Experiencia tipo app: barra inferior (Consultas, Dashboard, Equipo, Contenido, Más), barra superior compacta con título y avatar, lista de consultas en tarjetas de 3 líneas (toda la tarjeta es tocable, con franja de color por estado), filtros rápidos en chips y búsqueda con filtros plegables, botón flotante «Registrar» que se compacta al bajar, ficha y formularios a pantalla completa, menú «Más» (cuenta, avisos, ajustes, datos, herramientas de demostración, salir), área segura de iPhone y objetivos táctiles ≥ 44 px | Hecho |
 | 33 | Realizar pruebas de QA para pasar a desarrollo | Suite automática reutilizable en `tests/` (13 grupos, todos pasan), auditoría con axe-core, teclado, 130 combinaciones de tamaño, idiomas, privacidad y rendimiento; 10 defectos corregidos; informe en `docs/QA.md` | Hecho |
@@ -167,7 +168,8 @@ index.html, style.css, extras.css, app.js, i18n.js   Sitio público
 assets/                                             Fuente Jost, imágenes, SVG
 admin/                                              Panel (prototipo)
   index.html, admin.css, admin.js, data.js, export.js, charts.js, content.js, editor.js, config.js
-docs/                                               Documentación (DOCUMENTACION, ESTIMACION, SEGURIDAD, QA)
+docs/                                               Documentación (DOCUMENTACION, ESTIMACION, SEGURIDAD, QA, DESPLIEGUE)
+src/, scripts/, firebase.json, firestore.rules      Capa Firebase, build, semilla, aprovisionamiento y reglas
 tests/                                              Suite de QA automática (no forma parte del sitio)
 README.md                                           Cómo ejecutar
 ```

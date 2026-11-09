@@ -29,7 +29,10 @@ Abrir `admin/index.html` (por ejemplo http://localhost:8000/admin/). Inicio de s
 - `docs/QA.md`: informe de QA y lista para pasar a desarrollo. Suite en `tests/` (`node tests/run-all.js`).
 - `docs/SEGURIDAD.md`: controles de seguridad (qué demuestra el prototipo y qué se implementará de verdad).
 
-## Firebase Hosting (cuando se acuerde)
+## Firebase (Hosting + Auth + Firestore)
+El proyecto está listo para Firebase: `node scripts/provision.js` crea todo y despliega. Ver **`docs/DESPLIEGUE.md`**. Sin `dist/` ni `firebase-config.json`, el repositorio funciona en modo demostración (datos ficticios en memoria) como se describe arriba.
+
+## Firebase Hosting (nota anterior) (cuando se acuerde)
 Sitio estático: esta carpeta puede usarse como `public`. No se incluyó `firebase.json` ni `projectId`. NIC Chile (dominio), Cloudflare (DNS) y Zoho Mail (correo) no se modifican.
 
 ## Identidad

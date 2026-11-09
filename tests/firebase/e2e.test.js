@@ -136,6 +136,23 @@ async function panel(b, email, vp) {
     log('Operación del socio: tomar, estado, notas, reasignar, registro manual, plazo, exportar, dashboard, actividad y publicar contenido comprobados');
   }
 
+  /* ===== 3b. Cambio y recuperación de contraseña ===== */
+  {
+    const x = await panel(b, 'tomas@nexo-demo.example', null).catch(() => null);
+    PASS['tomas@nexo-demo.example'] = 'Contrasena-Segura-3';
+    const y = x || await panel(b, 'tomas@nexo-demo.example', null); const q = y.page;
+    await q.click('.tabs [data-view=settings]'); await q.fill('#pw-old', 'Contrasena-Segura-3'); await q.fill('#pw-new', 'corta'); await q.fill('#pw-new2', 'corta'); await q.click('#pw-form button[type=submit]');
+    ok(/al menos 12/.test(await q.textContent('#pw-err')), 'acepta contraseña corta');
+    await q.fill('#pw-new', 'Nueva-Contrasena-Larga-7'); await q.fill('#pw-new2', 'Nueva-Contrasena-Larga-7'); await q.fill('#pw-old', 'incorrecta-actual-1'); await q.click('#pw-form button[type=submit]');
+    await q.waitForFunction(() => !document.querySelector('#pw-err').hidden, null, { timeout: 8000 }).catch(() => {}); ok(/actual no es correcta/.test(await q.textContent('#pw-err')), 'acepta una contraseña actual incorrecta');
+    await q.fill('#pw-old', 'Contrasena-Segura-3'); await q.click('#pw-form button[type=submit]'); await q.waitForFunction(() => !document.querySelector('#pw-msg').hidden, null, { timeout: 8000 }).catch(() => {}); ok(/Contraseña cambiada/.test(await q.textContent('#pw-msg')), 'no cambió la contraseña');
+    await q.click('#logout'); await y.ctx.close();
+    const c2 = await b.newContext(); const q2 = await c2.newPage(); await login(q2, 'tomas@nexo-demo.example', 'Contrasena-Segura-3'); await q2.waitForSelector('#login-error:not([hidden])', { timeout: 8000 }); ok(await q2.isVisible('#login'), 'la contraseña anterior sigue funcionando');
+    await q2.fill('#login-pass', 'Nueva-Contrasena-Larga-7'); await q2.click('#login-submit'); await q2.waitForSelector('#app:not([hidden])', { timeout: 15000 }).catch(() => {}); ok(await q2.isVisible('#app'), 'no entra con la contraseña nueva');
+    await q2.click('#logout'); await q2.fill('#login-email', 'tomas@nexo-demo.example'); await q2.click('#forgot'); await q2.waitForFunction(() => /recibirás instrucciones/.test(document.querySelector('#login-msg').textContent), null, { timeout: 8000 }).catch(() => {}); ok(/recibirás instrucciones/.test(await q2.textContent('#login-msg')), 'recuperar contraseña sin mensaje'); await c2.close();
+    log('Contraseña: validaciones, cambio, rechazo de la anterior y recuperación comprobados');
+  }
+
   /* ===== 4. Concurrencia: dos socios toman la misma consulta ===== */
   {
     const id = 'C-CONCURR01'; await adb.doc('consultas/' + id).set({ nombre: 'Carrera de Dos', email: 'c@example.com', telefono: '', area: 'civil', canal: 'formulario', estado: 'nueva', responsable: null, manual: false, idioma: 'es', consentimiento: { aceptado: true, version: 'v' }, createdAt: Timestamp.now(), actualizadoAt: Timestamp.now(), historial: [{ at: Date.now(), quien: 'Sistema', texto: 'Consulta recibida.' }], notas: [] });

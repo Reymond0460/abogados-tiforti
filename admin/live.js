@@ -114,5 +114,11 @@ window.AdminLive = (() => {
   const saveDraft = (seccion, campos, versiones) => fb.setDoc(fb.doc(fb.db, 'contenido_borrador', seccion), { campos, versiones: versiones || [], actualizadoAt: fb.serverTimestamp(), actualizadoPor: me.id });
   const publish = (seccion, campos, version) => fb.setDoc(fb.doc(fb.db, 'contenido_publicado', seccion), { campos, version, actualizadoPor: me.id, actualizadoAt: fb.serverTimestamp() });
 
-  return { signIn, signOut, start, stop, take, undoTake, setStatus, reassign, addNote, register, setSla, audit, deleteDemo, loadContent, saveDraft, publish, get me() { return me; }, loadFB: () => loadFB().then((x) => { fb = x; return x; }) };
+  async function changePassword(actual, nueva) {
+    const u = fb.auth.currentUser; if (!u) throw new Error('Sin sesión');
+    await fb.reauthenticateWithCredential(u, fb.EmailAuthProvider.credential(u.email, actual));
+    await fb.updatePassword(u, nueva);
+  }
+  const resetPassword = async (email) => { fb = fb || await loadFB(); try { await fb.sendPasswordResetEmail(fb.auth, email); } catch (e) { /* respuesta siempre genérica */ } };
+  return { signIn, signOut, changePassword, resetPassword, start, stop, take, undoTake, setStatus, reassign, addNote, register, setSla, audit, deleteDemo, loadContent, saveDraft, publish, get me() { return me; }, loadFB: () => loadFB().then((x) => { fb = x; return x; }) };
 })();

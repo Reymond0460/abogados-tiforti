@@ -8,7 +8,9 @@
     "build:emulator": "node scripts/build.js --emulator",
     "test:rules": "firebase emulators:exec --only firestore --project demo-nexo \"node tests/firebase/reglas.test.js\"",
     "test:e2e": "node scripts/e2e.js",
-    "deploy": "npm run build && firebase deploy"
+    "deploy": "npm run build && firebase deploy",
+    "provision": "node scripts/provision.js",
+    "seed:emulador": "node scripts/seed.js --emulator"
   },
   "dependencies": {
     "firebase": "^11.0.0"

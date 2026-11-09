@@ -432,3 +432,6 @@ dialog h3{margin:.2em 0 .4em}
   .toast-action{left:12px;right:12px;transform:none;justify-content:space-between}
 }
 @media(max-width:820px){#rows td.td-quick{margin-top:2px;padding-top:6px}#rows tr{padding-top:10px;padding-bottom:10px}}
+
+.link-btn{background:none;border:0;padding:6px 0;min-height:44px;color:var(--navy);font-weight:600;text-decoration:underline;text-underline-offset:3px;cursor:pointer;font-size:15px}
+.forgot{margin:8px 0 0}

@@ -36,6 +36,7 @@
       <label for="login-code" class="mfa-only">Código de verificación</label>
       <input class="mfa-only" id="login-code" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code" maxlength="6" placeholder="000 000" aria-describedby="code-help" required>
       <p id="code-help" class="field-help mfa-only">6 dígitos que muestra tu aplicación autenticadora. Cambian cada 30 segundos.</p>
+      <p class="live-only forgot" hidden><button type="button" class="link-btn" id="forgot">¿Olvidaste tu contraseña?</button></p>
       <p id="login-msg" class="ok" role="status" hidden></p>
       <p id="login-error" class="error" role="alert" hidden></p>
       <button class="btn btn-primary" id="login-submit" type="submit">Entrar al panel</button>
@@ -201,6 +202,11 @@
         <button class="btn btn-primary" type="submit">Aplicar plazo</button>
         <p id="settings-msg" class="ok" role="status" hidden></p>
       </form>
+    <form class="settings live-only" id="pw-form" hidden novalidate><h2>Cambiar mi contraseña</h2><p class="fine">Mínimo 12 caracteres. Usa una frase larga que solo tú conozcas y un gestor de contraseñas.</p>
+        <label for="pw-old">Contraseña actual</label><input id="pw-old" type="password" autocomplete="current-password" maxlength="128">
+        <label for="pw-new">Contraseña nueva</label><input id="pw-new" type="password" autocomplete="new-password" minlength="12" maxlength="128">
+        <label for="pw-new2">Repite la contraseña nueva</label><input id="pw-new2" type="password" autocomplete="new-password" minlength="12" maxlength="128">
+        <button class="btn btn-primary" type="submit">Cambiar contraseña</button><p id="pw-msg" class="ok" role="status" hidden></p><p id="pw-err" class="error" role="alert" hidden></p></form>
     <div class="settings live-only" hidden><h2>Datos de demostración</h2><p class="fine">Elimina de una vez las consultas ficticias cargadas para la demostración. Las consultas reales no se pueden borrar desde el panel.</p><button class="btn btn-secondary" id="del-demo" type="button">Eliminar consultas de demostración</button><p id="del-msg" class="ok" role="status" hidden></p></div>
     </section>
   </main>

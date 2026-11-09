@@ -46,14 +46,15 @@ Este documento traduce el trabajo a **horas y días** para que TiforTi pueda con
 | Responsive y accesibilidad | 4 – 6 |
 | Pruebas automáticas y correcciones | 4 – 6 |
 | Rediseño UX móvil del panel: barra inferior, cabecera compacta, lista en tarjetas, chips de filtro, hoja a pantalla completa, menú «Más», botón flotante, área segura, acción rápida «Tomar» con «Deshacer», pruebas móviles | 17 – 24 |
+| Versión Firebase: reglas de seguridad y sus pruebas, capa de datos, formulario real, login, tiempo real, transacciones, contenido publicado, auditoría, contraseñas, build, semilla, aprovisionamiento y pruebas con emuladores | 60 – 85 |
 | QA integral: suite reutilizable (13 grupos), auditoría axe-core, teclado, tamaños, idiomas, privacidad, corrección de 10 defectos e informe | 14 – 20 |
 | Documentación | 2 – 3 |
-| **Subtotal A2** | **109 – 155 h** |
+| **Subtotal A2** | **169 – 240 h** |
 
 ### Total de los prototipos (A1 + A2)
 | | Horas | Días de 8 h |
 |---|---|---|
-| **Referencia manual** | **147 – 210 h** | **≈ 19 – 27 días** |
+| **Referencia manual** | **207 – 295 h** | **≈ 26 – 37 días** |
 
 ---
 

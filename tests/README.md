@@ -35,3 +35,6 @@ Además, `run-all.js` revisa la sintaxis de todo el JavaScript y que no haya rec
 
 ## Límites
 Solo Chromium. No cubre Firefox, Safari, dispositivos reales ni lectores de pantalla.
+
+## Firebase
+`node tests/run-all.js --firebase` agrega las reglas de Firestore (`tests/firebase/reglas.test.js`) y la prueba de punta a punta con emuladores (`tests/firebase/e2e.test.js`). Requiere Java y descarga los emuladores la primera vez.

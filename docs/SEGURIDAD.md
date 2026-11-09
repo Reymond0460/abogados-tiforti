@@ -96,6 +96,17 @@ Sin segundo factor, si una contraseña se filtra o la roban (phishing, reutiliza
 
 ---
 
+## 2c. Implementado en la versión Firebase (verificado con emuladores)
+- **Reglas de Firestore** (`firestore.rules`, 63 pruebas): denegar todo por defecto; el público solo puede **crear** una consulta con campos exactos, estado «nueva», sin responsable, con consentimiento y fecha del servidor; nunca leer, modificar ni borrar. Solo socios activos leen y gestionan. El historial y las notas **solo crecen**. Solo se pueden borrar consultas marcadas como demostración. Auditoría solo se agrega.
+- **Autenticación real** (Firebase Auth, correo y contraseña ≥ 12 caracteres), sesión que termina al cerrar la pestaña, cierre por inactividad, bloqueo tras 5 intentos fallidos y mensajes que no revelan qué dato falló. Una cuenta sin perfil de socio no entra.
+- **Control de carrera**: si dos socios toman la misma consulta, solo uno lo logra (transacción + regla).
+- **Cabeceras de Hosting**: CSP estricta (sin scripts de terceros), HSTS, X-Frame-Options, no-index y sin caché en `/admin/`.
+- **Datos en Santiago** (`southamerica-west1`), sin analítica ni cookies de terceros.
+- **Contraseñas**: cambio y recuperación desde el panel; las iniciales son temporales.
+- Pendiente (ver `docs/DESPLIEGUE.md`, sección 6): anti-spam fuerte (App Check), aviso por correo, segundo factor, respaldos y retención.
+
+---
+
 ## 3. Qué NO resuelve el prototipo (para evitar falsas expectativas)
 - No hay autenticación ni autorización reales.
 - El límite de intentos se reinicia al recargar la página: en producción lo aplica el servidor.
