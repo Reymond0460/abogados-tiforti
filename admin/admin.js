@@ -390,6 +390,8 @@
   document.querySelectorAll('.live-only').forEach((el) => { el.hidden = !LIVE; });
   if (LIVE) {
     $('#login-email').required = true;
+    const bn = document.querySelector('.demo-banner'); if (bn) bn.textContent = 'Panel real conectado a Firebase. Las consultas marcadas «Demo» son ficticias; elimínalas en Ajustes antes de recibir consultas reales.';
+    const fine = document.querySelector('.login-card > .fine'); if (fine) fine.textContent = 'Acceso protegido: la sesión termina al cerrar la pestaña o tras 15 minutos sin actividad.';
     const tab = document.querySelector('.tabs [data-view=notices]'); if (tab) tab.textContent = 'Actividad';
     const go = document.querySelector('#view-more [data-go=notices] span'); if (go) go.textContent = 'Actividad';
     $('#t-notices').textContent = 'Actividad reciente';
