@@ -1,5 +1,7 @@
 # NEXO Abogados · Despliegue en Firebase
 
+> **Estado:** proyecto `nexo-abogados-908e` creado, Hosting y reglas desplegados en https://nexo-abogados-908e.web.app (9-nov-2026). Falta activar Authentication (paso manual, sección 2) y cargar cuentas y datos (`node scripts/seed.js --project nexo-abogados-908e`).
+
 Última actualización: 9 de noviembre de 2026.
 
 Sitio público + panel de socios sobre **Firebase Hosting, Authentication y Firestore** (plan gratuito Spark; no requiere tarjeta ni Cloud Functions).

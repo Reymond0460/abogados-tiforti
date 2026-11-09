@@ -12,6 +12,7 @@ const { spawnSync } = require('child_process');
 const ROOT = path.resolve(__dirname, '..');
 const arg = (n) => { const i = process.argv.indexOf(n); return i > -1 ? process.argv[i + 1] : null; };
 const has = (n) => process.argv.includes(n);
+const google = require('./google-api');
 const CLI = path.join(ROOT, 'node_modules/firebase-tools/lib/bin/firebase.js');
 const say = (m) => console.log('\n▶ ' + m);
 const die = (m, code = 1) => { console.error('\n✖ ' + m); process.exit(code); };
@@ -51,6 +52,12 @@ console.log('Configuración guardada en firebase-config.json (es pública: no co
 
 /* 4. Firestore */
 say('4/6  Base de datos Firestore (' + (arg('--region') || 'southamerica-west1') + ')');
+console.log('Habilitando las APIs necesarias (Firestore, Authentication, reglas y Hosting)…');
+(async () => {
+  try { await google.enableServices(id, ['firestore.googleapis.com', 'identitytoolkit.googleapis.com', 'firebaserules.googleapis.com', 'firebasehosting.googleapis.com']); } catch (e) { console.log('Aviso: ' + e.message); }
+  main4();
+})();
+function main4() {
 const dbs = fbJson(['firestore:databases:list', '--project', id]); const hasDb = JSON.stringify(dbs).includes('/databases/(default)');
 if (!hasDb) { const r = fb(['firestore:databases:create', '(default)', '--location', arg('--region') || 'southamerica-west1', '--project', id], { stdio: 'inherit' }); if (r.status !== 0) die('No se pudo crear Firestore. Revísalo en https://console.firebase.google.com/project/' + id + '/firestore'); } else console.log('La base de datos ya existe.');
 
@@ -82,3 +89,4 @@ console.log(`
    Panel de socios: https://${id}.web.app/admin/
    Consola:         https://console.firebase.google.com/project/${id}/overview
 Siguientes pasos: cambia las contraseñas temporales (Ajustes → Cambiar mi contraseña), reemplaza los correos de los socios en Authentication si usaste los de ejemplo, y revisa docs/DESPLIEGUE.md.`);
+}

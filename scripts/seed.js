@@ -4,7 +4,7 @@
    Uso: node scripts/seed.js --emulator
         node scripts/seed.js --project <id> [--sin-demo] [--refresh-token <ruta.json>]   (producción)  */
 const fs = require('fs'), path = require('path'), vm = require('vm'), crypto = require('crypto'), os = require('os');
-const { initializeApp, cert, applicationDefault } = require('firebase-admin/app'); const { getFirestore, Timestamp } = require('firebase-admin/firestore'); const { getAuth } = require('firebase-admin/auth');
+const { initializeApp } = require('firebase-admin/app'); const { getFirestore, Timestamp } = require('firebase-admin/firestore'); const { getAuth } = require('firebase-admin/auth');
 
 const arg = (n) => { const i = process.argv.indexOf(n); return i > -1 ? process.argv[i + 1] : null; };
 const emulator = process.argv.includes('--emulator'), sinDemo = process.argv.includes('--sin-demo');
@@ -27,7 +27,12 @@ const pass = () => crypto.randomBytes(12).toString('base64url') + '-9a';
     projectId = arg('--project'); if (!projectId) throw new Error('Falta --project <id>');
     const tokFile = arg('--refresh-token') || path.join(os.homedir(), '.config/configstore/firebase-tools.json');
     const j = JSON.parse(fs.readFileSync(tokFile, 'utf8')); const rt = (j.tokens && j.tokens.refresh_token) || j.refresh_token;
-    initializeApp({ projectId, credential: refreshTokenCred ? refreshTokenCred({ type: 'authorized_user', client_id: '563584335869-fgrhgmd47bqnekij5i8b5pr03ho849e6.apps.googleusercontent.com', client_secret: 'j9iVZfS8kkCEFUPaAeJV0sAi', refresh_token: rt }) : undefined });
+    // Credenciales de usuario (las de «firebase login») como credenciales por defecto de Google, en un archivo temporal que se borra al terminar.
+    const adc = path.join(os.tmpdir(), 'nexo-adc-' + process.pid + '.json');
+    fs.writeFileSync(adc, JSON.stringify({ type: 'authorized_user', client_id: '563584335869-fgrhgmd47bqnekij5i8b5pr03ho849e6.apps.googleusercontent.com', client_secret: 'j9iVZfS8kkCEFUPaAeJV0sAi', refresh_token: rt, quota_project_id: projectId }), { mode: 0o600 });
+    process.on('exit', () => { try { fs.unlinkSync(adc); } catch (e) { /* ya borrado */ } });
+    process.env.GOOGLE_APPLICATION_CREDENTIALS = adc; process.env.GOOGLE_CLOUD_QUOTA_PROJECT = projectId;
+    initializeApp({ projectId });
   }
   const auth = getAuth(), db = getFirestore(), TS = Timestamp;
   const creds = [];
