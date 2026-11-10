@@ -1,26 +1,31 @@
-# Borrador de correo para el abogado (demo NEXO Abogados)
+# Borrador de correo para el abogado
 
-> Borrador. No incluye contraseñas. Envíe la contraseña por otro canal (WhatsApp o llamada), nunca en este mismo correo.
-> Antes de enviar: ejecutar `node scripts/seed.js --project nexo-abogados-908e` para refrescar los plazos de las consultas de demostración.
+> Sin contraseñas: envíelas por otro canal (WhatsApp o llamada). Antes de enviar, refrescar la demo con `node scripts/seed.js --project nexo-abogados-908e`.
+> Adjuntos: `GUIA-DEMO.pdf` y `COTIZACION.pdf`.
 
-**Asunto:** Demostración de la página web y el panel de NEXO Abogados
+**Asunto:** Propuesta de página web y panel de socios para NEXO Abogados
 
 Estimado/a [nombre]:
 
-Junto con saludar, le comparto la demostración de la propuesta de página web y panel de consultas para NEXO Abogados.
+Le presento nuestra propuesta para NEXO Abogados, junto con una demostración que ya puede revisar.
 
-- Sitio web: https://nexo-abogados-908e.web.app
-- Panel de los socios: https://nexo-abogados-908e.web.app/admin/
-- Usuario de prueba: [correo de prueba]
-- La contraseña se la envío por separado.
+**1. Página web (landing page) · $120.000**
+Es la página principal del estudio: da a conocer sus servicios y quiénes son, incluye preguntas frecuentes y un apartado para solicitar una consulta, que los lleva a su WhatsApp.
 
-Adjunto una guía en PDF (10 páginas) que explica cómo recorrer el sitio, cómo entrar al panel y qué se puede probar en unos 15 minutos.
+**2. Panel de socios · el plus que preparamos para ustedes**
+Al ser tres socios, vimos el potencial de crear un panel privado donde cada uno pueda ver los casos que llegan y administrarlos: quién los toma, en qué estado están y cuánto plazo queda para responder.
 
-Es una demostración: los nombres, fotos, teléfono y consultas son ficticios, y el panel funciona con datos de ejemplo marcados como «Demo». Lo que se pruebe se guarda de verdad, pero se puede borrar.
+**Inversión total: $300.000** (página web + panel de socios), sin IVA.
 
-Me ayudaría mucho conocer su opinión, sobre todo respecto de las preguntas de la sección 10 de la guía (tono, especialidades, plazo de respuesta, reparto de consultas y avisos).
+- **Pago único**, sin mensualidades obligatorias.
+- La página y el sistema quedan **funcionando a nombre del estudio**, con su dominio y sus cuentas. Los datos de las consultas son del estudio y se pueden exportar a Excel cuando quieran.
+- **Derecho de uso sin plazo.** Los cambios y el soporte los realizamos nosotros, con una mantención opcional desde $19.990 al mes. Si algún día dejáramos de prestar el servicio, entregaríamos el código al estudio.
+- **Forma de pago:** 50 % para comenzar y 50 % al ver todo funcionando, con hasta 2 rondas de cambios.
+- Para comenzar necesitamos su logo, los nombres de los socios, sus correos corporativos y sus datos de contacto.
+
+Para revisar la demostración, adjunto una guía con el paso a paso para entrar al sitio y al panel. La clave de acceso se la envío por separado.
 
 Quedo atento/a a sus comentarios.
 
 Saludos cordiales,
-[su nombre] · TiforTi
+Brayan · TiforTi
