@@ -6,7 +6,7 @@
       "**/.*",
       "**/node_modules/**"
     ],
-    "cleanUrls": true,
+    "cleanUrls": false,
     "headers": [
       {
         "source": "**",
@@ -84,13 +84,6 @@
             "value": "no-cache"
           }
         ]
-      }
-    ],
-    "redirects": [
-      {
-        "source": "/admin",
-        "destination": "/admin/",
-        "type": 301
       }
     ]
   },
