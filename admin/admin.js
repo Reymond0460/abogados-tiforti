@@ -390,8 +390,10 @@
   document.querySelectorAll('.live-only').forEach((el) => { el.hidden = !LIVE; });
   if (LIVE) {
     $('#login-email').required = true;
-    const bn = document.querySelector('.demo-banner'); if (bn) bn.textContent = 'Panel real conectado a Firebase. Las consultas marcadas «Demo» son ficticias; elimínalas en Ajustes antes de recibir consultas reales.';
-    const fine = document.querySelector('.login-card > .fine'); if (fine) fine.textContent = 'Acceso protegido: la sesión termina al cerrar la pestaña o tras 15 minutos sin actividad.';
+    const bn = document.querySelector('.demo-banner'); if (bn) bn.textContent = 'Versión de demostración. Las consultas marcadas «Demo» son ficticias; lo que hagas aquí se guarda de verdad.';
+    const st = document.querySelector('.steps li:first-child span:last-child'); if (st) st.textContent = 'Escribe tu correo.';
+    document.querySelectorAll('.tabs .chip').forEach((c) => { c.hidden = true; });
+    const cp = $('#view-content > p.muted'); if (cp) cp.textContent = 'Cambia los textos de la página web, en español e inglés. Lo que publiques se ve de inmediato en el sitio.';
     const tab = document.querySelector('.tabs [data-view=notices]'); if (tab) tab.textContent = 'Actividad';
     const go = document.querySelector('#view-more [data-go=notices] span'); if (go) go.textContent = 'Actividad';
     $('#t-notices').textContent = 'Actividad reciente';
