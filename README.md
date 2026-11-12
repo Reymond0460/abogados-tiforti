@@ -12,7 +12,7 @@ y abrir http://localhost:8000. (También funciona abriendo `index.html` directam
 ## Estructura
 - `index.html`, `style.css` (diseño original), `extras.css` (selector de idioma, panel de accesibilidad, datos de contacto), `app.js`, `i18n.js` (textos ES/EN)
 - `assets/`: `jost.ttf` (+ `OFL-Jost.txt`), `nexo-simbolo.svg`, `favicon.svg`, `office-nexo.webp`, `partner-1..3.jpg`
-- `assets/manrope.*`, `sans.woff2`, `serif.woff2`, `office.jpg` (ahora en `assets/originales/`): restos de versiones anteriores, sin uso visual en la versión azul (se conservan por ser parte del ZIP original).
+- `assets/originales/manrope.ttf`, `sans.woff2`, `serif.woff2`, `office.jpg` (ahora en `assets/originales/`): restos de versiones anteriores, sin uso visual en la versión azul (se conservan por ser parte del ZIP original).
 
 ## Novedades de esta versión
 - **Español / inglés**: selector ES | EN en la cabecera. Todos los textos, ventanas, formulario y mensajes están en `i18n.js`; para cambiar un texto se edita ahí.
