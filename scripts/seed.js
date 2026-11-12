@@ -14,9 +14,9 @@ function load(file) { const sb = { window: {} }; vm.runInNewContext(fs.readFileS
 const DATA = load('admin/data.js').ADMIN_DATA, CONTENT = load('admin/content.js').ADMIN_CONTENT;
 
 const SOCIOS = [
-  { id: 'p1', nombre: 'Andrés Vergara Muñoz', corto: 'Andrés', area: 'civil', foto: 'assets/partner-1.jpg', email: process.env.SOCIO1_EMAIL || 'andres@nexo-demo.example' },
-  { id: 'p2', nombre: 'Valentina Soto Araya', corto: 'Valentina', area: 'laboral', foto: 'assets/partner-2.jpg', email: process.env.SOCIO2_EMAIL || 'valentina@nexo-demo.example' },
-  { id: 'p3', nombre: 'Tomás Herrera Lagos', corto: 'Tomás', area: 'empresas', foto: 'assets/partner-3.jpg', email: process.env.SOCIO3_EMAIL || 'tomas@nexo-demo.example' }
+  { id: 'p1', nombre: 'Andrés Vergara Muñoz', corto: 'Andrés', area: 'civil', foto: 'assets/partner-1.webp', email: process.env.SOCIO1_EMAIL || 'andres@nexo-demo.example' },
+  { id: 'p2', nombre: 'Valentina Soto Araya', corto: 'Valentina', area: 'laboral', foto: 'assets/partner-2.webp', email: process.env.SOCIO2_EMAIL || 'valentina@nexo-demo.example' },
+  { id: 'p3', nombre: 'Tomás Herrera Lagos', corto: 'Tomás', area: 'empresas', foto: 'assets/partner-3.webp', email: process.env.SOCIO3_EMAIL || 'tomas@nexo-demo.example' }
 ];
 const pass = () => crypto.randomBytes(12).toString('base64url') + '-9a';
 

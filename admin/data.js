@@ -5,9 +5,9 @@ window.ADMIN_DATA = (() => {
   const now = Date.now();
   const ago = (hours) => now - hours * H;
   const partners = [
-    { id: 'p1', name: 'Andrés Vergara Muñoz', short: 'Andrés', area: 'civil', photo: '../assets/partner-1.jpg' },
-    { id: 'p2', name: 'Valentina Soto Araya', short: 'Valentina', area: 'laboral', photo: '../assets/partner-2.jpg' },
-    { id: 'p3', name: 'Tomás Herrera Lagos', short: 'Tomás', area: 'empresas', photo: '../assets/partner-3.jpg' }
+    { id: 'p1', name: 'Andrés Vergara Muñoz', short: 'Andrés', area: 'civil', photo: '../assets/partner-1.webp' },
+    { id: 'p2', name: 'Valentina Soto Araya', short: 'Valentina', area: 'laboral', photo: '../assets/partner-2.webp' },
+    { id: 'p3', name: 'Tomás Herrera Lagos', short: 'Tomás', area: 'empresas', photo: '../assets/partner-3.webp' }
   ];
   const mk = (id, hours, name, email, phone, area, channel, status, owner, extra = {}) => ({
     id, createdAt: ago(hours), name, email, phone, area, channel, status, owner,

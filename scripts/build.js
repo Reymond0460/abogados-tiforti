@@ -11,7 +11,7 @@ fs.rmSync(DIST, { recursive: true, force: true }); fs.mkdirSync(DIST, { recursiv
 const copy = (rel) => { const d = path.join(DIST, rel); fs.mkdirSync(path.dirname(d), { recursive: true }); fs.copyFileSync(path.join(ROOT, rel), d); };
 
 ['index.html', 'style.css', 'extras.css', 'app.js', 'i18n.js'].forEach(copy);
-['jost.ttf', 'manrope.ttf', 'OFL-Jost.txt', 'favicon.svg', 'nexo-simbolo.svg', 'office-nexo.jpg', 'partner-1.jpg', 'partner-2.jpg', 'partner-3.jpg'].forEach((f) => copy('assets/' + f));
+['jost.ttf', 'manrope.ttf', 'OFL-Jost.txt', 'favicon.svg', 'nexo-simbolo.svg', 'office-nexo.webp', 'partner-1.webp', 'partner-2.webp', 'partner-3.webp'].forEach((f) => copy('assets/' + f));
 ['index.html', 'admin.css', 'admin.js', 'charts.js', 'config.js', 'content.js', 'editor.js', 'export.js', 'live.js'].forEach((f) => copy('admin/' + f));
 
 // El panel real no lleva datos ficticios: se publica un data.js vacío.

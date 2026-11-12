@@ -9,7 +9,7 @@ const { spawn, spawnSync } = require('child_process');
 const run = (file, env) => new Promise((resolve) => { const c = spawn(process.execPath, [file], { env }); let out = ''; const t = setTimeout(() => c.kill(), 600000); c.stdout.on('data', (d) => { out += d; }); c.stderr.on('data', (d) => { out += d; }); c.on('close', (code) => { clearTimeout(t); resolve({ status: code, out }); }); });
 
 const ROOT = path.resolve(__dirname, '..');
-const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml', '.jpg': 'image/jpeg', '.ttf': 'font/ttf', '.txt': 'text/plain; charset=utf-8', '.md': 'text/markdown; charset=utf-8' };
+const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml', '.jpg': 'image/jpeg', '.webp': 'image/webp', '.ttf': 'font/ttf', '.txt': 'text/plain; charset=utf-8', '.md': 'text/markdown; charset=utf-8' };
 const TESTS = [
   ['Sitio público · funcional (menú, ventanas, formulario, accesibilidad, idiomas)', 'public-funcional.test.js', /SIN HALLAZGOS/],
   ['Panel · funcional (bandeja, ficha, avisos, ajustes, editor, restablecer)', 'panel-funcional.test.js', /SIN HALLAZGOS/],

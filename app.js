@@ -25,7 +25,7 @@ const dialog = document.querySelector('#detail-dialog');
 const dialogContent = document.querySelector('#dialog-content');
 let previousFocus = null;
 let currentKey = null;
-const portraits = { socio1: 'assets/partner-1.jpg', socio2: 'assets/partner-2.jpg', socio3: 'assets/partner-3.jpg' };
+const portraits = { socio1: 'assets/partner-1.webp', socio2: 'assets/partner-2.webp', socio3: 'assets/partner-3.webp' };
 
 function renderDialog(key) {
   const c = t('dlg.' + key);

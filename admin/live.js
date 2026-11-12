@@ -18,7 +18,7 @@ window.AdminLive = (() => {
     return { id: d.id, createdAt: ms(x.createdAt), name: x.nombre, email: x.email || '', phone: x.telefono || '', area: x.area, channel: x.canal, status: x.estado, owner: x.responsable || null,
       notes: (x.notas || []).map(entry), history: (x.historial || []).map(entry), manual: !!x.manual, summary: x.resumen || '', demo: !!x.demo };
   }
-  const fromSocio = (d) => { const x = d.data(); return { id: d.id, name: x.nombre, short: x.corto || x.nombre.split(' ')[0], area: x.area || '', photo: '../' + (x.foto || 'assets/partner-1.jpg'), activo: x.activo !== false, orden: x.orden || 0, email: x.email || '' }; };
+  const fromSocio = (d) => { const x = d.data(); return { id: d.id, name: x.nombre, short: x.corto || x.nombre.split(' ')[0], area: x.area || '', photo: '../' + (x.foto || 'assets/partner-1.webp'), activo: x.activo !== false, orden: x.orden || 0, email: x.email || '' }; };
 
   async function signIn(email, password) {
     fb = await loadFB();
